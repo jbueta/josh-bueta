@@ -4,34 +4,34 @@ import React from "react";
 import { Marquee, TechCard } from "@/registry/magicui/marquee";
 import { BlurFade } from "@/registry/magicui/blur-fade";
 import {
-  Code,
-  Layers,
-  Database,
-  Cpu,
-  Globe,
-  Server,
-  Terminal,
-  Zap,
-  Box,
-  Layout,
-  Flame,
-  GitBranch,
-} from "lucide-react";
+  TypeScriptLogo,
+  NextjsLogo,
+  ReactLogo,
+  TailwindLogo,
+  NodejsLogo,
+  PythonLogo,
+  PostgresqlLogo,
+  DockerLogo,
+  GitLogo,
+  FramerMotionLogo,
+  GraphQLLogo,
+  RedisLogo,
+} from "@/components/tech-logos";
 
 export function TechStack() {
   const techList = [
-    { name: "TypeScript", icon: <Code className="w-4 h-4 text-blue-500" />, category: "Language" },
-    { name: "Next.js", icon: <Globe className="w-4 h-4 text-zinc-900 dark:text-zinc-100" />, category: "Framework" },
-    { name: "React", icon: <Layers className="w-4 h-4 text-cyan-400" />, category: "Library" },
-    { name: "Tailwind CSS", icon: <Layout className="w-4 h-4 text-teal-400" />, category: "Styling" },
-    { name: "Node.js", icon: <Server className="w-4 h-4 text-emerald-500" />, category: "Runtime" },
-    { name: "Python", icon: <Terminal className="w-4 h-4 text-amber-400" />, category: "Language" },
-    { name: "PostgreSQL", icon: <Database className="w-4 h-4 text-indigo-400" />, category: "Database" },
-    { name: "Docker", icon: <Box className="w-4 h-4 text-sky-500" />, category: "DevOps" },
-    { name: "Git", icon: <GitBranch className="w-4 h-4 text-orange-500" />, category: "VCS" },
-    { name: "Framer Motion", icon: <Zap className="w-4 h-4 text-purple-400" />, category: "Animation" },
-    { name: "GraphQL", icon: <Cpu className="w-4 h-4 text-pink-500" />, category: "API" },
-    { name: "Redis", icon: <Flame className="w-4 h-4 text-red-500" />, category: "Cache" },
+    { name: "TypeScript", icon: <TypeScriptLogo className="w-5 h-5" />, category: "Language" },
+    { name: "Next.js", icon: <NextjsLogo className="w-5 h-5" />, category: "Framework" },
+    { name: "React", icon: <ReactLogo className="w-5 h-5" />, category: "Library" },
+    { name: "Tailwind CSS", icon: <TailwindLogo className="w-5 h-5" />, category: "Styling" },
+    { name: "Node.js", icon: <NodejsLogo className="w-5 h-5" />, category: "Runtime" },
+    { name: "Python", icon: <PythonLogo className="w-5 h-5" />, category: "Language" },
+    { name: "PostgreSQL", icon: <PostgresqlLogo className="w-5 h-5" />, category: "Database" },
+    { name: "Docker", icon: <DockerLogo className="w-5 h-5" />, category: "DevOps" },
+    { name: "Git", icon: <GitLogo className="w-5 h-5" />, category: "VCS" },
+    { name: "Framer Motion", icon: <FramerMotionLogo className="w-5 h-5" />, category: "Animation" },
+    { name: "GraphQL", icon: <GraphQLLogo className="w-5 h-5" />, category: "API" },
+    { name: "Redis", icon: <RedisLogo className="w-5 h-5" />, category: "Cache" },
   ];
 
   const row1 = techList.slice(0, 6);
