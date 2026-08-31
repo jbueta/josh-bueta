@@ -26,7 +26,7 @@ export function Footer() {
                   </div>
                 </div>
                 <span className="text-xl font-bold text-zinc-900 dark:text-zinc-100 tracking-tight">
-                  Mark Jason Bueta
+                  Mark Joshua Bueta
                 </span>
               </div>
               <p className="text-xs text-zinc-500 dark:text-zinc-400 max-w-sm">
@@ -57,7 +57,7 @@ export function Footer() {
               </a>
 
               <a
-                href="mailto:contact@mjbueta.dev"
+                href="mailto:joshua.bueta13@gmail.com"
                 aria-label="Email Contact"
                 className="p-3 rounded-xl border border-zinc-200 dark:border-zinc-800 bg-white/60 dark:bg-zinc-900/60 hover:text-amber-500 dark:hover:text-amber-400 hover:border-amber-500/50 transition-all duration-300 shadow-sm"
               >
@@ -79,7 +79,7 @@ export function Footer() {
         <BlurFade delay={0.2} inView>
           <div className="flex flex-col sm:flex-row items-center justify-between gap-4 text-xs font-mono text-zinc-500 dark:text-zinc-400">
             <div className="flex items-center gap-1.5">
-              <span>© {new Date().getFullYear()} Mark Jason Bueta. All rights reserved.</span>
+              <span>© {new Date().getFullYear()} Mark Joshua Bueta. All rights reserved.</span>
             </div>
 
             <div className="flex items-center gap-1">

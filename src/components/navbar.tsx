@@ -2,7 +2,6 @@
 
 import React, { useState, useEffect } from "react";
 import { AnimatedThemeToggler } from "@/registry/magicui/animated-theme-toggler";
-import { Code2, Sparkles, Terminal } from "lucide-react";
 import { cn } from "@/lib/utils";
 
 export function Navbar() {
@@ -32,10 +31,10 @@ export function Navbar() {
       )}
     >
       <div className="max-w-6xl mx-auto flex items-center justify-between">
-        {/* Left: Initials Logo MJB */}
+        {/* Left: Initials Logo MJB strictly */}
         <a
           href="#"
-          className="group flex items-center gap-2 font-mono font-extrabold text-xl tracking-wider text-zinc-900 dark:text-zinc-100 focus:outline-none"
+          className="group flex items-center font-mono font-extrabold text-xl tracking-wider text-zinc-900 dark:text-zinc-100 focus:outline-none"
         >
           <div className="w-9 h-9 rounded-xl bg-gradient-to-tr from-emerald-500 via-teal-500 to-cyan-500 p-[2px] shadow-lg shadow-emerald-500/20 group-hover:scale-105 transition-transform duration-300">
             <div className="w-full h-full bg-white dark:bg-zinc-950 rounded-[10px] flex items-center justify-center">
@@ -44,9 +43,6 @@ export function Navbar() {
               </span>
             </div>
           </div>
-          <span className="hidden sm:inline-block text-sm font-semibold text-zinc-600 dark:text-zinc-400 group-hover:text-emerald-500 transition-colors">
-            /dev
-          </span>
         </a>
 
         {/* Center: Navigation Links */}

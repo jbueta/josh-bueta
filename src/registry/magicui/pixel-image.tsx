@@ -10,6 +10,7 @@ interface PixelImageProps {
   rows?: number;
   cols?: number;
   className?: string;
+  onClick?: () => void;
 }
 
 export function PixelImage({
@@ -18,6 +19,7 @@ export function PixelImage({
   rows = 4,
   cols = 6,
   className,
+  onClick,
 }: PixelImageProps) {
   const [isHovered, setIsHovered] = useState(false);
 
@@ -33,6 +35,7 @@ export function PixelImage({
 
   return (
     <div
+      onClick={onClick}
       className={cn(
         "relative overflow-hidden rounded-2xl border-2 border-zinc-200 dark:border-zinc-800 shadow-2xl bg-zinc-900 group cursor-pointer select-none",
         className
@@ -40,14 +43,11 @@ export function PixelImage({
       onMouseEnter={() => setIsHovered(true)}
       onMouseLeave={() => setIsHovered(false)}
     >
-      {/* Base Image */}
+      {/* Base Image - Crisp without grayscale filter */}
       <img
         src={src}
         alt={alt}
-        className={cn(
-          "w-full h-full object-cover transition-all duration-700 ease-out",
-          isHovered ? "grayscale-0 scale-105" : "grayscale contrast-125"
-        )}
+        className="w-full h-full object-cover transition-transform duration-700 ease-out group-hover:scale-105"
       />
 
       {/* Grid Overlay Matrix */}
@@ -65,8 +65,8 @@ export function PixelImage({
               key={cell.id}
               initial={false}
               animate={{
-                opacity: isHovered ? 0 : 0.2,
-                backgroundColor: isHovered ? "rgba(16, 185, 129, 0)" : "rgba(0,0,0,0.3)",
+                opacity: isHovered ? 0 : 0.15,
+                backgroundColor: isHovered ? "rgba(16, 185, 129, 0)" : "rgba(0,0,0,0.2)",
               }}
               transition={{
                 duration: 0.4,
@@ -80,9 +80,9 @@ export function PixelImage({
 
       {/* Ambient glow border */}
       <div className="absolute inset-0 rounded-2xl ring-1 ring-inset ring-white/20 dark:ring-white/10 pointer-events-none" />
-      <div className="absolute bottom-0 inset-x-0 h-1/3 bg-gradient-to-t from-black/80 via-black/20 to-transparent pointer-events-none flex items-end justify-center pb-2 opacity-0 group-hover:opacity-100 transition-opacity duration-300">
+      <div className="absolute bottom-0 inset-x-0 h-1/3 bg-gradient-to-t from-black/80 via-black/20 to-transparent pointer-events-none flex items-end justify-center pb-3 opacity-0 group-hover:opacity-100 transition-opacity duration-300">
         <span className="text-[10px] tracking-widest font-mono text-emerald-400 uppercase font-semibold">
-          GRID [4x6] PIXEL ACTIVE
+          CLICK TO EXPAND 🔍
         </span>
       </div>
     </div>
