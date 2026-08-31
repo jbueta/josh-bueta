@@ -28,14 +28,14 @@ export function Hero() {
 
       {/* Center Layout: Avatar & Titles */}
       <div className="flex flex-col md:flex-row items-center justify-center gap-8 md:gap-12 w-full mb-10 text-center md:text-left">
-        {/* MagicUI PixelImage Component */}
+        {/* MagicUI PixelImage Component (Scaled to w-56 h-56 sm:w-72 sm:h-72) */}
         <BlurFade delay={0.2} className="shrink-0">
           <PixelImage
-            src="/avatar.png"
+            src="/avatar.jpg"
             alt="Mark Jason Bueta"
             rows={4}
             cols={6}
-            className="w-44 h-44 sm:w-52 sm:h-52"
+            className="w-56 h-56 sm:w-72 sm:h-72"
           />
         </BlurFade>
 
@@ -71,37 +71,28 @@ export function Hero() {
             </p>
           </BlurFade>
 
-          {/* Social Links & CTA */}
+          {/* Action CTAs & Social Links */}
           <BlurFade delay={0.6}>
             <div className="flex flex-wrap items-center justify-center md:justify-start gap-4">
-              {/* Primary CTA */}
+              {/* Primary Download CV Button */}
               <a
-                href="#projects"
-                className="inline-flex items-center gap-2 px-5 py-2.5 rounded-xl bg-emerald-600 hover:bg-emerald-500 text-white font-medium text-sm shadow-lg shadow-emerald-500/25 transition-all duration-300 hover:scale-105 active:scale-95"
-              >
-                <span>View Projects</span>
-                <Sparkles className="w-4 h-4" />
-              </a>
-
-              {/* CV Button */}
-              <a
-                href="/cv-mark-jason-bueta.pdf"
+                href="/Bueta-Resume_Updated.pdf"
                 target="_blank"
                 rel="noopener noreferrer"
-                className="inline-flex items-center gap-2 px-5 py-2.5 rounded-xl border border-zinc-300 dark:border-zinc-800 bg-white/80 dark:bg-zinc-900/80 hover:bg-zinc-100 dark:hover:bg-zinc-800 text-zinc-800 dark:text-zinc-200 font-medium text-sm transition-all duration-300 shadow-sm"
+                className="inline-flex items-center gap-2 px-6 py-3 rounded-xl bg-emerald-600 hover:bg-emerald-500 text-white font-semibold text-sm shadow-lg shadow-emerald-500/25 transition-all duration-300 hover:scale-105 active:scale-95"
               >
-                <Download className="w-4 h-4 text-emerald-500" />
+                <Download className="w-4 h-4" />
                 <span>Download CV</span>
               </a>
 
-              {/* Social Icons */}
-              <div className="flex items-center gap-2 pl-2">
+              {/* Social Icons Directly Adjacent */}
+              <div className="flex items-center gap-2">
                 <a
                   href="https://github.com/jbueta"
                   target="_blank"
                   rel="noopener noreferrer"
                   aria-label="GitHub Profile"
-                  className="p-2.5 rounded-xl border border-zinc-200 dark:border-zinc-800 bg-white/60 dark:bg-zinc-900/60 hover:text-emerald-500 dark:hover:text-emerald-400 hover:border-emerald-500/50 transition-all duration-300 shadow-sm"
+                  className="p-3 rounded-xl border border-zinc-200 dark:border-zinc-800 bg-white/60 dark:bg-zinc-900/60 hover:text-emerald-500 dark:hover:text-emerald-400 hover:border-emerald-500/50 transition-all duration-300 shadow-sm"
                 >
                   <GithubIcon className="w-4 h-4" />
                 </a>
@@ -111,7 +102,7 @@ export function Hero() {
                   target="_blank"
                   rel="noopener noreferrer"
                   aria-label="LinkedIn Profile"
-                  className="p-2.5 rounded-xl border border-zinc-200 dark:border-zinc-800 bg-white/60 dark:bg-zinc-900/60 hover:text-cyan-500 dark:hover:text-cyan-400 hover:border-cyan-500/50 transition-all duration-300 shadow-sm"
+                  className="p-3 rounded-xl border border-zinc-200 dark:border-zinc-800 bg-white/60 dark:bg-zinc-900/60 hover:text-cyan-500 dark:hover:text-cyan-400 hover:border-cyan-500/50 transition-all duration-300 shadow-sm"
                 >
                   <LinkedinIcon className="w-4 h-4" />
                 </a>
@@ -119,7 +110,7 @@ export function Hero() {
                 <a
                   href="mailto:contact@mjbueta.dev"
                   aria-label="Email Contact"
-                  className="p-2.5 rounded-xl border border-zinc-200 dark:border-zinc-800 bg-white/60 dark:bg-zinc-900/60 hover:text-amber-500 dark:hover:text-amber-400 hover:border-amber-500/50 transition-all duration-300 shadow-sm"
+                  className="p-3 rounded-xl border border-zinc-200 dark:border-zinc-800 bg-white/60 dark:bg-zinc-900/60 hover:text-amber-500 dark:hover:text-amber-400 hover:border-amber-500/50 transition-all duration-300 shadow-sm"
                 >
                   <Mail className="w-4 h-4" />
                 </a>
