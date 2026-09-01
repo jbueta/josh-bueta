@@ -31,18 +31,15 @@ export function Navbar() {
       )}
     >
       <div className="max-w-6xl mx-auto flex items-center justify-between">
-        {/* Left: Initials Logo MJB Navy Sapphire gradient */}
+        {/* Left: Pure Typography Initials Logo MJB without container */}
         <a
           href="#"
-          className="group flex items-center font-mono font-extrabold text-xl tracking-wider text-zinc-900 dark:text-zinc-100 focus:outline-none"
+          aria-label="Mark Joshua Bueta Initials Logo"
+          className="group flex items-center focus:outline-none py-1 overflow-visible"
         >
-          <div className="w-9 h-9 rounded-xl bg-gradient-to-tr from-blue-600 via-indigo-600 to-sky-400 p-[2px] shadow-lg shadow-blue-500/20 group-hover:scale-105 transition-transform duration-300">
-            <div className="w-full h-full bg-white dark:bg-zinc-950 rounded-[10px] flex items-center justify-center">
-              <span className="text-blue-600 dark:text-blue-400 font-black text-sm">
-                MJB
-              </span>
-            </div>
-          </div>
+          <span className="font-heading font-black text-2xl sm:text-3xl tracking-tighter bg-gradient-to-r from-blue-500 via-indigo-400 to-sky-400 bg-clip-text text-transparent group-hover:scale-105 transition-transform duration-300 inline-block leading-none">
+            MJB
+          </span>
         </a>
 
         {/* Center: Navigation Links */}
@@ -51,7 +48,7 @@ export function Navbar() {
             <a
               key={link.name}
               href={link.href}
-              className="px-4 py-1.5 rounded-full text-xs font-medium text-zinc-700 dark:text-zinc-300 hover:text-zinc-950 dark:hover:text-white hover:bg-white dark:hover:bg-zinc-800 transition-all duration-200"
+              className="px-4 py-1.5 rounded-full text-xs font-semibold text-zinc-700 dark:text-zinc-300 hover:text-zinc-950 dark:hover:text-white hover:bg-white dark:hover:bg-zinc-800 transition-all duration-200 font-sans"
             >
               {link.name}
             </a>

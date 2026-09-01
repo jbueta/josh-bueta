@@ -15,21 +15,17 @@ export function Footer() {
       <div className="max-w-6xl mx-auto flex flex-col gap-12">
         <BlurFade delay={0.1} inView>
           <div className="flex flex-col md:flex-row justify-between items-start md:items-center gap-8 pb-12 border-b border-zinc-200/80 dark:border-zinc-800/80">
-            {/* Left: Brand / Initials */}
+            {/* Left: Pure Typography Initials Logo MJB without container */}
             <div className="flex flex-col gap-2">
               <div className="flex items-center gap-3">
-                <div className="w-10 h-10 rounded-xl bg-gradient-to-tr from-blue-600 via-indigo-600 to-sky-400 p-[2px] shadow-lg shadow-blue-500/20">
-                  <div className="w-full h-full bg-white dark:bg-zinc-950 rounded-[10px] flex items-center justify-center">
-                    <span className="text-blue-600 dark:text-blue-400 font-extrabold font-mono text-sm">
-                      MJB
-                    </span>
-                  </div>
-                </div>
-                <span className="text-xl font-bold text-zinc-900 dark:text-zinc-100 tracking-tight">
+                <span className="font-heading font-black text-2xl sm:text-3xl tracking-tighter bg-gradient-to-r from-blue-500 via-indigo-400 to-sky-400 bg-clip-text text-transparent">
+                  MJB
+                </span>
+                <span className="text-xl font-extrabold text-zinc-900 dark:text-zinc-100 tracking-tight font-heading">
                   Mark Joshua Bueta
                 </span>
               </div>
-              <p className="text-xs text-zinc-500 dark:text-zinc-400 max-w-sm">
+              <p className="text-xs text-zinc-500 dark:text-zinc-400 max-w-sm font-sans">
                 Architecting modern web solutions, responsive applications, and developer-first user experiences.
               </p>
             </div>
@@ -77,12 +73,12 @@ export function Footer() {
 
         {/* Bottom Credits */}
         <BlurFade delay={0.2} inView>
-          <div className="flex flex-col sm:flex-row items-center justify-between gap-4 text-xs font-mono text-zinc-500 dark:text-zinc-400">
+          <div className="flex flex-col sm:flex-row items-center justify-between gap-4 text-xs font-sans text-zinc-500 dark:text-zinc-400">
             <div className="flex items-center gap-1.5">
               <span>© {new Date().getFullYear()} Mark Joshua Bueta. All rights reserved.</span>
             </div>
 
-            <div className="flex items-center gap-1">
+            <div className="flex items-center gap-1 font-sans">
               <span>Built with Next.js, MagicUI & Tailwind CSS</span>
             </div>
           </div>

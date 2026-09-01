@@ -155,17 +155,18 @@ export function Experience() {
           </div>
 
           {/* 2. Organization Experience Timeline using UI Timeline Component */}
-          <div className="flex flex-col gap-6">
+          <div className="flex flex-col gap-4">
             <BlurFade delay={0.4} inView>
-              <div className="flex items-center justify-between mb-2">
+              <div className="flex flex-col items-start gap-2 mb-2">
                 <div className="flex items-center gap-2 text-zinc-900 dark:text-zinc-100 font-bold text-xl">
                   <div className="p-2 rounded-lg bg-indigo-500/10 text-indigo-500">
                     <Users className="w-5 h-5" />
                   </div>
                   <h3>Organization Experience</h3>
                 </div>
-                <span className="text-xs font-mono font-bold text-blue-500 px-3 py-1 rounded-full bg-blue-500/10 border border-blue-500/20 flex items-center gap-1">
-                  <Briefcase className="w-3 h-3" />
+                {/* Repositioned PLP Computer Society Badge directly below the header */}
+                <span className="text-xs font-mono font-bold text-blue-500 px-3 py-1.5 rounded-full bg-blue-500/10 border border-blue-500/20 flex items-center gap-1.5 self-start">
+                  <Briefcase className="w-3.5 h-3.5" />
                   PLP Computer Society
                 </span>
               </div>

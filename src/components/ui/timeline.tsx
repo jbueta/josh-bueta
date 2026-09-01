@@ -20,10 +20,13 @@ export function Timeline({
     >
       {React.Children.map(children, (child, index) => {
         if (React.isValidElement(child)) {
-          return React.cloneElement(child as React.ReactElement<{ isActive?: boolean; isLast?: boolean }>, {
-            isActive: activeIndex !== undefined ? index <= activeIndex : true,
-            isLast: index === React.Children.count(children) - 1,
-          });
+          return React.cloneElement(
+            child as React.ReactElement<{ isActive?: boolean; isLast?: boolean }>,
+            {
+              isActive: activeIndex !== undefined ? index <= activeIndex : true,
+              isLast: index === React.Children.count(children) - 1,
+            }
+          );
         }
         return child;
       })}
@@ -50,10 +53,13 @@ export function TimelineItem({
     >
       {React.Children.map(children, (child) => {
         if (React.isValidElement(child)) {
-          return React.cloneElement(child as React.ReactElement<{ isActive?: boolean; isLast?: boolean }>, {
-            isActive,
-            isLast,
-          });
+          return React.cloneElement(
+            child as React.ReactElement<{ isActive?: boolean; isLast?: boolean }>,
+            {
+              isActive,
+              isLast,
+            }
+          );
         }
         return child;
       })}
@@ -63,11 +69,13 @@ export function TimelineItem({
 
 interface TimelineDotProps extends React.HTMLAttributes<HTMLDivElement> {
   isActive?: boolean;
+  isLast?: boolean;
 }
 
 export function TimelineDot({
   className,
   isActive = true,
+  isLast, // Destructured to prevent passing unknown DOM prop to div
   ...props
 }: TimelineDotProps) {
   return (
@@ -117,11 +125,18 @@ export function TimelineConnector({
   );
 }
 
+interface TimelineSubProps extends React.HTMLAttributes<HTMLDivElement> {
+  isActive?: boolean;
+  isLast?: boolean;
+}
+
 export function TimelineContent({
   children,
   className,
+  isActive, // Destructured to prevent passing unknown DOM prop to div
+  isLast, // Destructured to prevent passing unknown DOM prop to div
   ...props
-}: React.HTMLAttributes<HTMLDivElement>) {
+}: TimelineSubProps) {
   return (
     <div className={cn("ml-4 flex-1 pb-2", className)} {...props}>
       {children}
@@ -132,8 +147,10 @@ export function TimelineContent({
 export function TimelineHeader({
   children,
   className,
+  isActive, // Destructured
+  isLast, // Destructured
   ...props
-}: React.HTMLAttributes<HTMLDivElement>) {
+}: TimelineSubProps) {
   return (
     <div
       className={cn("flex flex-col sm:flex-row sm:items-center justify-between gap-1 mb-1", className)}
@@ -144,12 +161,19 @@ export function TimelineHeader({
   );
 }
 
+interface TimelineTimeProps extends React.TimeHTMLAttributes<HTMLTimeElement> {
+  isActive?: boolean;
+  isLast?: boolean;
+}
+
 export function TimelineTime({
   children,
   className,
   dateTime,
+  isActive, // Destructured
+  isLast, // Destructured
   ...props
-}: React.TimeHTMLAttributes<HTMLTimeElement>) {
+}: TimelineTimeProps) {
   return (
     <time
       dateTime={dateTime}
@@ -164,15 +188,22 @@ export function TimelineTime({
   );
 }
 
+interface TimelineTextProps extends React.HTMLAttributes<HTMLElement> {
+  isActive?: boolean;
+  isLast?: boolean;
+}
+
 export function TimelineTitle({
   children,
   className,
+  isActive, // Destructured
+  isLast, // Destructured
   ...props
-}: React.HTMLAttributes<HTMLHeadingElement>) {
+}: TimelineTextProps) {
   return (
     <h4
       className={cn(
-        "text-base font-bold text-zinc-900 dark:text-zinc-100 group-hover:text-blue-500 transition-colors",
+        "text-base font-bold text-zinc-900 dark:text-zinc-100 group-hover:text-blue-500 transition-colors font-heading",
         className
       )}
       {...props}
@@ -185,12 +216,14 @@ export function TimelineTitle({
 export function TimelineDescription({
   children,
   className,
+  isActive, // Destructured
+  isLast, // Destructured
   ...props
-}: React.HTMLAttributes<HTMLParagraphElement>) {
+}: TimelineTextProps) {
   return (
     <p
       className={cn(
-        "text-xs text-zinc-600 dark:text-zinc-400 leading-relaxed mt-1",
+        "text-xs text-zinc-600 dark:text-zinc-400 leading-relaxed mt-1 font-sans",
         className
       )}
       {...props}
