@@ -164,7 +164,7 @@ export function Certifications() {
 
   return (
     <>
-      <section id="certifications" className="py-20 relative z-10 max-w-6xl mx-auto px-4 sm:px-8">
+      <section id="certifications" className="py-20 relative z-10 max-w-6xl mx-auto px-4 sm:px-8 overflow-hidden">
         <BlurFade delay={0.1} inView>
           <div className="text-center mb-16">
             <h2 className="text-xs font-mono tracking-widest text-blue-500 uppercase font-semibold mb-2">
@@ -173,7 +173,7 @@ export function Certifications() {
             <p className="text-3xl sm:text-4xl font-extrabold text-zinc-900 dark:text-zinc-100 font-heading">
               Technical Certifications & Specializations
             </p>
-            <p className="text-sm text-zinc-600 dark:text-zinc-400 max-w-xl mx-auto mt-2 font-sans">
+            <p className="text-xs sm:text-sm text-zinc-600 dark:text-zinc-400 max-w-xl mx-auto mt-2 font-sans">
               Click any certification card to inspect the official certificate preview and download credentials.
             </p>
           </div>
@@ -185,10 +185,10 @@ export function Certifications() {
               <div className="flex flex-col gap-6">
                 {/* Category Header */}
                 <div className="flex items-center gap-3 border-b border-zinc-200/80 dark:border-zinc-800/80 pb-3">
-                  <div className="p-2 rounded-xl bg-blue-500/10 text-blue-500">
+                  <div className="p-2 rounded-xl bg-blue-500/10 text-blue-500 shrink-0">
                     {cat.icon}
                   </div>
-                  <h3 className="text-xl font-bold text-zinc-900 dark:text-zinc-100 font-heading">
+                  <h3 className="text-lg sm:text-xl font-bold text-zinc-900 dark:text-zinc-100 font-heading leading-snug">
                     {cat.category}
                   </h3>
                 </div>
@@ -199,21 +199,21 @@ export function Certifications() {
                     <div
                       key={certIdx}
                       onClick={() => setSelectedCert(cert)}
-                      className="group relative p-6 rounded-2xl border border-zinc-200/80 dark:border-zinc-800/80 bg-white/60 dark:bg-zinc-900/60 backdrop-blur-md hover:border-blue-500/50 hover:shadow-xl hover:shadow-blue-500/5 transition-all duration-300 flex flex-col justify-between cursor-pointer"
+                      className="group relative p-5 sm:p-6 rounded-2xl border border-zinc-200/80 dark:border-zinc-800/80 bg-white/60 dark:bg-zinc-900/60 backdrop-blur-md hover:border-blue-500/50 hover:shadow-xl hover:shadow-blue-500/5 transition-all duration-300 flex flex-col justify-between cursor-pointer"
                     >
                       <div>
                         {/* Header metadata */}
-                        <div className="flex justify-between items-start mb-2 font-mono">
+                        <div className="flex justify-between items-start mb-2 font-mono flex-wrap gap-1">
                           <span className="text-xs font-semibold text-blue-600 dark:text-blue-400">
                             {cert.issuer}
                           </span>
-                          <span className="text-[11px] text-zinc-400 bg-zinc-100 dark:bg-zinc-800 px-2 py-0.5 rounded">
+                          <span className="text-[10px] sm:text-[11px] text-zinc-400 bg-zinc-100 dark:bg-zinc-800 px-2 py-0.5 rounded shrink-0">
                             {cert.date}
                           </span>
                         </div>
 
                         {/* Title */}
-                        <h4 className="text-lg font-bold text-zinc-900 dark:text-zinc-100 mb-2 font-heading group-hover:text-blue-500 transition-colors flex items-center justify-between gap-2">
+                        <h4 className="text-base sm:text-lg font-bold text-zinc-900 dark:text-zinc-100 mb-2 font-heading group-hover:text-blue-500 transition-colors flex items-center justify-between gap-2">
                           <span>{cert.title}</span>
                           <Eye className="w-4 h-4 text-blue-500 opacity-0 group-hover:opacity-100 transition-opacity shrink-0" />
                         </h4>
@@ -259,7 +259,7 @@ export function Certifications() {
             animate={{ opacity: 1 }}
             exit={{ opacity: 0 }}
             onClick={() => setSelectedCert(null)}
-            className="fixed inset-0 z-50 flex items-center justify-center bg-black/80 backdrop-blur-md p-4 sm:p-6 cursor-zoom-out select-none"
+            className="fixed inset-0 z-50 flex items-center justify-center bg-black/80 backdrop-blur-md p-3 sm:p-6 cursor-zoom-out select-none"
           >
             <motion.div
               initial={{ scale: 0.85, opacity: 0 }}
@@ -267,19 +267,19 @@ export function Certifications() {
               exit={{ scale: 0.85, opacity: 0 }}
               transition={{ type: "spring", damping: 25, stiffness: 300 }}
               onClick={(e) => e.stopPropagation()}
-              className="relative max-w-4xl w-full rounded-3xl overflow-hidden border-2 border-blue-500/40 shadow-2xl bg-zinc-950 flex flex-col"
+              className="relative max-w-4xl w-full rounded-3xl overflow-hidden border-2 border-blue-500/40 shadow-2xl bg-zinc-950 flex flex-col max-h-[90vh]"
             >
               {/* Modal Header Bar */}
-              <div className="flex items-center justify-between px-6 py-4 bg-zinc-900 border-b border-zinc-800">
+              <div className="flex items-center justify-between px-4 sm:px-6 py-3 sm:py-4 bg-zinc-900 border-b border-zinc-800">
                 <div className="flex items-center gap-3">
-                  <div className="p-2 rounded-lg bg-blue-500/20 text-blue-400">
+                  <div className="p-2 rounded-lg bg-blue-500/20 text-blue-400 shrink-0">
                     <Award className="w-5 h-5" />
                   </div>
                   <div>
-                    <h3 className="text-base sm:text-lg font-bold text-white font-heading">
+                    <h3 className="text-sm sm:text-lg font-bold text-white font-heading leading-tight">
                       {selectedCert.title}
                     </h3>
-                    <p className="text-xs text-zinc-400 font-mono">
+                    <p className="text-[10px] sm:text-xs text-zinc-400 font-mono">
                       {selectedCert.issuer} • Issued {selectedCert.date}
                     </p>
                   </div>
@@ -288,14 +288,14 @@ export function Certifications() {
                 <button
                   onClick={() => setSelectedCert(null)}
                   aria-label="Close Preview"
-                  className="p-2 rounded-full bg-zinc-800 text-zinc-300 hover:bg-blue-600 hover:text-white transition-colors cursor-pointer"
+                  className="p-2 rounded-full bg-zinc-800 text-zinc-300 hover:bg-blue-600 hover:text-white transition-colors cursor-pointer shrink-0"
                 >
                   <X className="w-5 h-5" />
                 </button>
               </div>
 
               {/* Certificate Image Preview Stage */}
-              <div className="relative bg-zinc-900/90 p-4 sm:p-6 flex items-center justify-center max-h-[70vh] overflow-y-auto">
+              <div className="relative bg-zinc-900/90 p-3 sm:p-6 flex items-center justify-center overflow-y-auto max-h-[60vh]">
                 <img
                   src={selectedCert.previewImage}
                   alt={`${selectedCert.title} Certificate`}
@@ -304,17 +304,17 @@ export function Certifications() {
               </div>
 
               {/* Modal Footer Controls */}
-              <div className="flex flex-wrap items-center justify-between gap-4 px-6 py-4 bg-zinc-900 border-t border-zinc-800 font-mono text-xs">
-                <p className="text-zinc-400 max-w-md line-clamp-1 font-sans">
+              <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-3 px-4 sm:px-6 py-3 sm:py-4 bg-zinc-900 border-t border-zinc-800 font-mono text-xs">
+                <p className="text-zinc-400 max-w-md line-clamp-2 sm:line-clamp-1 font-sans text-[11px] sm:text-xs">
                   {selectedCert.description}
                 </p>
 
-                <div className="flex items-center gap-3 ml-auto">
+                <div className="flex items-center gap-3 w-full sm:w-auto justify-end">
                   <a
                     href={selectedCert.pdfUrl}
                     target="_blank"
                     rel="noopener noreferrer"
-                    className="inline-flex items-center gap-2 px-4 py-2 rounded-xl bg-blue-600 hover:bg-blue-500 text-white font-bold transition-all shadow-md"
+                    className="inline-flex items-center justify-center gap-2 px-4 py-2 rounded-xl bg-blue-600 hover:bg-blue-500 text-white font-bold transition-all shadow-md w-full sm:w-auto"
                   >
                     <Download className="w-4 h-4" />
                     <span>Download Official PDF</span>

@@ -130,6 +130,16 @@ export function Projects() {
   const [projects, setProjects] = useState<ProcessedProject[]>([]);
   const [loading, setLoading] = useState(true);
   const [activeIndex, setActiveIndex] = useState<number>(0);
+  const [isMobile, setIsMobile] = useState(false);
+
+  useEffect(() => {
+    const handleResize = () => {
+      setIsMobile(window.innerWidth < 640);
+    };
+    handleResize();
+    window.addEventListener("resize", handleResize);
+    return () => window.removeEventListener("resize", handleResize);
+  }, []);
 
   useEffect(() => {
     async function fetchAllContributedRepos() {
@@ -318,7 +328,7 @@ export function Projects() {
   const currentProject = activeProjects[activeIndex] || activeProjects[0];
 
   return (
-    <section id="projects" className="py-20 relative z-10 max-w-6xl mx-auto px-4 sm:px-8">
+    <section id="projects" className="py-20 relative z-10 max-w-6xl mx-auto px-4 sm:px-8 overflow-hidden">
       {/* Section Header */}
       <BlurFade delay={0.1} inView>
         <div className="flex flex-col items-center text-center mb-12">
@@ -344,7 +354,7 @@ export function Projects() {
       <BlurFade delay={0.3} inView>
         <div className="relative w-full flex flex-col items-center justify-center my-4">
           {/* Carousel Stage Track Container */}
-          <div className="relative w-full max-w-3xl h-[240px] sm:h-[270px] flex items-center justify-center overflow-visible">
+          <div className="relative w-full max-w-3xl h-[220px] sm:h-[270px] flex items-center justify-center overflow-visible">
             <div className="relative w-full h-full flex items-center justify-center">
               {activeProjects.map((project, idx) => {
                 const total = activeProjects.length;
@@ -359,9 +369,10 @@ export function Projects() {
 
                 if (!isCenter && !isLeft && !isRight) return null;
 
+                const sideOffset = isMobile ? 115 : 190;
                 let positionX = 0;
-                if (isLeft) positionX = -190;
-                if (isRight) positionX = 190;
+                if (isLeft) positionX = -sideOffset;
+                if (isRight) positionX = sideOffset;
 
                 return (
                   <motion.div
@@ -369,8 +380,8 @@ export function Projects() {
                     initial={false}
                     animate={{
                       x: positionX,
-                      scale: isCenter ? 1 : 0.85,
-                      opacity: isCenter ? 1 : 0.5,
+                      scale: isCenter ? 1 : isMobile ? 0.78 : 0.85,
+                      opacity: isCenter ? 1 : 0.45,
                       zIndex: isCenter ? 30 : 10,
                     }}
                     transition={{
@@ -379,21 +390,21 @@ export function Projects() {
                     }}
                     onClick={() => setActiveIndex(idx)}
                     className={cn(
-                      "absolute w-[280px] sm:w-[350px] h-[210px] sm:h-[240px] rounded-3xl overflow-hidden cursor-pointer shadow-xl transition-colors duration-300 border-2 select-none",
+                      "absolute w-[250px] sm:w-[350px] h-[200px] sm:h-[240px] rounded-3xl overflow-hidden cursor-pointer shadow-xl transition-colors duration-300 border-2 select-none",
                       isCenter
                         ? "border-blue-500 shadow-blue-500/20 bg-zinc-950 ring-2 ring-blue-500/20"
                         : "border-zinc-200 dark:border-zinc-800 bg-zinc-900/90 opacity-60 hover:opacity-85"
                     )}
                   >
                     {/* Media Preview Banner */}
-                    <div className="relative w-full h-full bg-gradient-to-br from-slate-900 via-zinc-950 to-blue-950 p-5 flex flex-col justify-between overflow-hidden">
+                    <div className="relative w-full h-full bg-gradient-to-br from-slate-900 via-zinc-950 to-blue-950 p-4 sm:p-5 flex flex-col justify-between overflow-hidden">
                       <div className="absolute inset-0 bg-grid-pattern opacity-20" />
 
                       {/* Top Role Badge */}
                       <div className="flex justify-between items-center z-10">
                         <span
                           className={cn(
-                            "inline-flex items-center gap-1 px-2.5 py-1 rounded-full text-[10px] font-mono font-bold border backdrop-blur-md",
+                            "inline-flex items-center gap-1 px-2 py-0.5 sm:px-2.5 sm:py-1 rounded-full text-[10px] font-mono font-bold border backdrop-blur-md",
                             project.role === "Owner"
                               ? "bg-blue-500/20 text-blue-400 border-blue-500/30"
                               : "bg-indigo-500/20 text-indigo-400 border-indigo-500/30"
@@ -407,27 +418,27 @@ export function Projects() {
                           {project.role}
                         </span>
 
-                        <span className="text-[11px] font-mono text-zinc-400 bg-zinc-900/80 px-2.5 py-1 rounded-md border border-zinc-800">
+                        <span className="text-[10px] sm:text-[11px] font-mono text-zinc-400 bg-zinc-900/80 px-2 py-0.5 sm:px-2.5 sm:py-1 rounded-md border border-zinc-800">
                           {project.updatedAt}
                         </span>
                       </div>
 
                       {/* Center Card Title Icon */}
-                      <div className="z-10 flex flex-col items-center text-center gap-2.5 my-auto">
-                        <div className="w-12 h-12 rounded-2xl bg-zinc-900/90 border border-zinc-700/60 backdrop-blur-md flex items-center justify-center text-blue-400 shadow-lg">
-                          <Code2 className="w-6 h-6" />
+                      <div className="z-10 flex flex-col items-center text-center gap-2 my-auto">
+                        <div className="w-10 h-10 sm:w-12 sm:h-12 rounded-2xl bg-zinc-900/90 border border-zinc-700/60 backdrop-blur-md flex items-center justify-center text-blue-400 shadow-lg">
+                          <Code2 className="w-5 h-5 sm:w-6 sm:h-6" />
                         </div>
-                        <h4 className="text-base font-bold text-white font-heading tracking-wide capitalize line-clamp-1">
+                        <h4 className="text-xs sm:text-base font-bold text-white font-heading tracking-wide capitalize line-clamp-1">
                           {project.name}
                         </h4>
                       </div>
 
                       {/* Floating Bottom Stats */}
-                      <div className="z-10 flex items-center justify-between text-[11px] font-mono text-zinc-300 bg-zinc-900/80 backdrop-blur-md px-3 py-1.5 rounded-lg border border-zinc-800">
-                        <span className="text-zinc-400 font-medium">
+                      <div className="z-10 flex items-center justify-between text-[10px] sm:text-[11px] font-mono text-zinc-300 bg-zinc-900/80 backdrop-blur-md px-2.5 py-1 sm:px-3 sm:py-1.5 rounded-lg border border-zinc-800">
+                        <span className="text-zinc-400 font-medium truncate max-w-[90px] sm:max-w-none">
                           @{project.ownerName}
                         </span>
-                        <div className="flex items-center gap-3">
+                        <div className="flex items-center gap-2 sm:gap-3 shrink-0">
                           <span className="flex items-center gap-1 text-amber-400 font-semibold">
                             <Star className="w-3 h-3 fill-amber-400" />
                             {project.stars}
@@ -475,17 +486,17 @@ export function Projects() {
                 animate={{ opacity: 1, y: 0 }}
                 exit={{ opacity: 0, y: -10 }}
                 transition={{ duration: 0.3, ease: [0.32, 0.72, 0, 1] }}
-                className="p-6 sm:p-8 rounded-3xl border border-zinc-200/80 dark:border-zinc-800/80 bg-white/70 dark:bg-zinc-900/70 backdrop-blur-md shadow-xl max-w-3xl mx-auto flex flex-col justify-between"
+                className="p-5 sm:p-8 rounded-3xl border border-zinc-200/80 dark:border-zinc-800/80 bg-white/70 dark:bg-zinc-900/70 backdrop-blur-md shadow-xl max-w-3xl mx-auto flex flex-col justify-between"
               >
                 <div>
                   {/* Title & Badges */}
                   <div className="flex flex-wrap items-center justify-between gap-3 mb-4 border-b border-zinc-200/80 dark:border-zinc-800/80 pb-4">
-                    <div className="flex items-center gap-3">
-                      <h3 className="text-2xl sm:text-3xl font-extrabold text-zinc-900 dark:text-zinc-100 font-heading capitalize">
+                    <div className="flex items-center gap-2 sm:gap-3 flex-wrap">
+                      <h3 className="text-xl sm:text-3xl font-extrabold text-zinc-900 dark:text-zinc-100 font-heading capitalize">
                         {currentProject.name}
                       </h3>
                       {currentProject.hasReadme && (
-                        <span className="inline-flex items-center gap-1 text-xs font-mono text-blue-500 bg-blue-500/10 border border-blue-500/20 px-2.5 py-1 rounded-full shrink-0">
+                        <span className="inline-flex items-center gap-1 text-[10px] sm:text-xs font-mono text-blue-500 bg-blue-500/10 border border-blue-500/20 px-2 py-0.5 sm:px-2.5 sm:py-1 rounded-full shrink-0">
                           <FileText className="w-3.5 h-3.5" />
                           README
                         </span>
@@ -494,7 +505,7 @@ export function Projects() {
 
                     <span
                       className={cn(
-                        "inline-flex items-center gap-1 px-3 py-1 rounded-full text-xs font-mono font-bold border",
+                        "inline-flex items-center gap-1 px-2.5 py-0.5 sm:px-3 sm:py-1 rounded-full text-xs font-mono font-bold border",
                         currentProject.role === "Owner"
                           ? "bg-blue-500/10 text-blue-600 dark:text-blue-400 border-blue-500/20"
                           : "bg-indigo-500/10 text-indigo-600 dark:text-indigo-400 border-indigo-500/20"
@@ -510,14 +521,14 @@ export function Projects() {
                   </div>
 
                   {/* Narrative Description */}
-                  <p className="text-sm sm:text-base text-zinc-600 dark:text-zinc-300 leading-relaxed font-sans mb-6">
+                  <p className="text-xs sm:text-base text-zinc-600 dark:text-zinc-300 leading-relaxed font-sans mb-6">
                     {currentProject.description}
                   </p>
 
                   {/* Contributors */}
                   {currentProject.coDevelopers && (
                     <div className="flex items-center gap-2 mb-6 text-xs font-mono text-zinc-500 dark:text-zinc-400">
-                      <Users className="w-4 h-4 text-blue-500" />
+                      <Users className="w-4 h-4 text-blue-500 shrink-0" />
                       <span>Contributors:</span>
                       <div className="flex flex-wrap gap-1.5">
                         {currentProject.coDevelopers.map((dev, i) => (
@@ -537,7 +548,7 @@ export function Projects() {
                     {currentProject.techStack.map((tech, i) => (
                       <span
                         key={i}
-                        className="px-3 py-1.5 rounded-lg text-xs font-mono font-semibold bg-blue-500/10 text-blue-600 dark:text-blue-400 border border-blue-500/20"
+                        className="px-2.5 py-1 sm:px-3 sm:py-1.5 rounded-lg text-[10px] sm:text-xs font-mono font-semibold bg-blue-500/10 text-blue-600 dark:text-blue-400 border border-blue-500/20"
                       >
                         {tech}
                       </span>
@@ -546,12 +557,12 @@ export function Projects() {
                 </div>
 
                 {/* Footer Action Links */}
-                <div className="flex flex-wrap items-center justify-between gap-4 pt-4 border-t border-zinc-200/80 dark:border-zinc-800/80 font-mono">
+                <div className="flex flex-wrap items-center justify-between gap-3 pt-4 border-t border-zinc-200/80 dark:border-zinc-800/80 font-mono">
                   <a
                     href={currentProject.githubUrl}
                     target="_blank"
                     rel="noopener noreferrer"
-                    className="inline-flex items-center gap-2 px-5 py-2.5 rounded-xl bg-zinc-900 dark:bg-zinc-100 text-white dark:text-zinc-950 font-bold text-xs hover:bg-blue-600 dark:hover:bg-blue-500 dark:hover:text-white transition-all shadow-md"
+                    className="inline-flex items-center gap-2 px-4 py-2 sm:px-5 sm:py-2.5 rounded-xl bg-zinc-900 dark:bg-zinc-100 text-white dark:text-zinc-950 font-bold text-xs hover:bg-blue-600 dark:hover:bg-blue-500 dark:hover:text-white transition-all shadow-md"
                   >
                     <GithubIcon className="w-4 h-4" />
                     <span>View Repository</span>
@@ -562,7 +573,7 @@ export function Projects() {
                       href={currentProject.liveUrl}
                       target="_blank"
                       rel="noopener noreferrer"
-                      className="inline-flex items-center gap-2 px-5 py-2.5 rounded-xl bg-blue-600 hover:bg-blue-500 text-white font-bold text-xs transition-all shadow-lg shadow-blue-500/20"
+                      className="inline-flex items-center gap-2 px-4 py-2 sm:px-5 sm:py-2.5 rounded-xl bg-blue-600 hover:bg-blue-500 text-white font-bold text-xs transition-all shadow-lg shadow-blue-500/20"
                     >
                       <span>Live Application</span>
                       <ExternalLink className="w-4 h-4" />

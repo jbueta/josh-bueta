@@ -149,25 +149,28 @@ export function ContributionGraph({
   return (
     <div
       className={cn(
-        "relative w-full p-5 sm:p-6 rounded-2xl border border-zinc-200/80 dark:border-zinc-800/80 bg-white/70 dark:bg-[#0d1117]/80 backdrop-blur-md shadow-sm select-none",
+        "relative w-full p-4 sm:p-6 rounded-2xl border border-zinc-200/80 dark:border-zinc-800/80 bg-white/70 dark:bg-[#0d1117]/80 backdrop-blur-md shadow-sm select-none overflow-hidden",
         className
       )}
     >
       {/* Header: Total Contributions */}
-      <div className="flex items-center justify-between mb-4">
+      <div className="flex items-center justify-between mb-4 flex-wrap gap-2">
         <h3 className="text-sm sm:text-base font-bold text-zinc-900 dark:text-zinc-100 font-sans tracking-tight">
           <span className="text-blue-600 dark:text-blue-400 font-extrabold">
             {totalContributions}
           </span>{" "}
           contributions in the last year
         </h3>
+        <span className="text-[10px] font-mono text-zinc-400 sm:hidden">
+          ← Scroll horizontally →
+        </span>
       </div>
 
       {/* Graph Box Container */}
-      <div className="relative w-full p-4 rounded-xl border border-zinc-200 dark:border-zinc-800/90 bg-zinc-50/50 dark:bg-[#161b22]/50">
-        {/* Scrollable Container */}
-        <div className="w-full">
-          <div className="w-full min-w-[700px] flex flex-col">
+      <div className="relative w-full p-3 sm:p-4 rounded-xl border border-zinc-200 dark:border-zinc-800/90 bg-zinc-50/50 dark:bg-[#161b22]/50">
+        {/* Scrollable Container for Mobile */}
+        <div className="w-full overflow-x-auto scrollbar-thin pb-2">
+          <div className="w-full min-w-[680px] flex flex-col">
             {/* Months Row */}
             <div className="flex text-[11px] font-sans text-zinc-500 dark:text-zinc-400 pl-8 mb-2 justify-between pr-1">
               {monthLabels.map((m, idx) => (
@@ -209,7 +212,7 @@ export function ContributionGraph({
                             "bg-sky-400 border border-sky-300 shadow-md shadow-sky-400/40 hover:scale-125 hover:z-30"
                         )}
                       >
-                        {/* Smart Overlay Tooltip Dialog (Never Clipped) */}
+                        {/* Smart Overlay Tooltip Dialog */}
                         {hoveredDay?.day.date === day.date && (
                           <div
                             className={cn(

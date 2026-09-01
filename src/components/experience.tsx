@@ -100,27 +100,27 @@ export function Experience() {
   ];
 
   return (
-    <section id="experience" className="py-20 relative z-10 max-w-6xl mx-auto px-4 sm:px-8">
+    <section id="experience" className="py-20 relative z-10 max-w-6xl mx-auto px-4 sm:px-8 overflow-hidden">
       {/* Section Header */}
       <BlurFade delay={0.1} inView>
         <div className="text-center mb-16">
           <h2 className="text-xs font-mono tracking-widest text-blue-500 uppercase font-semibold mb-2">
             BACKGROUND & MILESTONES
           </h2>
-          <p className="text-3xl sm:text-4xl font-extrabold text-zinc-900 dark:text-zinc-100">
+          <p className="text-3xl sm:text-4xl font-extrabold text-zinc-900 dark:text-zinc-100 font-heading">
             Education, Experience & Scholarships
           </p>
         </div>
       </BlurFade>
 
       {/* Main 2-Column Grid Layout */}
-      <div className="grid grid-cols-1 lg:grid-cols-12 gap-10">
+      <div className="grid grid-cols-1 lg:grid-cols-12 gap-8 lg:gap-10">
         {/* LEFT COLUMN (7 cols): Academic Experience & Organization Experience Timeline */}
         <div className="lg:col-span-7 flex flex-col gap-10">
           {/* 1. Academic Experience (Education) */}
           <div className="flex flex-col gap-6">
             <BlurFade delay={0.2} inView>
-              <div className="flex items-center gap-2 text-zinc-900 dark:text-zinc-100 font-bold text-xl">
+              <div className="flex items-center gap-2 text-zinc-900 dark:text-zinc-100 font-bold text-xl font-heading">
                 <div className="p-2 rounded-lg bg-blue-500/10 text-blue-500">
                   <GraduationCap className="w-5 h-5" />
                 </div>
@@ -130,23 +130,23 @@ export function Experience() {
 
             {education.map((edu, idx) => (
               <BlurFade key={idx} delay={0.3} inView>
-                <div className="p-6 rounded-2xl border border-zinc-200/80 dark:border-zinc-800/80 bg-white/60 dark:bg-zinc-900/60 backdrop-blur-md shadow-sm hover:border-blue-500/40 transition-all">
-                  <div className="flex items-center justify-between text-xs text-zinc-500 dark:text-zinc-400 mb-2 font-mono">
+                <div className="p-5 sm:p-6 rounded-2xl border border-zinc-200/80 dark:border-zinc-800/80 bg-white/60 dark:bg-zinc-900/60 backdrop-blur-md shadow-sm hover:border-blue-500/40 transition-all">
+                  <div className="flex flex-wrap items-center justify-between gap-1 text-xs text-zinc-500 dark:text-zinc-400 mb-2 font-mono">
                     <span className="flex items-center gap-1 font-semibold text-zinc-700 dark:text-zinc-300">
-                      <Building className="w-3.5 h-3.5 text-blue-500" />
+                      <Building className="w-3.5 h-3.5 text-blue-500 shrink-0" />
                       {edu.institution}
                     </span>
-                    <span className="flex items-center gap-1 text-blue-500 font-semibold">
+                    <span className="flex items-center gap-1 text-blue-500 font-semibold shrink-0">
                       {edu.period}
                     </span>
                   </div>
-                  <h4 className="text-lg font-bold text-zinc-900 dark:text-zinc-100 mb-2">
+                  <h4 className="text-base sm:text-lg font-bold text-zinc-900 dark:text-zinc-100 mb-2 font-heading">
                     {edu.degree}
                   </h4>
-                  <div className="inline-block px-3 py-1 rounded-full text-[11px] font-semibold bg-amber-500/10 text-amber-600 dark:text-amber-400 mb-3 border border-amber-500/20">
+                  <div className="inline-block px-3 py-1 rounded-full text-[11px] font-semibold bg-amber-500/10 text-amber-600 dark:text-amber-400 mb-3 border border-amber-500/20 font-mono">
                     🏆 {edu.honors}
                   </div>
-                  <p className="text-xs text-zinc-600 dark:text-zinc-400 leading-relaxed">
+                  <p className="text-xs sm:text-sm text-zinc-600 dark:text-zinc-400 leading-relaxed font-sans">
                     {edu.details}
                   </p>
                 </div>
@@ -158,7 +158,7 @@ export function Experience() {
           <div className="flex flex-col gap-4">
             <BlurFade delay={0.4} inView>
               <div className="flex flex-col items-start gap-2 mb-2">
-                <div className="flex items-center gap-2 text-zinc-900 dark:text-zinc-100 font-bold text-xl">
+                <div className="flex items-center gap-2 text-zinc-900 dark:text-zinc-100 font-bold text-xl font-heading">
                   <div className="p-2 rounded-lg bg-indigo-500/10 text-indigo-500">
                     <Users className="w-5 h-5" />
                   </div>
@@ -174,18 +174,18 @@ export function Experience() {
 
             {/* Custom UI Timeline Component */}
             <BlurFade delay={0.5} inView>
-              <div className="p-6 rounded-2xl border border-zinc-200/80 dark:border-zinc-800/80 bg-white/60 dark:bg-zinc-900/60 backdrop-blur-md shadow-sm">
+              <div className="p-4 sm:p-6 rounded-2xl border border-zinc-200/80 dark:border-zinc-800/80 bg-white/60 dark:bg-zinc-900/60 backdrop-blur-md shadow-sm">
                 <Timeline activeIndex={3}>
                   {orgPositions.map((pos) => (
                     <TimelineItem key={pos.id}>
                       <TimelineDot />
                       <TimelineConnector />
                       <TimelineContent>
-                        <TimelineHeader>
-                          <TimelineTitle>{pos.role}</TimelineTitle>
-                          <TimelineTime>{pos.period}</TimelineTime>
+                        <TimelineHeader className="flex-col sm:flex-row items-start sm:items-center">
+                          <TimelineTitle className="text-sm sm:text-base">{pos.role}</TimelineTitle>
+                          <TimelineTime className="text-[11px] sm:text-xs">{pos.period}</TimelineTime>
                         </TimelineHeader>
-                        <TimelineDescription>{pos.description}</TimelineDescription>
+                        <TimelineDescription className="text-xs sm:text-sm">{pos.description}</TimelineDescription>
                       </TimelineContent>
                     </TimelineItem>
                   ))}
@@ -198,7 +198,7 @@ export function Experience() {
         {/* RIGHT COLUMN (5 cols): Scholarship Grants & Programs */}
         <div className="lg:col-span-5 flex flex-col gap-6">
           <BlurFade delay={0.2} inView>
-            <div className="flex items-center gap-2 text-zinc-900 dark:text-zinc-100 font-bold text-xl mb-1">
+            <div className="flex items-center gap-2 text-zinc-900 dark:text-zinc-100 font-bold text-xl mb-1 font-heading">
               <div className="p-2 rounded-lg bg-sky-500/10 text-sky-500">
                 <Award className="w-5 h-5" />
               </div>
@@ -214,17 +214,17 @@ export function Experience() {
             </div>
             {academicScholarships.map((schol, idx) => (
               <BlurFade key={idx} delay={0.3 + idx * 0.1} inView>
-                <div className="p-5 rounded-2xl border border-zinc-200/80 dark:border-zinc-800/80 bg-white/60 dark:bg-zinc-900/60 backdrop-blur-md shadow-sm hover:border-sky-500/40 transition-all">
-                  <div className="flex justify-between items-center text-xs text-zinc-500 dark:text-zinc-400 mb-1 font-mono">
+                <div className="p-4 sm:p-5 rounded-2xl border border-zinc-200/80 dark:border-zinc-800/80 bg-white/60 dark:bg-zinc-900/60 backdrop-blur-md shadow-sm hover:border-sky-500/40 transition-all">
+                  <div className="flex flex-wrap justify-between items-center gap-1 text-xs text-zinc-500 dark:text-zinc-400 mb-1 font-mono">
                     <span className="font-semibold text-zinc-700 dark:text-zinc-300">
                       {schol.organization}
                     </span>
-                    <span className="text-sky-500 font-semibold">{schol.period}</span>
+                    <span className="text-sky-500 font-semibold shrink-0">{schol.period}</span>
                   </div>
-                  <h4 className="text-base font-bold text-zinc-900 dark:text-zinc-100 mb-2">
+                  <h4 className="text-sm sm:text-base font-bold text-zinc-900 dark:text-zinc-100 mb-2 font-heading">
                     {schol.title}
                   </h4>
-                  <p className="text-xs text-zinc-600 dark:text-zinc-400 leading-relaxed">
+                  <p className="text-xs sm:text-sm text-zinc-600 dark:text-zinc-400 leading-relaxed font-sans">
                     {schol.description}
                   </p>
                 </div>
@@ -233,24 +233,24 @@ export function Experience() {
           </div>
 
           {/* Tech Scholarship Grants */}
-          <div className="flex flex-col gap-4 mt-4">
+          <div className="flex flex-col gap-4 mt-2">
             <div className="text-xs font-mono uppercase tracking-wider font-semibold text-blue-500 flex items-center gap-1">
               <ChevronRight className="w-3.5 h-3.5" />
               <span>Tech Scholarship Grants</span>
             </div>
             {techScholarships.map((grant, idx) => (
               <BlurFade key={idx} delay={0.5 + idx * 0.1} inView>
-                <div className="p-5 rounded-2xl border border-zinc-200/80 dark:border-zinc-800/80 bg-white/60 dark:bg-zinc-900/60 backdrop-blur-md shadow-sm hover:border-blue-500/40 transition-all">
-                  <div className="flex justify-between items-center text-[11px] text-zinc-500 dark:text-zinc-400 mb-1 font-mono">
+                <div className="p-4 sm:p-5 rounded-2xl border border-zinc-200/80 dark:border-zinc-800/80 bg-white/60 dark:bg-zinc-900/60 backdrop-blur-md shadow-sm hover:border-blue-500/40 transition-all">
+                  <div className="flex flex-wrap justify-between items-center gap-1 text-[11px] text-zinc-500 dark:text-zinc-400 mb-1 font-mono">
                     <span className="font-semibold text-zinc-700 dark:text-zinc-300">
                       {grant.organization}
                     </span>
-                    <span className="text-blue-500 font-semibold">{grant.period}</span>
+                    <span className="text-blue-500 font-semibold shrink-0">{grant.period}</span>
                   </div>
-                  <h4 className="text-base font-bold text-zinc-900 dark:text-zinc-100 mb-2">
+                  <h4 className="text-sm sm:text-base font-bold text-zinc-900 dark:text-zinc-100 mb-2 font-heading">
                     {grant.title}
                   </h4>
-                  <p className="text-xs text-zinc-600 dark:text-zinc-400 leading-relaxed">
+                  <p className="text-xs sm:text-sm text-zinc-600 dark:text-zinc-400 leading-relaxed font-sans">
                     {grant.description}
                   </p>
                 </div>
