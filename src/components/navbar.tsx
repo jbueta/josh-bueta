@@ -31,14 +31,14 @@ export function Navbar() {
       )}
     >
       <div className="max-w-6xl mx-auto flex items-center justify-between">
-        {/* Left: Initials Logo MJB strictly */}
+        {/* Left: Initials Logo MJB Navy Sapphire gradient */}
         <a
           href="#"
           className="group flex items-center font-mono font-extrabold text-xl tracking-wider text-zinc-900 dark:text-zinc-100 focus:outline-none"
         >
-          <div className="w-9 h-9 rounded-xl bg-gradient-to-tr from-emerald-500 via-teal-500 to-cyan-500 p-[2px] shadow-lg shadow-emerald-500/20 group-hover:scale-105 transition-transform duration-300">
+          <div className="w-9 h-9 rounded-xl bg-gradient-to-tr from-blue-600 via-indigo-600 to-sky-400 p-[2px] shadow-lg shadow-blue-500/20 group-hover:scale-105 transition-transform duration-300">
             <div className="w-full h-full bg-white dark:bg-zinc-950 rounded-[10px] flex items-center justify-center">
-              <span className="text-emerald-600 dark:text-emerald-400 font-black text-sm">
+              <span className="text-blue-600 dark:text-blue-400 font-black text-sm">
                 MJB
               </span>
             </div>

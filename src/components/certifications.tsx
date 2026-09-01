@@ -3,20 +3,16 @@
 import React from "react";
 import { BlurFade } from "@/registry/magicui/blur-fade";
 import {
-  Award,
-  ShieldCheck,
-  CheckCircle,
   Cloud,
   Code,
   Terminal,
-  ExternalLink,
 } from "lucide-react";
 
 export function Certifications() {
   const certCategories = [
     {
       category: "Cloud Architecture & Infrastructure",
-      icon: <Cloud className="w-5 h-5 text-cyan-500" />,
+      icon: <Cloud className="w-5 h-5 text-blue-500" />,
       certs: [
         {
           title: "AWS Certified Solutions Architect – Associate",
@@ -36,7 +32,7 @@ export function Certifications() {
     },
     {
       category: "Web & Software Engineering Upskilling",
-      icon: <Code className="w-5 h-5 text-emerald-500" />,
+      icon: <Code className="w-5 h-5 text-sky-500" />,
       certs: [
         {
           title: "Meta Front-End Developer Specialization",
@@ -73,7 +69,7 @@ export function Certifications() {
     <section id="certifications" className="py-20 relative z-10 max-w-6xl mx-auto px-4 sm:px-8">
       <BlurFade delay={0.1} inView>
         <div className="text-center mb-16">
-          <h2 className="text-xs font-mono tracking-widest text-emerald-500 uppercase font-semibold mb-2">
+          <h2 className="text-xs font-mono tracking-widest text-blue-500 uppercase font-semibold mb-2">
             CREDENTIALS & UPSKILLING
           </h2>
           <p className="text-3xl sm:text-4xl font-extrabold text-zinc-900 dark:text-zinc-100">
@@ -101,11 +97,11 @@ export function Certifications() {
                 {cat.certs.map((cert, certIdx) => (
                   <div
                     key={certIdx}
-                    className="p-6 rounded-2xl border border-zinc-200/80 dark:border-zinc-800/80 bg-white/60 dark:bg-zinc-900/60 backdrop-blur-md hover:border-emerald-500/40 transition-all duration-300 flex flex-col justify-between"
+                    className="p-6 rounded-2xl border border-zinc-200/80 dark:border-zinc-800/80 bg-white/60 dark:bg-zinc-900/60 backdrop-blur-md hover:border-blue-500/40 transition-all duration-300 flex flex-col justify-between"
                   >
                     <div>
                       <div className="flex justify-between items-start mb-2">
-                        <span className="text-xs font-mono font-semibold text-emerald-600 dark:text-emerald-400">
+                        <span className="text-xs font-mono font-semibold text-blue-600 dark:text-blue-400">
                           {cert.issuer}
                         </span>
                         <span className="text-[11px] font-mono text-zinc-400">

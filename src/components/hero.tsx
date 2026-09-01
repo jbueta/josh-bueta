@@ -3,6 +3,7 @@
 import React, { useState } from "react";
 import { PixelImage } from "@/registry/magicui/pixel-image";
 import { BlurFade } from "@/registry/magicui/blur-fade";
+import { HyperText } from "@/registry/magicui/hyper-text";
 import { GithubIcon, LinkedinIcon } from "@/components/icons";
 import {
   Mail,
@@ -10,7 +11,6 @@ import {
   Terminal,
   MapPin,
   X,
-  Sparkles,
 } from "lucide-react";
 import { motion, AnimatePresence } from "framer-motion";
 
@@ -20,6 +20,17 @@ export function Hero() {
   return (
     <>
       <section className="relative pt-32 pb-20 md:pt-40 md:pb-28 px-4 sm:px-8 max-w-6xl mx-auto flex flex-col items-center justify-center text-center">
+        {/* Availability Status Badge in Sapphire Navy Blue */}
+        <BlurFade delay={0.1}>
+          <div className="inline-flex items-center gap-2 px-3 py-1.5 rounded-full border border-blue-500/30 bg-blue-500/10 text-blue-600 dark:text-blue-400 text-xs font-mono mb-8 backdrop-blur-md">
+            <span className="relative flex h-2 w-2">
+              <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-blue-400 opacity-75"></span>
+              <span className="relative inline-flex rounded-full h-2 w-2 bg-blue-500"></span>
+            </span>
+            AVAILABLE FOR NEW OPPORTUNITIES & ARCHITECTURE PROJECTS
+          </div>
+        </BlurFade>
+
         {/* Center Layout: Avatar & Titles */}
         <div className="flex flex-col md:flex-row items-center justify-center gap-8 md:gap-12 w-full mb-10 text-center md:text-left">
           {/* MagicUI PixelImage Component (Click to expand Lightbox) */}
@@ -38,17 +49,23 @@ export function Hero() {
           <div className="flex flex-col max-w-2xl">
             <BlurFade delay={0.3}>
               <div className="flex items-center justify-center md:justify-start gap-2 text-xs font-mono text-zinc-500 dark:text-zinc-400 mb-2">
-                <MapPin className="w-3.5 h-3.5 text-emerald-500" />
+                <MapPin className="w-3.5 h-3.5 text-blue-500" />
                 <span>Pasig City, Philippines</span>
                 <span className="text-zinc-300 dark:text-zinc-700">•</span>
                 <Terminal className="w-3.5 h-3.5 text-indigo-500" />
                 <span>Web Development & UI/UX Design</span>
               </div>
-              <h1 className="text-3xl sm:text-5xl font-extrabold tracking-tight text-zinc-900 dark:text-zinc-50 leading-tight mb-3">
-                Hi, I&apos;m{" "}
-                <span className="bg-gradient-to-r from-emerald-500 via-teal-400 to-cyan-500 bg-clip-text text-transparent">
+
+              {/* Heading with Sapphire Navy HyperText */}
+              <h1 className="flex flex-wrap items-center justify-center md:justify-start gap-x-2 text-3xl sm:text-5xl font-extrabold tracking-tight text-zinc-900 dark:text-zinc-50 leading-tight mb-3">
+                <span>Hi, I&apos;m</span>
+                <HyperText
+                  className="bg-gradient-to-r from-blue-500 via-indigo-400 to-sky-400 bg-clip-text text-transparent font-extrabold"
+                  as="span"
+                  duration={900}
+                >
                   Mark Joshua Bueta
-                </span>
+                </HyperText>
               </h1>
             </BlurFade>
 
@@ -71,7 +88,7 @@ export function Hero() {
                 <a
                   href="/Mark_Joshua_Bueta_CV.pdf"
                   download="Mark_Joshua_Bueta_CV.pdf"
-                  className="inline-flex items-center gap-2 px-6 py-3 rounded-xl bg-emerald-600 hover:bg-emerald-500 text-white font-semibold text-sm shadow-lg shadow-emerald-500/25 transition-all duration-300 hover:scale-105 active:scale-95"
+                  className="inline-flex items-center gap-2 px-6 py-3 rounded-xl bg-blue-600 hover:bg-blue-500 text-white font-semibold text-sm shadow-lg shadow-blue-500/25 transition-all duration-300 hover:scale-105 active:scale-95"
                 >
                   <Download className="w-4 h-4" />
                   <span>Download CV</span>
@@ -84,7 +101,7 @@ export function Hero() {
                     target="_blank"
                     rel="noopener noreferrer"
                     aria-label="GitHub Profile"
-                    className="p-3 rounded-xl border border-zinc-200 dark:border-zinc-800 bg-white/60 dark:bg-zinc-900/60 hover:text-emerald-500 dark:hover:text-emerald-400 hover:border-emerald-500/50 transition-all duration-300 shadow-sm"
+                    className="p-3 rounded-xl border border-zinc-200 dark:border-zinc-800 bg-white/60 dark:bg-zinc-900/60 hover:text-blue-500 dark:hover:text-blue-400 hover:border-blue-500/50 transition-all duration-300 shadow-sm"
                   >
                     <GithubIcon className="w-4 h-4" />
                   </a>
@@ -94,7 +111,7 @@ export function Hero() {
                     target="_blank"
                     rel="noopener noreferrer"
                     aria-label="LinkedIn Profile"
-                    className="p-3 rounded-xl border border-zinc-200 dark:border-zinc-800 bg-white/60 dark:bg-zinc-900/60 hover:text-cyan-500 dark:hover:text-cyan-400 hover:border-cyan-500/50 transition-all duration-300 shadow-sm"
+                    className="p-3 rounded-xl border border-zinc-200 dark:border-zinc-800 bg-white/60 dark:bg-zinc-900/60 hover:text-sky-500 dark:hover:text-sky-400 hover:border-sky-500/50 transition-all duration-300 shadow-sm"
                   >
                     <LinkedinIcon className="w-4 h-4" />
                   </a>
@@ -102,7 +119,7 @@ export function Hero() {
                   <a
                     href="mailto:joshua.bueta13@gmail.com"
                     aria-label="Email Contact"
-                    className="p-3 rounded-xl border border-zinc-200 dark:border-zinc-800 bg-white/60 dark:bg-zinc-900/60 hover:text-amber-500 dark:hover:text-amber-400 hover:border-amber-500/50 transition-all duration-300 shadow-sm"
+                    className="p-3 rounded-xl border border-zinc-200 dark:border-zinc-800 bg-white/60 dark:bg-zinc-900/60 hover:text-indigo-500 dark:hover:text-indigo-400 hover:border-indigo-500/50 transition-all duration-300 shadow-sm"
                   >
                     <Mail className="w-4 h-4" />
                   </a>
@@ -129,12 +146,12 @@ export function Hero() {
               exit={{ scale: 0.8, opacity: 0 }}
               transition={{ type: "spring", damping: 25, stiffness: 300 }}
               onClick={(e) => e.stopPropagation()}
-              className="relative max-w-xl w-full rounded-2xl overflow-hidden border-2 border-emerald-500/40 shadow-2xl bg-zinc-950"
+              className="relative max-w-xl w-full rounded-2xl overflow-hidden border-2 border-blue-500/40 shadow-2xl bg-zinc-950"
             >
               <button
                 onClick={() => setIsLightboxOpen(false)}
                 aria-label="Close Lightbox"
-                className="absolute top-4 right-4 z-10 p-2 rounded-full bg-black/60 text-white hover:bg-emerald-500 transition-colors"
+                className="absolute top-4 right-4 z-10 p-2 rounded-full bg-black/60 text-white hover:bg-blue-600 transition-colors"
               >
                 <X className="w-5 h-5" />
               </button>

@@ -1,51 +1,42 @@
 import React from "react";
 
+// Official TypeScript Logo
 export function TypeScriptLogo(props: React.SVGProps<SVGSVGElement>) {
   return (
-    <svg viewBox="0 0 128 128" {...props}>
-      <path fill="#3178C6" d="M0 0h128v128H0z" />
+    <svg viewBox="0 0 128 128" width="100%" height="100%" {...props}>
+      <rect width="128" height="128" fill="#3178c6" rx="16" />
       <path
-        fill="#FFF"
-        d="M116.89 97.43c-1.39-3.41-4-6.09-8.76-8.76-3.83-2.1-9.6-4.08-16.14-5.91-1.31-3.66-2.73-8.82-3.82-14.81 12.16-3.15 19.38-10.42 19.38-20.91 0-12.78-10.02-20.52-27.18-20.52H46.68v93.24h21.11V83.69h12.14c3.48 0 6.64.46 9.38 1.45 2.1 4.79 3.82 9.68 5.18 14.2 1.51 5.06 2.76 9.6 3.82 13.02h22.61c-1.44-4.27-3.09-9.15-4.03-14.93zM67.79 43.19h11.75c6.51 0 10.42 2.89 10.42 7.7 0 4.93-3.91 7.76-10.42 7.76H67.79V43.19z"
+        fill="#ffffff"
+        d="M71.72 107.57c2.95 4.96 8.01 8.24 15.08 8.24 8.07 0 13.13-4.14 13.13-9.92 0-6.19-4.24-8.77-13.62-12.8-13.75-5.74-19.8-11.48-19.8-23.73 0-13.42 10.66-23.09 28.16-23.09 12.18 0 20.37 4.14 25.59 13.48l-10.4 6.74c-3.15-5.41-6.93-7.53-14.73-7.53-7.24 0-11.48 3.51-11.48 8.52 0 5.41 3.56 7.67 13.75 12.06 14.73 6.3 19.94 12.06 19.94 24.32 0 14.8-11.48 24.18-30.08 24.18-15.82 0-25.73-6.61-30.49-16.74l14.95-8.73zM25.73 50.11h43.32v14.15H40.66v49.88H25.73V64.26H10.79V50.11h14.94z"
       />
     </svg>
   );
 }
 
+// Official Next.js Logo
 export function NextjsLogo(props: React.SVGProps<SVGSVGElement>) {
   return (
-    <svg viewBox="0 0 180 180" fill="none" {...props}>
-      <mask
-        id="mask0_next"
-        maskUnits="userSpaceOnUse"
-        x="0"
-        y="0"
-        width="180"
-        height="180"
-      >
-        <circle cx="90" cy="90" r="90" fill="black" />
-      </mask>
-      <g mask="url(#mask0_next)">
-        <circle cx="90" cy="90" r="90" className="fill-zinc-900 dark:fill-white" />
-        <path
-          d="M149.508 157.52L69.142 54H54V126H67.08V70.626L137.324 161.264C141.677 160.279 145.748 159.014 149.508 157.52Z"
-          className="fill-white dark:fill-zinc-900"
-        />
-        <rect
-          x="115"
-          y="54"
-          width="13"
-          height="72"
-          className="fill-white dark:fill-zinc-900"
-        />
-      </g>
+    <svg viewBox="0 0 180 180" width="100%" height="100%" fill="none" {...props}>
+      <circle cx="90" cy="90" r="90" className="fill-zinc-900 dark:fill-white" />
+      <path
+        d="M149.508 157.52L69.142 54H54V126H67.08V70.626L137.324 161.264C141.677 160.279 145.748 159.014 149.508 157.52Z"
+        className="fill-white dark:fill-zinc-900"
+      />
+      <rect
+        x="115"
+        y="54"
+        width="13"
+        height="72"
+        className="fill-white dark:fill-zinc-900"
+      />
     </svg>
   );
 }
 
+// Official React Logo
 export function ReactLogo(props: React.SVGProps<SVGSVGElement>) {
   return (
-    <svg viewBox="-11.5 -10.23174 23 20.46348" {...props}>
+    <svg viewBox="-11.5 -10.23174 23 20.46348" width="100%" height="100%" {...props}>
       <circle cx="0" cy="0" r="2.05" fill="#61dafb" />
       <g stroke="#61dafb" strokeWidth="1" fill="none">
         <ellipse rx="11" ry="4.2" />
@@ -56,36 +47,74 @@ export function ReactLogo(props: React.SVGProps<SVGSVGElement>) {
   );
 }
 
+// Official Tailwind CSS Logo
 export function TailwindLogo(props: React.SVGProps<SVGSVGElement>) {
   return (
-    <svg viewBox="0 0 24 24" fill="#06B6D4" {...props}>
+    <svg viewBox="0 0 24 24" width="100%" height="100%" fill="#06B6D4" {...props}>
       <path d="M12.001 4.8c-3.2 0-5.2 1.6-6 4.8 1.2-1.6 2.6-2.2 4.2-1.8.913.228 1.565.89 2.288 1.624C13.666 10.618 15.027 12 18.001 12c3.2 0 5.2-1.6 6-4.8-1.2 1.6-2.6 2.2-4.2 1.8-.913-.228-1.565-.89-2.288-1.624C16.336 6.182 14.975 4.8 12.001 4.8zm-6 7.2c-3.2 0-5.2 1.6-6 4.8 1.2-1.6 2.6-2.2 4.2-1.8.913.228 1.565.89 2.288 1.624 1.177 1.194 2.538 2.576 5.512 2.576 3.2 0 5.2-1.6 6-4.8-1.2 1.6-2.6 2.2-4.2 1.8-.913-.228-1.565-.89-2.288-1.624C10.336 13.382 8.975 12 6.001 12z" />
     </svg>
   );
 }
 
-export function NodejsLogo(props: React.SVGProps<SVGSVGElement>) {
+// Official PHP Logo
+export function PhpLogo(props: React.SVGProps<SVGSVGElement>) {
   return (
-    <svg viewBox="0 0 128 128" {...props}>
-      <path
-        fill="#5FA04E"
-        d="M64 13.525l43.682 25.22v50.44L64 114.405 20.318 89.185v-50.44z"
-      />
+    <svg viewBox="0 0 128 128" width="100%" height="100%" {...props}>
+      <ellipse cx="64" cy="64" rx="60" ry="34" fill="#777BB4" />
       <path
         fill="#FFF"
-        d="M64 26.685L31.71 45.328v37.284L64 101.255l32.29-18.643V45.328z"
-      />
-      <path
-        fill="#5FA04E"
-        d="M64 36.425l-23.77 13.725v27.45L64 91.325l23.77-13.725v-27.45z"
+        d="M34.8 48.5h7.2c5.4 0 8.6 2.3 8.6 6.6 0 4.8-3.9 7.1-9 7.1h-3.6l-2.4 12.8H29l6.8-26.5zm5.7 4.7l-1.6 8.9h2.9c2.8 0 4.6-1.1 4.6-3.8 0-2.4-1.7-3.6-4.2-3.6h-1.7zm19.9-4.7h6.6l-2.2 8.9h6.1l2.2-8.9h6.6l-6.8 26.5h-6.6l2.3-12.8h-6.1l-2.3 12.8h-6.6l6.8-26.5zm31.7 0h7.2c5.4 0 8.6 2.3 8.6 6.6 0 4.8-3.9 7.1-9 7.1h-3.6l-2.4 12.8h-6.6l6.8-26.5zm5.7 4.7l-1.6 8.9h2.9c2.8 0 4.6-1.1 4.6-3.8 0-2.4-1.7-3.6-4.2-3.6h-1.7z"
       />
     </svg>
   );
 }
 
+// Official Laravel Logo
+export function LaravelLogo(props: React.SVGProps<SVGSVGElement>) {
+  return (
+    <svg viewBox="0 0 24 24" width="100%" height="100%" fill="#FF2D20" {...props}>
+      <path d="M7.742 2.628L1.6 6.175V17.82l6.142 3.553 6.142-3.553V6.175L7.742 2.628zm4.642 14.072l-4.642 2.684-4.642-2.684V7.3l4.642-2.684 4.642 2.684v9.4zM22.4 6.175v11.645l-6.142 3.553V9.728l6.142-3.553z" />
+    </svg>
+  );
+}
+
+// Official Java Logo
+export function JavaLogo(props: React.SVGProps<SVGSVGElement>) {
+  return (
+    <svg viewBox="0 0 128 128" width="100%" height="100%" {...props}>
+      <path
+        fill="#E76F00"
+        d="M48.7 94.6c.1.1 9.4 1.2 18.2.1 11-1.3 15.3-4 15.3-4s-3.5 1-10 1.5c-9.1.7-18.7-.3-23.5-2.4z"
+      />
+      <path
+        fill="#5382A1"
+        d="M43.9 83.2c.1.1 8.8 1.4 17.5.3 10.9-1.3 14.8-4.2 14.8-4.2s-3.4 1.2-9.6 1.7c-9 .7-18.1-.1-22.7-2.2zM68.7 11.2s8.2 8.3-2.3 22.8c-8.5 11.7-3 18.3 0 25.1-8.5-7.7-10.4-15.5-5.5-22.7 7.2-10.6 7.8-17.6 7.8-25.2z"
+      />
+      <path
+        fill="#E76F00"
+        d="M84.1 69.3c5.3-5.7 3.3-9.5 3.3-9.5s-.8 2.6-4.5 5.5c-4.1 3.2-11.8 6.7-22.9 7-12.8.3-23.7-2.6-28.7-4.8 0 0 1.2 1.3 7 3.1 7.2 2.2 20 4.1 31.8 3.5 11.2-.6 14-4.8 14-4.8z"
+      />
+      <path
+        fill="#5382A1"
+        d="M51.9 28.5s6.1 5.9-1.9 16.3c-6.5 8.4-1.7 13.5 0 18.1-6.1-5.5-7.4-11.1-3.9-16.3 5.3-7.7 5.8-12.7 5.8-18.1z"
+      />
+    </svg>
+  );
+}
+
+// Official Node.js Logo
+export function NodejsLogo(props: React.SVGProps<SVGSVGElement>) {
+  return (
+    <svg viewBox="0 0 24 24" width="100%" height="100%" fill="#339933" {...props}>
+      <path d="M12 2a1 1 0 0 0-.5.13l-8.5 4.9a1 1 0 0 0-.5.87v9.8a1 1 0 0 0 .5.87l8.5 4.9a1 1 0 0 0 1 0l8.5-4.9a1 1 0 0 0 .5-.87V7.9a1 1 0 0 0-.5-.87l-8.5-4.9A1 1 0 0 0 12 2zm0 2.3l6.5 3.75v7.5L12 19.3 5.5 15.55v-7.5L12 4.3z" />
+    </svg>
+  );
+}
+
+// Official Python Logo
 export function PythonLogo(props: React.SVGProps<SVGSVGElement>) {
   return (
-    <svg viewBox="0 0 128 128" {...props}>
+    <svg viewBox="0 0 128 128" width="100%" height="100%" {...props}>
       <path
         fill="#3776AB"
         d="M63.04 7.6c-18.42 0-17.27 8-17.27 8v8.28h35.04v5h-49.2s-12.07 1.34-12.07 17.51c0 16.16 10.5 16.64 10.5 16.64h6.27v-8.81s-.33-10.5 10.33-10.5h17.82s10.15.17 10.15-9.82V17.65s1.46-10.05-11.57-10.05zm-9.35 10.22a3.42 3.42 0 1 1 0-6.84 3.42 3.42 0 0 1 0 6.84z"
@@ -98,28 +127,31 @@ export function PythonLogo(props: React.SVGProps<SVGSVGElement>) {
   );
 }
 
+// Official PostgreSQL Logo
 export function PostgresqlLogo(props: React.SVGProps<SVGSVGElement>) {
   return (
-    <svg viewBox="0 0 128 128" {...props}>
+    <svg viewBox="0 0 128 128" width="100%" height="100%" {...props}>
       <path
-        fill="#336791"
+        fill="#4169E1"
         d="M63.78 12.5c-28.16 0-51 22.84-51 51s22.84 51 51 51 51-22.84 51-51-22.84-51-51-51zm21.36 71.91c-3.1 1.77-7.23 2.76-12.06 2.76-10.1 0-16.68-5.18-16.68-14.73V54.41H46.12v-9.67h10.28V33.68h11.96v11.06h16.78v9.67H68.36v15.71c0 4.6 2.65 6.9 7.47 6.9 2.53 0 4.95-.58 6.9-1.61v8.09z"
       />
     </svg>
   );
 }
 
+// Official Docker Logo
 export function DockerLogo(props: React.SVGProps<SVGSVGElement>) {
   return (
-    <svg viewBox="0 0 24 24" fill="#2496ED" {...props}>
+    <svg viewBox="0 0 24 24" width="100%" height="100%" fill="#2496ED" {...props}>
       <path d="M13.983 11.078h2.119a.186.186 0 00.186-.185V9.006a.186.186 0 00-.186-.186h-2.119a.185.185 0 00-.185.186v1.887c0 .102.083.185.185.185zm-2.954-5.43h2.118a.185.185 0 00.186-.186V3.575a.186.186 0 00-.186-.185h-2.118a.185.185 0 00-.185.185v1.887c0 .102.083.186.185.186zm-2.954 5.43h2.118a.185.185 0 00.186-.185V9.006a.185.185 0 00-.186-.186H8.075a.185.185 0 00-.185.186v1.887c0 .102.083.185.185.185zm0-2.715h2.118a.186.186 0 00.186-.186V6.291a.186.186 0 00-.186-.185H8.075a.185.185 0 00-.185.185v1.887c0 .102.083.186.185.186zm-2.954 2.715h2.118a.185.185 0 00.186-.185V9.006a.185.185 0 00-.186-.186H5.121a.185.185 0 00-.185.186v1.887c0 .102.083.185.185.185zm0-2.715h2.118a.186.186 0 00.186-.186V6.291a.186.186 0 00-.186-.185H5.121a.185.185 0 00-.185.185v1.887c0 .102.083.186.185.186zm-2.954 2.715h2.119a.186.186 0 00.185-.185V9.006a.186.186 0 00-.185-.186H2.167a.186.186 0 00-.186.186v1.887c0 .102.084.185.186.185zm0-2.715h2.119a.186.186 0 00.185-.186V6.291a.186.186 0 00-.185-.185H2.167a.186.186 0 00-.186.185v1.887c0 .102.084.186.186.186zm10.816 5.43h2.118a.185.185 0 00.186-.186v-1.886a.186.186 0 00-.186-.186h-2.118a.185.185 0 00-.185.186v1.886c0 .103.083.186.185.186zm-2.954 0h2.118a.185.185 0 00.186-.186v-1.886a.186.186 0 00-.186-.186h-2.118a.185.185 0 00-.185.186v1.886c0 .103.083.186.185.186zm-2.954 0h2.118a.186.186 0 00.186-.186v-1.886a.186.186 0 00-.186-.186H8.075a.185.185 0 00-.185.186v1.886c0 .103.083.186.185.186zm-2.954 0h2.118a.185.185 0 00.186-.186v-1.886a.186.186 0 00-.186-.186H5.121a.185.185 0 00-.185.186v1.886c0 .103.083.186.185.186zm-2.954 0h2.119a.186.186 0 00.185-.186v-1.886a.186.186 0 00-.185-.186H2.167a.186.186 0 00-.186.186v1.886c0 .103.084.186.186.186zm21.611 1.782a13.34 13.34 0 00-3.838-.567c-1.047.01-2.086.173-3.08.483-1.026.31-1.921.981-2.61 1.838-.97-.487-2.053-.734-3.147-.72-1.788 0-3.414.733-4.606 1.917-1.192-1.184-2.818-1.917-4.606-1.917-1.788 0-3.414.733-4.606 1.917-1.192-1.184-2.818-1.917-4.606-1.917-1.194 0-2.38.324-3.412.934a6.57 6.57 0 00-1.874 1.703 12.3 12.3 0 00-1.096 1.688c-.628 1.157-1.02 2.42-1.16 3.722-.213 1.94.137 3.902.996 5.617 1.258 2.515 3.518 4.394 6.262 5.208 4.295 1.277 8.924.975 13.018-.847a18.25 18.25 0 008.204-7.464 16.71 16.71 0 003.541.38c2.146 0 4.253-.45 6.188-1.32 1.637-.736 3.097-1.815 4.269-3.155.076-.088.136-.188.176-.297a.545.545 0 00-.332-.693z" />
     </svg>
   );
 }
 
+// Official Git Logo
 export function GitLogo(props: React.SVGProps<SVGSVGElement>) {
   return (
-    <svg viewBox="0 0 128 128" {...props}>
+    <svg viewBox="0 0 128 128" width="100%" height="100%" {...props}>
       <path
         fill="#F05032"
         d="M122.78 54.84L73.16 5.22a12.8 12.8 0 0 0-18.1 0L5.22 54.84a12.8 12.8 0 0 0 0 18.1l49.62 49.62a12.8 12.8 0 0 0 18.1 0l49.84-49.62a12.8 12.8 0 0 0 0-18.1z"
@@ -132,17 +164,19 @@ export function GitLogo(props: React.SVGProps<SVGSVGElement>) {
   );
 }
 
+// Official Framer Motion Logo
 export function FramerMotionLogo(props: React.SVGProps<SVGSVGElement>) {
   return (
-    <svg viewBox="0 0 24 24" fill="#0055FF" {...props}>
+    <svg viewBox="0 0 24 24" width="100%" height="100%" fill="#0055FF" {...props}>
       <path d="M4 0h16v8h-8zM4 8h8l8 8H4zM4 16h8v8z" />
     </svg>
   );
 }
 
+// Official GraphQL Logo
 export function GraphQLLogo(props: React.SVGProps<SVGSVGElement>) {
   return (
-    <svg viewBox="0 0 128 128" {...props}>
+    <svg viewBox="0 0 128 128" width="100%" height="100%" {...props}>
       <path
         fill="#E10098"
         d="M64 12.2l44.86 25.9v51.8L64 115.8 19.14 89.9V38.1L64 12.2zm0 13.9L29.5 45.9v36.2L64 102.0l34.5-19.9V46.1L64 26.1z"
@@ -157,9 +191,10 @@ export function GraphQLLogo(props: React.SVGProps<SVGSVGElement>) {
   );
 }
 
+// Official Redis Logo
 export function RedisLogo(props: React.SVGProps<SVGSVGElement>) {
   return (
-    <svg viewBox="0 0 128 128" {...props}>
+    <svg viewBox="0 0 128 128" width="100%" height="100%" {...props}>
       <path
         fill="#DC382D"
         d="M116.4 53.6L68.8 30.8c-3-1.4-6.6-1.4-9.6 0L11.6 53.6c-3 1.4-4.8 4.4-4.8 7.6v6.4c0 3.2 1.8 6.2 4.8 7.6l47.6 22.8c3 1.4 6.6 1.4 9.6 0l47.6-22.8c3-1.4 4.8-4.4 4.8-7.6v-6.4c0-3.2-1.8-6.2-4.8-7.6z"

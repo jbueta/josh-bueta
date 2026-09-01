@@ -42,8 +42,8 @@ export function GlyphMatrix({ className }: GlyphMatrixProps) {
     const isDark = resolvedTheme === "dark";
 
     const draw = () => {
-      // Trail effect
-      ctx.fillStyle = isDark ? "rgba(10, 10, 10, 0.08)" : "rgba(248, 250, 252, 0.12)";
+      // Trail effect with deep navy backdrop
+      ctx.fillStyle = isDark ? "rgba(8, 13, 26, 0.08)" : "rgba(241, 245, 249, 0.12)";
       ctx.fillRect(0, 0, canvas.width, canvas.height);
 
       ctx.font = `${fontSize}px monospace`;
@@ -53,13 +53,13 @@ export function GlyphMatrix({ className }: GlyphMatrixProps) {
         const x = i * fontSize;
         const y = drops[i] * fontSize;
 
-        // Head glyph vs trail color
+        // Head glyph vs trail color (Royal / Sapphire Navy Blue)
         if (Math.random() > 0.95) {
           ctx.fillStyle = isDark ? "#ffffff" : "#0f172a";
         } else {
           ctx.fillStyle = isDark
-            ? "rgba(16, 185, 129, 0.4)" // Emerald green in dark
-            : "rgba(99, 102, 241, 0.3)"; // Indigo in light
+            ? "rgba(59, 130, 246, 0.45)" // Royal blue in dark
+            : "rgba(37, 99, 235, 0.35)"; // Sapphire blue in light
         }
 
         ctx.fillText(text, x, y);

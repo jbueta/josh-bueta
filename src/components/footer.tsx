@@ -18,9 +18,9 @@ export function Footer() {
             {/* Left: Brand / Initials */}
             <div className="flex flex-col gap-2">
               <div className="flex items-center gap-3">
-                <div className="w-10 h-10 rounded-xl bg-gradient-to-tr from-emerald-500 via-teal-500 to-cyan-500 p-[2px] shadow-lg shadow-emerald-500/20">
+                <div className="w-10 h-10 rounded-xl bg-gradient-to-tr from-blue-600 via-indigo-600 to-sky-400 p-[2px] shadow-lg shadow-blue-500/20">
                   <div className="w-full h-full bg-white dark:bg-zinc-950 rounded-[10px] flex items-center justify-center">
-                    <span className="text-emerald-600 dark:text-emerald-400 font-extrabold font-mono text-sm">
+                    <span className="text-blue-600 dark:text-blue-400 font-extrabold font-mono text-sm">
                       MJB
                     </span>
                   </div>
@@ -41,7 +41,7 @@ export function Footer() {
                 target="_blank"
                 rel="noopener noreferrer"
                 aria-label="GitHub Profile"
-                className="p-3 rounded-xl border border-zinc-200 dark:border-zinc-800 bg-white/60 dark:bg-zinc-900/60 hover:text-emerald-500 dark:hover:text-emerald-400 hover:border-emerald-500/50 transition-all duration-300 shadow-sm"
+                className="p-3 rounded-xl border border-zinc-200 dark:border-zinc-800 bg-white/60 dark:bg-zinc-900/60 hover:text-blue-500 dark:hover:text-blue-400 hover:border-blue-500/50 transition-all duration-300 shadow-sm"
               >
                 <GithubIcon className="w-5 h-5" />
               </a>
@@ -51,7 +51,7 @@ export function Footer() {
                 target="_blank"
                 rel="noopener noreferrer"
                 aria-label="LinkedIn Profile"
-                className="p-3 rounded-xl border border-zinc-200 dark:border-zinc-800 bg-white/60 dark:bg-zinc-900/60 hover:text-cyan-500 dark:hover:text-cyan-400 hover:border-cyan-500/50 transition-all duration-300 shadow-sm"
+                className="p-3 rounded-xl border border-zinc-200 dark:border-zinc-800 bg-white/60 dark:bg-zinc-900/60 hover:text-sky-500 dark:hover:text-sky-400 hover:border-sky-500/50 transition-all duration-300 shadow-sm"
               >
                 <LinkedinIcon className="w-5 h-5" />
               </a>
@@ -59,7 +59,7 @@ export function Footer() {
               <a
                 href="mailto:joshua.bueta13@gmail.com"
                 aria-label="Email Contact"
-                className="p-3 rounded-xl border border-zinc-200 dark:border-zinc-800 bg-white/60 dark:bg-zinc-900/60 hover:text-amber-500 dark:hover:text-amber-400 hover:border-amber-500/50 transition-all duration-300 shadow-sm"
+                className="p-3 rounded-xl border border-zinc-200 dark:border-zinc-800 bg-white/60 dark:bg-zinc-900/60 hover:text-indigo-500 dark:hover:text-indigo-400 hover:border-indigo-500/50 transition-all duration-300 shadow-sm"
               >
                 <Mail className="w-5 h-5" />
               </a>
@@ -67,7 +67,7 @@ export function Footer() {
               <button
                 onClick={scrollToTop}
                 aria-label="Scroll back to top"
-                className="p-3 rounded-xl border border-zinc-200 dark:border-zinc-800 bg-emerald-500/10 hover:bg-emerald-500 text-emerald-500 hover:text-white transition-all duration-300 shadow-sm cursor-pointer ml-2"
+                className="p-3 rounded-xl border border-zinc-200 dark:border-zinc-800 bg-blue-500/10 hover:bg-blue-600 text-blue-500 hover:text-white transition-all duration-300 shadow-sm cursor-pointer ml-2"
               >
                 <ArrowUp className="w-5 h-5" />
               </button>
