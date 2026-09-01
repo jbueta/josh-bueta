@@ -43,7 +43,7 @@ export function Hero() {
                   <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-blue-400 opacity-75"></span>
                   <span className="relative inline-flex rounded-full h-2 w-2 bg-blue-500"></span>
                 </span>
-                AVAILABLE FOR NEW OPPORTUNITIES & ARCHITECTURE PROJECTS
+                OPEN FOR INTERNSHIP OPPORTUNITIES & COLLABORATIONS
               </div>
             </BlurFade>
 
@@ -79,7 +79,7 @@ export function Hero() {
             {/* Role Subtitle */}
             <BlurFade delay={0.5}>
               <p className="text-lg sm:text-xl font-medium text-zinc-700 dark:text-zinc-300 mb-4">
-                Web Developer and Software Engineer
+                Web Developer and Aspiring Software Engineer
               </p>
             </BlurFade>
 

@@ -31,14 +31,14 @@ export function Experience() {
       period: "2023 – Present",
       honors: "President's / Dean's Lister (GWA: 1.25 – 1.60)",
       details:
-        "Specialized in Software Engineering, Data Structures & Algorithms, and Distributed Cloud Architectures. Capstone Lead for an AI-assisted web platform.",
+        "Specialized in Software Engineering, Data Structures & Algorithms, and Parallel & Distributed Programming. Capstone Lead for an AI-assisted web platform. A student leader, goal-driven and committed to continuous improvement.",
     },
   ];
 
   const orgPositions = [
     {
       id: "cs-rep",
-      role: "Computer Science Representative",
+      role: "Freshmen Computer Science Representative",
       period: "2023 – 2024",
       description: "Freshmen representative of the computer science program.",
     },
