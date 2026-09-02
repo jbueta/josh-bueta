@@ -1,6 +1,7 @@
 "use client";
 
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
+import { createPortal } from "react-dom";
 import { BlurFade } from "@/registry/magicui/blur-fade";
 import {
   Sparkles,
@@ -26,6 +27,11 @@ interface CertItem {
 
 export function Certifications() {
   const [selectedCert, setSelectedCert] = useState<CertItem | null>(null);
+  const [mounted, setMounted] = useState(false);
+
+  useEffect(() => {
+    setMounted(true);
+  }, []);
 
   const certCategories: {
     category: string;
@@ -251,80 +257,84 @@ export function Certifications() {
         </div>
       </section>
 
-      {/* Lightbox Preview Modal for Selected Certificate */}
-      <AnimatePresence>
-        {selectedCert && (
-          <motion.div
-            initial={{ opacity: 0 }}
-            animate={{ opacity: 1 }}
-            exit={{ opacity: 0 }}
-            onClick={() => setSelectedCert(null)}
-            className="fixed inset-0 z-50 flex items-center justify-center bg-black/80 backdrop-blur-md p-3 sm:p-6 cursor-zoom-out select-none"
-          >
-            <motion.div
-              initial={{ scale: 0.85, opacity: 0 }}
-              animate={{ scale: 1, opacity: 1 }}
-              exit={{ scale: 0.85, opacity: 0 }}
-              transition={{ type: "spring", damping: 25, stiffness: 300 }}
-              onClick={(e) => e.stopPropagation()}
-              className="relative max-w-4xl w-full rounded-3xl overflow-hidden border-2 border-blue-500/40 shadow-2xl bg-zinc-950 flex flex-col max-h-[90vh]"
-            >
-              {/* Modal Header Bar */}
-              <div className="flex items-center justify-between px-4 sm:px-6 py-3 sm:py-4 bg-zinc-900 border-b border-zinc-800">
-                <div className="flex items-center gap-3">
-                  <div className="p-2 rounded-lg bg-blue-500/20 text-blue-400 shrink-0">
-                    <Award className="w-5 h-5" />
-                  </div>
-                  <div>
-                    <h3 className="text-sm sm:text-lg font-bold text-white font-heading leading-tight">
-                      {selectedCert.title}
-                    </h3>
-                    <p className="text-[10px] sm:text-xs text-zinc-400 font-mono">
-                      {selectedCert.issuer} • Issued {selectedCert.date}
-                    </p>
-                  </div>
-                </div>
-
-                <button
-                  onClick={() => setSelectedCert(null)}
-                  aria-label="Close Preview"
-                  className="p-2 rounded-full bg-zinc-800 text-zinc-300 hover:bg-blue-600 hover:text-white transition-colors cursor-pointer shrink-0"
+      {/* Lightbox Preview Modal Teleported to Document Body via React Portal */}
+      {mounted &&
+        createPortal(
+          <AnimatePresence>
+            {selectedCert && (
+              <motion.div
+                initial={{ opacity: 0 }}
+                animate={{ opacity: 1 }}
+                exit={{ opacity: 0 }}
+                onClick={() => setSelectedCert(null)}
+                className="fixed inset-0 z-[99999] flex items-center justify-center bg-black/90 backdrop-blur-xl p-3 sm:p-6 cursor-zoom-out select-none"
+              >
+                <motion.div
+                  initial={{ scale: 0.85, opacity: 0 }}
+                  animate={{ scale: 1, opacity: 1 }}
+                  exit={{ scale: 0.85, opacity: 0 }}
+                  transition={{ type: "spring", damping: 25, stiffness: 300 }}
+                  onClick={(e) => e.stopPropagation()}
+                  className="relative max-w-4xl w-full rounded-3xl overflow-hidden border-2 border-blue-500/40 shadow-2xl bg-zinc-950 flex flex-col max-h-[90vh] z-[100000]"
                 >
-                  <X className="w-5 h-5" />
-                </button>
-              </div>
+                  {/* Modal Header Bar */}
+                  <div className="flex items-center justify-between px-4 sm:px-6 py-3 sm:py-4 bg-zinc-900 border-b border-zinc-800 shrink-0">
+                    <div className="flex items-center gap-3">
+                      <div className="p-2 rounded-lg bg-blue-500/20 text-blue-400 shrink-0">
+                        <Award className="w-5 h-5" />
+                      </div>
+                      <div>
+                        <h3 className="text-sm sm:text-lg font-bold text-white font-heading leading-tight">
+                          {selectedCert.title}
+                        </h3>
+                        <p className="text-[10px] sm:text-xs text-zinc-400 font-mono">
+                          {selectedCert.issuer} • Issued {selectedCert.date}
+                        </p>
+                      </div>
+                    </div>
 
-              {/* Certificate Image Preview Stage */}
-              <div className="relative bg-zinc-900/90 p-3 sm:p-6 flex items-center justify-center overflow-y-auto max-h-[60vh]">
-                <img
-                  src={selectedCert.previewImage}
-                  alt={`${selectedCert.title} Certificate`}
-                  className="w-full h-auto object-contain rounded-xl border border-zinc-800 shadow-2xl"
-                />
-              </div>
+                    <button
+                      onClick={() => setSelectedCert(null)}
+                      aria-label="Close Preview"
+                      className="p-2 rounded-full bg-zinc-800 text-zinc-300 hover:bg-blue-600 hover:text-white transition-colors cursor-pointer shrink-0"
+                    >
+                      <X className="w-5 h-5" />
+                    </button>
+                  </div>
 
-              {/* Modal Footer Controls */}
-              <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-3 px-4 sm:px-6 py-3 sm:py-4 bg-zinc-900 border-t border-zinc-800 font-mono text-xs">
-                <p className="text-zinc-400 max-w-md line-clamp-2 sm:line-clamp-1 font-sans text-[11px] sm:text-xs">
-                  {selectedCert.description}
-                </p>
+                  {/* Certificate Image Preview Stage */}
+                  <div className="relative bg-zinc-900/90 p-3 sm:p-6 flex items-center justify-center overflow-y-auto max-h-[65vh]">
+                    <img
+                      src={selectedCert.previewImage}
+                      alt={`${selectedCert.title} Certificate`}
+                      className="w-full h-auto object-contain rounded-xl border border-zinc-800 shadow-2xl"
+                    />
+                  </div>
 
-                <div className="flex items-center gap-3 w-full sm:w-auto justify-end">
-                  <a
-                    href={selectedCert.pdfUrl}
-                    target="_blank"
-                    rel="noopener noreferrer"
-                    className="inline-flex items-center justify-center gap-2 px-4 py-2 rounded-xl bg-blue-600 hover:bg-blue-500 text-white font-bold transition-all shadow-md w-full sm:w-auto"
-                  >
-                    <Download className="w-4 h-4" />
-                    <span>Download Official PDF</span>
-                  </a>
-                </div>
-              </div>
-            </motion.div>
-          </motion.div>
+                  {/* Modal Footer Controls */}
+                  <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-3 px-4 sm:px-6 py-3 sm:py-4 bg-zinc-900 border-t border-zinc-800 font-mono text-xs shrink-0">
+                    <p className="text-zinc-400 max-w-md line-clamp-2 sm:line-clamp-1 font-sans text-[11px] sm:text-xs">
+                      {selectedCert.description}
+                    </p>
+
+                    <div className="flex items-center gap-3 w-full sm:w-auto justify-end">
+                      <a
+                        href={selectedCert.pdfUrl}
+                        target="_blank"
+                        rel="noopener noreferrer"
+                        className="inline-flex items-center justify-center gap-2 px-4 py-2 rounded-xl bg-blue-600 hover:bg-blue-500 text-white font-bold transition-all shadow-md w-full sm:w-auto"
+                      >
+                        <Download className="w-4 h-4" />
+                        <span>Download Official PDF</span>
+                      </a>
+                    </div>
+                  </div>
+                </motion.div>
+              </motion.div>
+            )}
+          </AnimatePresence>,
+          document.body
         )}
-      </AnimatePresence>
     </>
   );
 }

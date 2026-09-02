@@ -1,6 +1,7 @@
 "use client";
 
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
+import { createPortal } from "react-dom";
 import { PixelImage } from "@/registry/magicui/pixel-image";
 import { BlurFade } from "@/registry/magicui/blur-fade";
 import { HyperText } from "@/registry/magicui/hyper-text";
@@ -16,6 +17,11 @@ import { motion, AnimatePresence } from "framer-motion";
 
 export function Hero() {
   const [isLightboxOpen, setIsLightboxOpen] = useState(false);
+  const [mounted, setMounted] = useState(false);
+
+  useEffect(() => {
+    setMounted(true);
+  }, []);
 
   return (
     <>
@@ -141,48 +147,52 @@ export function Hero() {
         </div>
       </section>
 
-      {/* Lightbox Modal for Profile Image */}
-      <AnimatePresence>
-        {isLightboxOpen && (
-          <motion.div
-            initial={{ opacity: 0 }}
-            animate={{ opacity: 1 }}
-            exit={{ opacity: 0 }}
-            onClick={() => setIsLightboxOpen(false)}
-            className="fixed inset-0 z-50 flex items-center justify-center bg-black/80 backdrop-blur-md p-4 cursor-zoom-out"
-          >
-            <motion.div
-              initial={{ scale: 0.8, opacity: 0 }}
-              animate={{ scale: 1, opacity: 1 }}
-              exit={{ scale: 0.8, opacity: 0 }}
-              transition={{ type: "spring", damping: 25, stiffness: 300 }}
-              onClick={(e) => e.stopPropagation()}
-              className="relative max-w-xl w-full rounded-3xl overflow-hidden border-2 border-blue-500/40 shadow-2xl bg-zinc-950"
-            >
-              <button
+      {/* Lightbox Modal for Profile Image (Teleported to document.body) */}
+      {mounted &&
+        createPortal(
+          <AnimatePresence>
+            {isLightboxOpen && (
+              <motion.div
+                initial={{ opacity: 0 }}
+                animate={{ opacity: 1 }}
+                exit={{ opacity: 0 }}
                 onClick={() => setIsLightboxOpen(false)}
-                aria-label="Close Lightbox"
-                className="absolute top-4 right-4 z-10 p-2 rounded-full bg-black/60 text-white hover:bg-blue-600 transition-colors cursor-pointer"
+                className="fixed inset-0 z-[99999] flex items-center justify-center bg-black/90 backdrop-blur-xl p-4 cursor-zoom-out select-none"
               >
-                <X className="w-5 h-5" />
-              </button>
-              <img
-                src="/avatar.jpg"
-                alt="Mark Joshua Bueta Full Avatar"
-                className="w-full h-auto object-cover max-h-[80vh]"
-              />
-              <div className="p-4 bg-zinc-900 text-center border-t border-zinc-800 font-sans">
-                <h3 className="text-base font-bold text-zinc-100 font-heading">
-                  Mark Joshua Bueta
-                </h3>
-                <p className="text-xs text-zinc-400 font-mono">
-                  Web Developer & Software Engineer
-                </p>
-              </div>
-            </motion.div>
-          </motion.div>
+                <motion.div
+                  initial={{ scale: 0.8, opacity: 0 }}
+                  animate={{ scale: 1, opacity: 1 }}
+                  exit={{ scale: 0.8, opacity: 0 }}
+                  transition={{ type: "spring", damping: 25, stiffness: 300 }}
+                  onClick={(e) => e.stopPropagation()}
+                  className="relative max-w-xl w-full rounded-3xl overflow-hidden border-2 border-blue-500/40 shadow-2xl bg-zinc-950 z-[100000]"
+                >
+                  <button
+                    onClick={() => setIsLightboxOpen(false)}
+                    aria-label="Close Lightbox"
+                    className="absolute top-4 right-4 z-10 p-2 rounded-full bg-black/60 text-white hover:bg-blue-600 transition-colors cursor-pointer"
+                  >
+                    <X className="w-5 h-5" />
+                  </button>
+                  <img
+                    src="/avatar.jpg"
+                    alt="Mark Joshua Bueta Full Avatar"
+                    className="w-full h-auto object-cover max-h-[80vh]"
+                  />
+                  <div className="p-4 bg-zinc-900 text-center border-t border-zinc-800 font-sans">
+                    <h3 className="text-base font-bold text-zinc-100 font-heading">
+                      Mark Joshua Bueta
+                    </h3>
+                    <p className="text-xs text-zinc-400 font-mono">
+                      Web Developer & Software Engineer
+                    </p>
+                  </div>
+                </motion.div>
+              </motion.div>
+            )}
+          </AnimatePresence>,
+          document.body
         )}
-      </AnimatePresence>
     </>
   );
 }
