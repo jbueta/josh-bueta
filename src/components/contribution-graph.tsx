@@ -14,8 +14,8 @@ interface ContributionGraphProps {
   className?: string;
 }
 
-const CACHE_KEY = "github_contributions_jbueta_v3";
-const CACHE_TTL = 24 * 60 * 60 * 1000; // 24 hours caching for rate-limit protection
+const CACHE_KEY = "github_contributions_jbueta_v4";
+const CACHE_TTL = 1 * 60 * 60 * 1000; // 1 hour TTL so fresh commits update quickly while preserving rate-limit safety
 
 export function ContributionGraph({
   username = "jbueta",
