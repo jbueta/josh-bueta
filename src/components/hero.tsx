@@ -1,153 +1,288 @@
 "use client";
 
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, useRef } from "react";
 import { createPortal } from "react-dom";
-import { PixelImage } from "@/registry/magicui/pixel-image";
-import { BlurFade } from "@/registry/magicui/blur-fade";
-import { HyperText } from "@/registry/magicui/hyper-text";
 import { GithubIcon, LinkedinIcon } from "@/components/icons";
-import {
-  Mail,
-  Download,
-  Terminal,
-  MapPin,
-  X,
-} from "lucide-react";
+import { Mail, Download, MapPin, X, Sparkles, Code2 } from "lucide-react";
 import { motion, AnimatePresence } from "framer-motion";
+import { gsap } from "gsap";
+import { useGSAP } from "@gsap/react";
 
+gsap.registerPlugin(useGSAP);
+
+/* ----------------------------------------------------------------
+   MANGA PORTRAIT PANEL — True Drawn Manga Panel Illustration
+   Uses /avatar-manga.jpg directly with zero artificial CSS filters
+   so the G-pen linework, sumi-ink hair highlights, Ben-Day screentone
+   suit shading, and intersecting action slashes render with 100%
+   native print clarity.
+   ---------------------------------------------------------------- */
+function CinematicAvatar({ onClick }: { onClick: () => void }) {
+  return (
+    <div
+      className="relative w-full h-full cursor-pointer select-none overflow-hidden group bg-white"
+      onClick={onClick}
+    >
+      {/* True Manga Panel Portrait Illustration */}
+      <img
+        src="/avatar-manga.jpg"
+        alt="Mark Joshua Bueta — Manga Panel Portrait"
+        fetchPriority="high"
+        loading="eager"
+        decoding="sync"
+        className="w-full h-full object-cover object-top transition-transform duration-500 ease-out group-hover:scale-[1.02]"
+        draggable={false}
+      />
+
+      {/* Crisp Ink-Boxed Manga Caption Plate (Bottom-Right Corner) */}
+      <div
+        className="absolute bottom-4 left-4 right-4 sm:left-auto sm:right-4 sm:max-w-xs pointer-events-none"
+        style={{ zIndex: 6 }}
+      >
+        <div className="border-3 border-[var(--ink)] bg-white/95 px-4 py-3 shadow-[4px_4px_0_var(--ink)]">
+          <div className="flex items-center justify-between gap-3 mb-1">
+            <span
+              className="font-manga text-[9px] tracking-[0.4em] px-2 py-0.5 text-white"
+              style={{ background: "var(--seido)" }}
+            >
+              PROTAGONIST // CS
+            </span>
+            <span className="font-mono text-[9px] tracking-[0.18em] text-[var(--ink)]/70">
+              CH. 01
+            </span>
+          </div>
+          <p className="font-manga text-xl sm:text-2xl tracking-[0.12em] text-[var(--ink)] leading-none">
+            MARK JOSHUA BUETA
+          </p>
+        </div>
+      </div>
+
+      {/* Tap hint badge (top right, clear of the slash) */}
+      <div className="absolute top-3 right-3 hidden sm:block" style={{ zIndex: 6 }}>
+        <span className="font-manga text-[9px] tracking-[0.35em] bg-[var(--ink)] text-white border-2 border-[var(--ink)] px-2.5 py-1 block group-hover:bg-[var(--seido)] group-hover:border-[var(--seido)] transition-colors shadow-[2px_2px_0_rgba(0,0,0,0.2)]">
+          EXPAND PANEL ↗
+        </span>
+      </div>
+    </div>
+  );
+}
+
+/* ----------------------------------------------------------------
+   HERO — Asymmetric Multi-Panel Manga Spread (ACT. 01)
+   ---------------------------------------------------------------- */
 export function Hero() {
   const [isLightboxOpen, setIsLightboxOpen] = useState(false);
   const [mounted, setMounted] = useState(false);
+  const heroRef = useRef<HTMLElement>(null);
+  const leftRef = useRef<HTMLDivElement>(null);
+  const rightTopRef = useRef<HTMLDivElement>(null);
+  const rightMidRef = useRef<HTMLDivElement>(null);
+  const rightBotRef = useRef<HTMLDivElement>(null);
 
   useEffect(() => {
     setMounted(true);
   }, []);
 
+  useGSAP(
+    () => {
+      const tl = gsap.timeline({ delay: 0.05 });
+      tl.fromTo(
+        leftRef.current,
+        { x: -40, opacity: 0 },
+        { x: 0, opacity: 1, duration: 0.55, ease: "power3.out" }
+      )
+        .fromTo(
+          rightTopRef.current,
+          { y: -25, opacity: 0 },
+          { y: 0, opacity: 1, duration: 0.45, ease: "power3.out" },
+          "-=0.35"
+        )
+        .fromTo(
+          rightMidRef.current,
+          { x: 40, opacity: 0 },
+          { x: 0, opacity: 1, duration: 0.5, ease: "power3.out" },
+          "-=0.3"
+        )
+        .fromTo(
+          rightBotRef.current,
+          { y: 25, opacity: 0 },
+          { y: 0, opacity: 1, duration: 0.45, ease: "power3.out" },
+          "-=0.3"
+        );
+    },
+    { scope: heroRef }
+  );
+
   return (
     <>
-      <section className="relative pt-24 pb-16 md:pt-36 md:pb-24 px-4 sm:px-8 max-w-6xl mx-auto flex flex-col items-center text-center lg:items-start lg:text-left overflow-hidden">
-        {/* Layout Container: Profile Avatar & Typography Column */}
-        <div className="flex flex-col lg:flex-row items-center lg:items-start justify-center lg:justify-start gap-8 lg:gap-14 w-full">
-          {/* Left Column: Scaled Profile Image with Locked Aspect Ratio */}
-          <BlurFade delay={0.1} className="shrink-0 self-center lg:self-start">
-            <PixelImage
-              src="/avatar.jpg"
-              alt="Mark Joshua Bueta"
-              rows={4}
-              cols={6}
-              className="w-56 h-56 sm:w-80 sm:h-80 lg:w-96 lg:h-96 aspect-square rounded-3xl"
-              onClick={() => setIsLightboxOpen(true)}
+      <section
+        ref={heroRef}
+        className="relative w-full min-h-[100dvh] pt-[60px] flex flex-col justify-stretch"
+        style={{ background: "var(--ink)", paddingBottom: "var(--gutter)" }}
+        aria-label="Hero"
+      >
+        <div
+          className="flex-1 w-full grid grid-cols-1 lg:grid-cols-12"
+          style={{ gap: "var(--gutter)", padding: "var(--gutter)" }}
+        >
+          {/* ── PANEL 1 (LEFT DOMINANT SPLASH — 7/12 cols on desktop, spans all 3 rows) ── */}
+          <div
+            ref={leftRef}
+            className="lg:col-span-7 lg:row-span-3 relative panel bg-white min-h-[440px] sm:min-h-[540px] lg:min-h-[calc(100dvh-76px)]"
+          >
+            <CinematicAvatar onClick={() => setIsLightboxOpen(true)} />
+
+            {/* Chapter badge — Seido fill */}
+            <div className="absolute top-3 left-3 z-20 pointer-events-none flex items-center gap-1.5">
+              <span
+                className="font-manga text-[10px] tracking-[0.45em] px-3 py-1 block text-white border-2 border-[var(--ink)] shadow-[2px_2px_0_var(--ink)]"
+                style={{ background: "var(--seido)" }}
+              >
+                ACT. 01 // OPENING
+              </span>
+            </div>
+          </div>
+
+          {/* ── PANEL 2 (RIGHT TOP — Narrow Kinetic Header Strip, 5/12 cols) ── */}
+          <div
+            ref={rightTopRef}
+            className="lg:col-span-5 panel bg-[var(--ink)] text-white px-6 py-4 flex items-center justify-between gap-4 relative overflow-hidden"
+          >
+            <div className="absolute inset-0 speed-lines opacity-25 pointer-events-none" aria-hidden="true" />
+            <div className="relative z-10 flex items-center gap-2 font-mono text-[11px] tracking-[0.25em] uppercase text-white/90">
+              <MapPin className="w-3.5 h-3.5 shrink-0" style={{ color: "#60a5fa" }} />
+              <span>Pasig City, Philippines</span>
+            </div>
+            <div className="relative z-10 flex items-center gap-1.5 border border-white/25 px-2.5 py-0.5 bg-white/5">
+              <Code2 className="w-3 h-3 text-white/70" />
+              <span className="font-manga text-[9px] tracking-[0.35em] text-white/80">
+                CS UNDERGRAD · 3RD YR
+              </span>
+            </div>
+          </div>
+
+          {/* ── PANEL 3 (RIGHT CENTER — Dominant Identity & Narrative Panel, 5/12 cols) ── */}
+          <div
+            ref={rightMidRef}
+            className="lg:col-span-5 panel bg-[var(--paper)] sfx-code px-7 sm:px-10 py-10 lg:py-12 flex flex-col justify-center relative"
+          >
+            <div
+              className="absolute inset-0 screentone-fine pointer-events-none"
+              style={{ zIndex: 0, opacity: 0.6 }}
+              aria-hidden="true"
             />
-          </BlurFade>
 
-          {/* Right Column: Typography & Badges (Centered on Mobile, Left-Aligned on Desktop) */}
-          <div className="flex flex-col items-center text-center lg:items-start lg:text-left justify-center lg:justify-start flex-1 max-w-2xl w-full">
-            {/* Availability Status Badge */}
-            <BlurFade delay={0.2} className="w-full flex justify-center lg:justify-start">
-              <div className="inline-flex items-center gap-2 px-3 py-1.5 rounded-full border border-blue-500/30 bg-blue-500/10 text-blue-600 dark:text-blue-400 text-[11px] sm:text-xs font-mono mb-4 backdrop-blur-md max-w-full leading-snug">
-                <span className="relative flex h-2 w-2 shrink-0">
-                  <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-blue-400 opacity-75"></span>
-                  <span className="relative inline-flex rounded-full h-2 w-2 bg-blue-500"></span>
-                </span>
-                <span className="truncate sm:whitespace-normal">
-                  OPEN FOR INTERNSHIP OPPORTUNITIES & COLLABORATIONS
+            <div className="relative z-10">
+              {/* Manga speech-tag eyebrow */}
+              <div className="inline-flex items-center gap-1.5 border-2 border-[var(--ink)] bg-white px-3 py-1 mb-5 shadow-[3px_3px_0_var(--ink)]">
+                <Sparkles className="w-3 h-3" style={{ color: "var(--seido)" }} />
+                <span className="font-manga text-[10px] tracking-[0.35em] text-[var(--ink)] uppercase">
+                  WEB DEVELOPER &amp; ASPIRING SOFTWARE ENGINEER
                 </span>
               </div>
-            </BlurFade>
 
-            {/* Meta Tags: Location & Specialization */}
-            <BlurFade delay={0.3} className="w-full flex justify-center lg:justify-start">
-              <div className="flex flex-wrap items-center justify-center lg:justify-start gap-2 text-xs font-mono text-zinc-500 dark:text-zinc-400 mb-3">
-                <div className="flex items-center gap-1">
-                  <MapPin className="w-3.5 h-3.5 text-blue-500 shrink-0" />
-                  <span>Pasig City, Philippines</span>
-                </div>
-                <span className="text-zinc-300 dark:text-zinc-700 hidden sm:inline">•</span>
-                <div className="flex items-center gap-1">
-                  <Terminal className="w-3.5 h-3.5 text-indigo-500 shrink-0" />
-                  <span>Web Development & UI/UX Design</span>
-                </div>
-              </div>
-            </BlurFade>
-
-            {/* Main Heading with HyperText */}
-            <BlurFade delay={0.4} className="w-full">
-              <h1 className="flex flex-wrap items-center justify-center lg:justify-start gap-x-2 text-2xl sm:text-4xl md:text-5xl font-extrabold tracking-tight text-zinc-900 dark:text-zinc-50 leading-tight mb-3">
-                <span>Hi, I&apos;m</span>
-                <HyperText
-                  className="bg-gradient-to-r from-blue-500 via-indigo-400 to-sky-400 bg-clip-text text-transparent font-extrabold"
-                  as="span"
-                  duration={900}
-                >
-                  Mark Joshua Bueta
-                </HyperText>
+              {/* Giant Manga Name Stack */}
+              <h1
+                className="font-manga leading-[0.86] tracking-wide text-[var(--ink)] mb-5"
+                style={{ fontSize: "clamp(3.4rem, 6.5vw, 6.8rem)" }}
+              >
+                MARK
+                <br />
+                JOSHUA
+                <br />
+                <span style={{ color: "var(--seido)" }}>BUETA</span>
               </h1>
-            </BlurFade>
 
-            {/* Role Subtitle */}
-            <BlurFade delay={0.5} className="w-full">
-              <p className="text-base sm:text-xl font-medium text-zinc-700 dark:text-zinc-300 mb-4 font-sans text-center lg:text-left">
-                Web Developer and Aspiring Software Engineer
-              </p>
-            </BlurFade>
-
-            {/* Bio Paragraph */}
-            <BlurFade delay={0.6} className="w-full">
-              <p className="text-xs sm:text-base text-zinc-600 dark:text-zinc-400 leading-relaxed mb-8 font-sans text-center lg:text-left">
-                Frontend Developer and UI/UX designer dedicated to crafting intuitive, accessible digital experiences and building intelligent, human-centered web solutions that create meaningful impact for communities.
-              </p>
-            </BlurFade>
-
-            {/* CTAs & Social Links */}
-            <BlurFade delay={0.7} className="w-full">
-              <div className="flex flex-wrap items-center justify-center lg:justify-start gap-3 sm:gap-4 w-full">
-                {/* Download CV CTA */}
-                <a
-                  href="/Mark_Joshua_Bueta_CV.pdf"
-                  download="Mark_Joshua_Bueta_CV.pdf"
-                  className="inline-flex items-center gap-2 px-5 py-2.5 sm:px-6 sm:py-3 rounded-xl bg-blue-600 hover:bg-blue-500 text-white font-semibold text-xs sm:text-sm shadow-lg shadow-blue-500/25 transition-all duration-300 hover:scale-105 active:scale-95 font-sans"
-                >
-                  <Download className="w-4 h-4" />
-                  <span>Download CV</span>
-                </a>
-
-                {/* Social Icons */}
-                <div className="flex items-center gap-2">
-                  <a
-                    href="https://github.com/jbueta"
-                    target="_blank"
-                    rel="noopener noreferrer"
-                    aria-label="GitHub Profile"
-                    className="p-2.5 sm:p-3 rounded-xl border border-zinc-200 dark:border-zinc-800 bg-white/60 dark:bg-zinc-900/60 hover:text-blue-500 dark:hover:text-blue-400 hover:border-blue-500/50 transition-all duration-300 shadow-sm"
-                  >
-                    <GithubIcon className="w-4 h-4" />
-                  </a>
-
-                  <a
-                    href="https://linkedin.com/in/jbueta"
-                    target="_blank"
-                    rel="noopener noreferrer"
-                    aria-label="LinkedIn Profile"
-                    className="p-2.5 sm:p-3 rounded-xl border border-zinc-200 dark:border-zinc-800 bg-white/60 dark:bg-zinc-900/60 hover:text-sky-500 dark:hover:text-sky-400 hover:border-sky-500/50 transition-all duration-300 shadow-sm"
-                  >
-                    <LinkedinIcon className="w-4 h-4" />
-                  </a>
-
-                  <a
-                    href="mailto:joshua.bueta13@gmail.com"
-                    aria-label="Email Contact"
-                    className="p-2.5 sm:p-3 rounded-xl border border-zinc-200 dark:border-zinc-800 bg-white/60 dark:bg-zinc-900/60 hover:text-indigo-500 dark:hover:text-indigo-400 hover:border-indigo-500/50 transition-all duration-300 shadow-sm"
-                  >
-                    <Mail className="w-4 h-4" />
-                  </a>
-                </div>
+              {/* Diagonal ink divider bar */}
+              <div className="flex items-center gap-2 mb-5" aria-hidden="true">
+                <div style={{ width: 56, height: 4, background: "var(--ink)" }} />
+                <div style={{ width: 14, height: 4, background: "var(--seido)" }} />
               </div>
-            </BlurFade>
+
+              {/* Bio */}
+              <p className="font-sans text-sm sm:text-[15px] leading-relaxed text-[hsl(var(--muted-foreground))] max-w-[26rem]">
+                Frontend Developer and UI/UX designer dedicated to crafting intuitive,
+                accessible digital experiences and building intelligent, human-centered web
+                solutions.
+              </p>
+            </div>
+          </div>
+
+          {/* ── PANEL 4 (RIGHT BOTTOM — Action & Status Panel, 5/12 cols) ── */}
+          <div
+            ref={rightBotRef}
+            className="lg:col-span-5 panel bg-[var(--paper)] px-7 sm:px-10 py-6 flex flex-col justify-between gap-5 relative"
+          >
+            {/* Availability Strip */}
+            <div className="flex items-center justify-between flex-wrap gap-2 pb-4 border-b-2 border-[var(--ink)]/15">
+              <div className="flex items-center gap-2.5">
+                <span className="relative flex h-2.5 w-2.5 shrink-0">
+                  <span
+                    className="animate-ping absolute inline-flex h-full w-full opacity-75"
+                    style={{ background: "var(--seido)" }}
+                  />
+                  <span
+                    className="relative inline-flex h-2.5 w-2.5"
+                    style={{ background: "var(--seido)" }}
+                  />
+                </span>
+                <span className="font-manga text-xs tracking-[0.28em] text-[var(--ink)] uppercase">
+                  Open for Internship &amp; Collaborations
+                </span>
+              </div>
+              <span className="font-mono text-[10px] px-2 py-0.5 bg-[var(--ink)] text-white">
+                STATUS: ACTIVE
+              </span>
+            </div>
+
+            {/* CTAs */}
+            <div className="flex flex-wrap items-center justify-between gap-3">
+              <a
+                href="/Mark_Joshua_Bueta_CV.pdf"
+                download="Mark_Joshua_Bueta_CV.pdf"
+                className="inline-flex items-center gap-2.5 px-6 py-3 font-manga tracking-[0.2em] text-xs text-white border-2 border-[var(--ink)] shadow-[4px_4px_0_var(--ink)] hover:shadow-none hover:translate-x-[2px] hover:translate-y-[2px] transition-all"
+                style={{ background: "var(--seido)" }}
+              >
+                <Download className="w-4 h-4 shrink-0" />
+                DOWNLOAD CV
+              </a>
+
+              <div className="flex items-center gap-2.5">
+                {[
+                  {
+                    href: "https://github.com/jbueta",
+                    label: "GitHub",
+                    icon: <GithubIcon className="w-4 h-4" />,
+                  },
+                  {
+                    href: "https://linkedin.com/in/jbueta",
+                    label: "LinkedIn",
+                    icon: <LinkedinIcon className="w-4 h-4" />,
+                  },
+                  {
+                    href: "mailto:joshua.bueta13@gmail.com",
+                    label: "Email",
+                    icon: <Mail className="w-4 h-4" />,
+                  },
+                ].map(({ href, label, icon }) => (
+                  <a
+                    key={label}
+                    href={href}
+                    target={href.startsWith("http") ? "_blank" : undefined}
+                    rel={href.startsWith("http") ? "noopener noreferrer" : undefined}
+                    aria-label={label}
+                    className="w-10 h-10 flex items-center justify-center border-2 border-[var(--ink)] bg-white text-[var(--ink)] shadow-[3px_3px_0_var(--ink)] hover:bg-[var(--ink)] hover:text-[var(--paper)] hover:shadow-none hover:translate-x-[2px] hover:translate-y-[2px] transition-all duration-150"
+                  >
+                    {icon}
+                  </a>
+                ))}
+              </div>
+            </div>
           </div>
         </div>
       </section>
 
-      {/* Lightbox Modal for Profile Image (Teleported to document.body) */}
+      {/* Lightbox */}
       {mounted &&
         createPortal(
           <AnimatePresence>
@@ -157,34 +292,40 @@ export function Hero() {
                 animate={{ opacity: 1 }}
                 exit={{ opacity: 0 }}
                 onClick={() => setIsLightboxOpen(false)}
-                className="fixed inset-0 z-[99999] flex items-center justify-center bg-black/90 backdrop-blur-xl p-4 cursor-zoom-out select-none"
+                className="fixed inset-0 z-[99999] flex items-center justify-center p-4 cursor-zoom-out select-none"
+                style={{ background: "rgba(10,10,10,0.92)" }}
               >
                 <motion.div
-                  initial={{ scale: 0.8, opacity: 0 }}
+                  initial={{ scale: 0.9, opacity: 0 }}
                   animate={{ scale: 1, opacity: 1 }}
-                  exit={{ scale: 0.8, opacity: 0 }}
-                  transition={{ type: "spring", damping: 25, stiffness: 300 }}
+                  exit={{ scale: 0.9, opacity: 0 }}
+                  transition={{ type: "spring", damping: 28, stiffness: 320 }}
                   onClick={(e) => e.stopPropagation()}
-                  className="relative max-w-xl w-full rounded-3xl overflow-hidden border-2 border-blue-500/40 shadow-2xl bg-zinc-950 z-[100000]"
+                  className="relative max-w-md w-full z-[100000] panel bg-white"
                 >
                   <button
                     onClick={() => setIsLightboxOpen(false)}
-                    aria-label="Close Lightbox"
-                    className="absolute top-4 right-4 z-10 p-2 rounded-full bg-black/60 text-white hover:bg-blue-600 transition-colors cursor-pointer"
+                    aria-label="Close"
+                    className="absolute top-3 right-3 z-10 p-2 border-2 border-[var(--ink)] bg-white text-[var(--ink)] hover:bg-[var(--ink)] hover:text-white transition-colors"
                   >
-                    <X className="w-5 h-5" />
+                    <X className="w-4 h-4" />
                   </button>
-                  <img
-                    src="/avatar.jpg"
-                    alt="Mark Joshua Bueta Full Avatar"
-                    className="w-full h-auto object-cover max-h-[80vh]"
-                  />
-                  <div className="p-4 bg-zinc-900 text-center border-t border-zinc-800 font-sans">
-                    <h3 className="text-base font-bold text-zinc-100 font-heading">
-                      Mark Joshua Bueta
-                    </h3>
-                    <p className="text-xs text-zinc-400 font-mono">
-                      Web Developer & Software Engineer
+                  <div
+                    className="relative overflow-hidden bg-white"
+                    style={{ aspectRatio: "1/1" }}
+                  >
+                    <img
+                      src="/avatar-manga.jpg"
+                      alt="Mark Joshua Bueta — Manga Panel Portrait"
+                      className="w-full h-full object-cover object-top"
+                    />
+                  </div>
+                  <div className="px-5 py-4 border-t-4 border-[var(--ink)] bg-[var(--ink)] text-center">
+                    <p className="font-manga text-xl tracking-[0.2em] text-white">
+                      MARK JOSHUA BUETA
+                    </p>
+                    <p className="text-[10px] font-mono text-white/60 mt-1">
+                      Web Developer · Aspiring Software Engineer
                     </p>
                   </div>
                 </motion.div>

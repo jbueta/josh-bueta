@@ -81,18 +81,18 @@ export function TimelineDot({
   return (
     <div
       className={cn(
-        "z-10 flex items-center justify-center w-5 h-5 rounded-full border-2 transition-all duration-300 shrink-0 mt-0.5",
+        "z-10 flex items-center justify-center w-4 h-4 rounded-none border-2 transition-all duration-300 shrink-0 mt-0.5",
         isActive
-          ? "bg-blue-600 border-blue-500 shadow-md shadow-blue-500/30 dark:bg-blue-500 dark:border-blue-400"
-          : "bg-zinc-200 border-zinc-300 dark:bg-zinc-800 dark:border-zinc-700",
+          ? "bg-[var(--seido)] border-[var(--ink)]"
+          : "bg-[var(--paper)] border-[var(--ink)]/40",
         className
       )}
       {...props}
     >
       <div
         className={cn(
-          "w-1.5 h-1.5 rounded-full transition-transform duration-300",
-          isActive ? "bg-white dark:bg-zinc-950 scale-100" : "bg-transparent scale-0"
+          "w-1.5 h-1.5 rounded-none transition-transform duration-300",
+          isActive ? "bg-white scale-100" : "bg-transparent scale-0"
         )}
       />
     </div>
@@ -114,10 +114,10 @@ export function TimelineConnector({
   return (
     <div
       className={cn(
-        "absolute left-[9px] top-6 bottom-0 w-[2px] -mb-6 transition-colors duration-300",
+        "absolute left-[7px] top-5 bottom-0 w-[2px] -mb-6 transition-colors duration-300",
         isActive
-          ? "bg-gradient-to-b from-blue-500 to-indigo-500/40 dark:from-blue-500 dark:to-indigo-500/30"
-          : "bg-zinc-200 dark:bg-zinc-800",
+          ? "bg-[var(--ink)]/35"
+          : "bg-[var(--ink)]/15",
         className
       )}
       {...props}
@@ -178,7 +178,7 @@ export function TimelineTime({
     <time
       dateTime={dateTime}
       className={cn(
-        "text-xs font-mono font-semibold text-blue-600 dark:text-blue-400 order-last sm:order-last",
+        "text-xs font-manga tracking-widest text-[var(--ink)] order-last sm:order-last",
         className
       )}
       {...props}
@@ -203,7 +203,7 @@ export function TimelineTitle({
   return (
     <h4
       className={cn(
-        "text-base font-bold text-zinc-900 dark:text-zinc-100 group-hover:text-blue-500 transition-colors font-heading",
+        "text-base font-manga tracking-wide text-[var(--ink)] group-hover:text-[var(--seido)] transition-colors",
         className
       )}
       {...props}
@@ -223,7 +223,7 @@ export function TimelineDescription({
   return (
     <p
       className={cn(
-        "text-xs text-zinc-600 dark:text-zinc-400 leading-relaxed mt-1 font-sans",
+        "text-xs text-[hsl(var(--muted-foreground))] leading-relaxed mt-1 font-sans",
         className
       )}
       {...props}

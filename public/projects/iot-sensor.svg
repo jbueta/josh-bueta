@@ -1,0 +1,83 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 960 560" width="960" height="560">
+  <defs>
+    <pattern id="tone5" width="6" height="6" patternUnits="userSpaceOnUse">
+      <circle cx="3" cy="3" r="1.1" fill="#0a0a0a" opacity="0.14"/>
+    </pattern>
+  </defs>
+
+  <rect width="960" height="560" fill="#f5f0e8"/>
+  <rect width="960" height="560" fill="url(#tone5)"/>
+
+  <!-- Browser Window -->
+  <rect x="28" y="24" width="904" height="512" fill="#fbf9f4" stroke="#0a0a0a" stroke-width="5"/>
+  <rect x="28" y="24" width="904" height="44" fill="#0a0a0a"/>
+  <rect x="46" y="38" width="14" height="14" fill="#f5f0e8"/>
+  <rect x="68" y="38" width="14" height="14" fill="#003087"/>
+  <rect x="90" y="38" width="14" height="14" fill="#f5f0e8" opacity="0.4"/>
+  <rect x="128" y="33" width="460" height="26" fill="#1a1a1a" stroke="#f5f0e8" stroke-width="1.5"/>
+  <text x="144" y="50" font-family="monospace" font-size="12" fill="#f5f0e8">http://192.168.1.104:5000/iot-telemetry/soil-node</text>
+  <rect x="748" y="33" width="166" height="26" fill="#003087"/>
+  <text x="764" y="50" font-family="Impact, sans-serif" font-size="13" fill="#ffffff" letter-spacing="2">FLASK + MYSQL LIVE</text>
+
+  <!-- Top Telemetry Gauges -->
+  <g>
+    <rect x="48" y="86" width="276" height="132" fill="#ffffff" stroke="#0a0a0a" stroke-width="4"/>
+    <rect x="48" y="86" width="276" height="28" fill="#0a0a0a"/>
+    <text x="64" y="105" font-family="Impact, sans-serif" font-size="13" fill="#ffffff" letter-spacing="2">SOIL MOISTURE SENSOR</text>
+    <text x="64" y="172" font-family="Impact, sans-serif" font-size="52" fill="#003087">68.4%</text>
+    <text x="206" y="156" font-family="monospace" font-size="11" font-weight="bold" fill="#0a0a0a">OPTIMAL</text>
+    <text x="206" y="174" font-family="monospace" font-size="10" fill="#555555">ADC: 412mV</text>
+
+    <rect x="342" y="86" width="276" height="132" fill="#ffffff" stroke="#0a0a0a" stroke-width="4"/>
+    <rect x="342" y="86" width="276" height="28" fill="#0a0a0a"/>
+    <text x="358" y="105" font-family="Impact, sans-serif" font-size="13" fill="#ffffff" letter-spacing="2">AMBIENT HUMIDITY (DHT22)</text>
+    <text x="358" y="172" font-family="Impact, sans-serif" font-size="52" fill="#0a0a0a">74.0%</text>
+    <text x="500" y="156" font-family="monospace" font-size="11" font-weight="bold" fill="#0a0a0a">STABLE</text>
+    <text x="500" y="174" font-family="monospace" font-size="10" fill="#555555">+1.2% / HR</text>
+
+    <rect x="636" y="86" width="276" height="132" fill="#0a0a0a" stroke="#0a0a0a" stroke-width="4"/>
+    <rect x="636" y="86" width="276" height="28" fill="#003087"/>
+    <text x="652" y="105" font-family="Impact, sans-serif" font-size="13" fill="#ffffff" letter-spacing="2">IRRIGATION RELAY STATE</text>
+    <text x="652" y="172" font-family="Impact, sans-serif" font-size="48" fill="#ffffff">STANDBY</text>
+    <text x="652" y="198" font-family="monospace" font-size="10" fill="#60a5fa">THRESHOLD TRIGGER: &lt; 42.0%</text>
+  </g>
+
+  <!-- Main Chart.js Waveform Panel -->
+  <rect x="48" y="236" width="570" height="280" fill="#ffffff" stroke="#0a0a0a" stroke-width="4"/>
+  <rect x="48" y="236" width="570" height="32" fill="#0a0a0a"/>
+  <text x="66" y="257" font-family="Impact, sans-serif" font-size="14" fill="#ffffff" letter-spacing="2">24-HOUR SENSOR TELEMETRY WAVEFORM (CHART.JS)</text>
+
+  <!-- Grid lines -->
+  <line x1="76" y1="310" x2="590" y2="310" stroke="#0a0a0a" stroke-width="1" stroke-dasharray="4 4" opacity="0.25"/>
+  <line x1="76" y1="365" x2="590" y2="365" stroke="#0a0a0a" stroke-width="1" stroke-dasharray="4 4" opacity="0.25"/>
+  <line x1="76" y1="420" x2="590" y2="420" stroke="#0a0a0a" stroke-width="1" stroke-dasharray="4 4" opacity="0.25"/>
+  <line x1="76" y1="475" x2="590" y2="475" stroke="#0a0a0a" stroke-width="2"/>
+
+  <!-- Moisture curve -->
+  <polyline points="76,410 130,390 184,325 238,340 292,360 346,385 400,315 454,330 508,348 562,335 590,328" fill="none" stroke="#003087" stroke-width="4"/>
+  <!-- Humidity curve -->
+  <polyline points="76,355 130,345 184,365 238,350 292,330 346,342 400,360 454,348 508,325 562,340 590,336" fill="none" stroke="#0a0a0a" stroke-width="2.5" stroke-dasharray="6 4"/>
+
+  <rect x="76" y="486" width="12" height="12" fill="#003087"/>
+  <text x="94" y="496" font-family="monospace" font-size="10" fill="#0a0a0a">SOIL MOISTURE (%)</text>
+  <rect x="230" y="486" width="12" height="12" fill="#0a0a0a"/>
+  <text x="248" y="496" font-family="monospace" font-size="10" fill="#0a0a0a">HUMIDITY (%)</text>
+
+  <!-- Right MCU Serial Log Panel -->
+  <rect x="636" y="236" width="276" height="280" fill="#0a0a0a" stroke="#0a0a0a" stroke-width="4"/>
+  <rect x="636" y="236" width="276" height="32" fill="#003087"/>
+  <text x="652" y="257" font-family="Impact, sans-serif" font-size="14" fill="#ffffff" letter-spacing="2">MYSQL SENSOR LOG STREAM</text>
+
+  <text x="652" y="294" font-family="monospace" font-size="10" fill="#60a5fa">ID #9482 · 12:04:00</text>
+  <text x="652" y="310" font-family="monospace" font-size="10" fill="#ffffff">MOIST: 68.4% | HUM: 74.0%</text>
+
+  <text x="652" y="342" font-family="monospace" font-size="10" fill="#60a5fa">ID #9481 · 12:03:30</text>
+  <text x="652" y="358" font-family="monospace" font-size="10" fill="#ffffff">MOIST: 68.1% | HUM: 73.8%</text>
+
+  <text x="652" y="390" font-family="monospace" font-size="10" fill="#60a5fa">ID #9480 · 12:03:00</text>
+  <text x="652" y="406" font-family="monospace" font-size="10" fill="#ffffff">MOIST: 67.9% | HUM: 73.9%</text>
+
+  <rect x="652" y="442" width="244" height="54" fill="#141414" stroke="#ffffff" stroke-width="1.5"/>
+  <text x="666" y="465" font-family="Impact, sans-serif" font-size="14" fill="#ffffff" letter-spacing="1.5">ESP32 / ARDUINO SERIAL</text>
+  <text x="666" y="483" font-family="monospace" font-size="10" fill="#60a5fa">BAUD 115200 · PACKETS OK</text>
+</svg>

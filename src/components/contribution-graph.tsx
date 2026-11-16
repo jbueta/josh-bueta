@@ -12,6 +12,7 @@ interface DayContribution {
 interface ContributionGraphProps {
   username?: string;
   className?: string;
+  mangaTheme?: boolean;
 }
 
 const CACHE_KEY = "github_contributions_jbueta_v4";
@@ -20,6 +21,7 @@ const CACHE_TTL = 1 * 60 * 60 * 1000; // 1 hour TTL so fresh commits update quic
 export function ContributionGraph({
   username = "jbueta",
   className,
+  mangaTheme = true,
 }: ContributionGraphProps) {
   const [totalContributions, setTotalContributions] = useState<number>(173);
   const [days, setDays] = useState<DayContribution[]>([]);
@@ -149,47 +151,49 @@ export function ContributionGraph({
   return (
     <div
       className={cn(
-        "relative w-full p-4 sm:p-6 rounded-2xl border border-zinc-200/80 dark:border-zinc-800/80 bg-white/70 dark:bg-[#0d1117]/80 backdrop-blur-md shadow-sm select-none overflow-hidden",
+        "relative w-full p-4 sm:p-6 select-none overflow-hidden",
+        mangaTheme
+          ? "bg-[var(--paper)]"
+          : "border-2 border-[var(--ink)] bg-[var(--paper)]",
         className
       )}
     >
-      {/* Header: Total Contributions */}
+      {/* Header */}
       <div className="flex items-center justify-between mb-4 flex-wrap gap-2">
-        <h3 className="text-sm sm:text-base font-bold text-zinc-900 dark:text-zinc-100 font-sans tracking-tight">
-          <span className="text-blue-600 dark:text-blue-400 font-extrabold">
+        <h3 className={cn(
+          "text-sm sm:text-base font-bold tracking-tight",
+          mangaTheme ? "font-manga tracking-widest text-[var(--ink)]" : "font-sans text-[var(--ink)]"
+        )}>
+          <span className="text-[var(--seido)]">
             {totalContributions}
           </span>{" "}
-          contributions in the last year
+          {mangaTheme ? "CONTRIBUTIONS IN THE LAST YEAR" : "contributions in the last year"}
         </h3>
-        <span className="text-[10px] font-mono text-zinc-400 sm:hidden">
-          ← Scroll horizontally →
+        <span className="text-[10px] font-mono text-[hsl(var(--muted-foreground))] sm:hidden">
+          ← Scroll →
         </span>
       </div>
 
-      {/* Graph Box Container */}
-      <div className="relative w-full p-3 sm:p-4 rounded-xl border border-zinc-200 dark:border-zinc-800/90 bg-zinc-50/50 dark:bg-[#161b22]/50">
-        {/* Scrollable Container for Mobile */}
-        <div className="w-full overflow-x-auto scrollbar-thin pb-2">
+      {/* Graph Box */}
+      <div className={cn(
+        "relative w-full p-3 sm:p-4",
+        mangaTheme
+          ? "border-2 border-[var(--ink)] bg-[#0a0a0a]"
+          : "border border-[var(--ink)]/30 bg-[#0a0a0a]"
+      )}>
+        <div className="w-full overflow-x-auto pb-2">
           <div className="w-full min-w-[680px] flex flex-col">
-            {/* Months Row */}
-            <div className="flex text-[11px] font-sans text-zinc-500 dark:text-zinc-400 pl-8 mb-2 justify-between pr-1">
+            <div className="flex text-[11px] font-mono text-white/60 pl-8 mb-2 justify-between pr-1">
               {monthLabels.map((m, idx) => (
-                <span key={idx} className="flex-1 text-left">
-                  {m}
-                </span>
+                <span key={idx} className="flex-1 text-left">{m}</span>
               ))}
             </div>
-
-            {/* Matrix Body: Day Labels + 52 Column Matrix */}
             <div className="flex w-full items-center">
-              {/* Day Labels */}
-              <div className="flex flex-col justify-between text-[11px] font-sans text-zinc-500 dark:text-zinc-400 pr-3 w-8 shrink-0 h-[104px]">
+              <div className="flex flex-col justify-between text-[11px] font-mono text-white/60 pr-3 w-8 shrink-0 h-[104px]">
                 <span>Mon</span>
                 <span>Wed</span>
                 <span>Fri</span>
               </div>
-
-              {/* 52 Columns Matrix */}
               <div className="flex flex-1 justify-between gap-[3px] sm:gap-[4px] items-center w-full">
                 {weeks.map((week, weekIdx) => (
                   <div key={weekIdx} className="flex flex-col gap-[3px] sm:gap-[4px] flex-1">
@@ -199,32 +203,22 @@ export function ContributionGraph({
                         onMouseEnter={() => setHoveredDay({ day, weekIdx })}
                         onMouseLeave={() => setHoveredDay(null)}
                         className={cn(
-                          "w-full aspect-square min-w-[10px] min-h-[10px] rounded-[2px] transition-all duration-200 cursor-pointer relative group",
-                          day.level === 0 &&
-                            "bg-zinc-200/80 dark:bg-[#161b22] border border-zinc-300/40 dark:border-zinc-800/40 hover:border-zinc-400",
-                          day.level === 1 &&
-                            "bg-blue-950/60 border border-blue-900/60 hover:bg-blue-900/80",
-                          day.level === 2 &&
-                            "bg-blue-700/70 border border-blue-600/70 hover:bg-blue-600",
-                          day.level === 3 &&
-                            "bg-blue-500 border border-blue-400 hover:bg-blue-400 shadow-sm shadow-blue-500/30",
-                          day.level === 4 &&
-                            "bg-sky-400 border border-sky-300 shadow-md shadow-sky-400/40 hover:scale-125 hover:z-30"
+                          "w-full aspect-square min-w-[10px] min-h-[10px] transition-all duration-200 cursor-pointer relative group rounded-none",
+                          day.level === 0 ? "bg-[#1a1a1a] border border-white/10"
+                            : day.level === 1 ? "bg-[rgba(0,48,135,0.45)] border border-[rgba(0,48,135,0.65)]"
+                            : day.level === 2 ? "bg-[#003087] border border-[#1d4ed8]"
+                            : day.level === 3 ? "bg-[#2563eb] border border-[#60a5fa]"
+                            : "bg-white border border-white shadow-[0_0_6px_rgba(255,255,255,0.75)] hover:scale-125 hover:z-30"
                         )}
                       >
-                        {/* Smart Overlay Tooltip Dialog */}
                         {hoveredDay?.day.date === day.date && (
                           <div
                             className={cn(
-                              "absolute bottom-full mb-2.5 px-3 py-1.5 bg-zinc-950 dark:bg-[#0d1117] text-zinc-100 text-[11px] font-sans font-medium rounded-lg shadow-2xl border border-zinc-700/90 whitespace-nowrap pointer-events-none z-50 transition-all duration-150",
-                              weekIdx > 42
-                                ? "right-0 translate-x-0"
-                                : weekIdx < 8
-                                ? "left-0 translate-x-0"
-                                : "left-1/2 -translate-x-1/2"
+                              "absolute bottom-full mb-2.5 px-3 py-1.5 text-[11px] font-mono font-medium whitespace-nowrap pointer-events-none z-50 bg-[#0a0a0a] text-white border-2 border-white",
+                              weekIdx > 42 ? "right-0" : weekIdx < 8 ? "left-0" : "left-1/2 -translate-x-1/2"
                             )}
                           >
-                            <span className="font-bold text-blue-400">
+                            <span className="font-bold text-[#60a5fa]">
                               {day.count === 0 ? "No" : day.count} contribution{day.count === 1 ? "" : "s"}
                             </span>{" "}
                             on {day.date}
@@ -239,16 +233,16 @@ export function ContributionGraph({
           </div>
         </div>
 
-        {/* Footer Legend */}
-        <div className="flex items-center justify-end pt-3 mt-1 border-t border-zinc-200/80 dark:border-zinc-800/80 text-[11px] font-sans text-zinc-500 dark:text-zinc-400">
+        {/* Legend */}
+        <div className="flex items-center justify-end pt-3 mt-1 border-t border-white/15 text-[11px] font-mono text-white/60">
           <div className="flex items-center gap-1.5">
             <span>Less</span>
             <div className="flex items-center gap-1">
-              <span className="w-3 h-3 rounded-[2px] bg-zinc-200/80 dark:bg-[#161b22] border border-zinc-300/40 dark:border-zinc-800/40" />
-              <span className="w-3 h-3 rounded-[2px] bg-blue-950/60 border border-blue-900/60" />
-              <span className="w-3 h-3 rounded-[2px] bg-blue-700/70 border border-blue-600/70" />
-              <span className="w-3 h-3 rounded-[2px] bg-blue-500 border border-blue-400" />
-              <span className="w-3 h-3 rounded-[2px] bg-sky-400 border border-sky-300 shadow-sm shadow-sky-400/40" />
+              <span className="w-3 h-3 bg-[#1a1a1a] border border-white/10" />
+              <span className="w-3 h-3 bg-[rgba(0,48,135,0.45)] border border-[rgba(0,48,135,0.65)]" />
+              <span className="w-3 h-3 bg-[#003087] border border-[#1d4ed8]" />
+              <span className="w-3 h-3 bg-[#2563eb] border border-[#60a5fa]" />
+              <span className="w-3 h-3 bg-white border border-white" />
             </div>
             <span>More</span>
           </div>

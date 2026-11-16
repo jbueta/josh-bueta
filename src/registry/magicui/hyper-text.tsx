@@ -14,7 +14,7 @@ interface HyperTextProps {
   animateOnHover?: boolean;
 }
 
-const alphabets = "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789";
+const alphabets = "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789アイウエオカキクケコサシスセソタチツテトナニヌネノハヒフヘホマミムメモヤユヨラリルレロワヲン";
 
 export function HyperText({
   children,
@@ -71,7 +71,7 @@ export function HyperText({
       onMouseEnter={() => animateOnHover && handleAnimation()}
       className={cn("overflow-hidden inline-flex cursor-pointer select-none", className)}
     >
-      <AnimatePresence mode="wait">
+      <AnimatePresence initial={false}>
         {displayText.map((letter, i) => (
           <motion.span
             key={i}

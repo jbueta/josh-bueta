@@ -1,10 +1,13 @@
 "use client";
 
-import React, { useEffect, useState } from "react";
+import React, { useEffect, useRef, useState } from "react";
+import { createPortal } from "react-dom";
 import { motion, AnimatePresence } from "framer-motion";
-import { BlurFade } from "@/registry/magicui/blur-fade";
+import { MangaPanelReveal } from "@/components/manga-panel-reveal";
 import { ContributionGraph } from "@/components/contribution-graph";
 import { GithubIcon } from "@/components/icons";
+import { gsap } from "gsap";
+import { useGSAP } from "@gsap/react";
 import {
   ExternalLink,
   GitCommit,
@@ -14,8 +17,39 @@ import {
   Code2,
   GitPullRequest,
   FileText,
+  ChevronLeft,
+  ChevronRight,
+  Maximize2,
+  X,
+  Layers,
 } from "lucide-react";
 import { cn } from "@/lib/utils";
+
+gsap.registerPlugin(useGSAP);
+
+/* ================================================================
+   DATA TYPES & CURATED HOMEPAGE PLACEHOLDER MAPPING
+   Each project now includes a dedicated manga-adapted homepage/landing
+   preview image (`previewImage`) stored in /public/projects/*.svg
+   ================================================================ */
+interface ProcessedProject {
+  id: number;
+  name: string;
+  fullName: string;
+  tagline: string;
+  description: string;
+  githubUrl: string;
+  liveUrl?: string;
+  previewImage: string;
+  stars: number;
+  forks: number;
+  techStack: string[];
+  updatedAt: string;
+  role: "Owner" | "Contributor" | "Collaborator";
+  ownerName: string;
+  coDevelopers?: string[];
+  hasReadme?: boolean;
+}
 
 interface GithubRepo {
   id: number;
@@ -30,30 +64,10 @@ interface GithubRepo {
   pushed_at: string;
   language: string | null;
   topics?: string[];
-  owner?: {
-    login: string;
-    avatar_url?: string;
-  };
+  owner?: { login: string };
 }
 
-interface ProcessedProject {
-  id: number;
-  name: string;
-  fullName: string;
-  description: string;
-  githubUrl: string;
-  liveUrl?: string;
-  stars: number;
-  forks: number;
-  techStack: string[];
-  updatedAt: string;
-  role: "Owner" | "Contributor" | "Collaborator";
-  ownerName: string;
-  coDevelopers?: string[];
-  hasReadme?: boolean;
-}
-
-const EXCLUDED_REPOS = [
+const EXCLUDED = [
   "josh-bueta",
   "jbueta",
   "bueta-app",
@@ -65,526 +79,772 @@ const EXCLUDED_REPOS = [
   "bueta-portfolio",
 ];
 
-const CUSTOM_TITLE_MAP: Record<string, { name: string; description?: string }> = {
+const CUSTOM: Record<
+  string,
+  { name: string; tagline: string; description: string; previewImage: string }
+> = {
   "indie-studio-saas": {
-    name: "StudioSprint: A Smart Workforce Optimization Platform for Startups",
+    name: "StudioSprint — Workforce Optimization Platform",
+    tagline: "GNN Critical Path & Predictive Resource Allocation",
     description:
-      "A robust workforce optimization platform designed for startup tech organizations. StudioSprint integrates powerful resource allocation and workforce management tools with predictive machine learning algorithms using Graph Neural Networks and Critical Path Algorithm to optimize project timelines, resource allocation, and workflow management.",
+      "Workforce optimization platform for startup tech organizations. Integrates resource allocation with predictive ML using Graph Neural Networks and Critical Path Algorithm to optimize project timelines.",
+    previewImage: "/projects/studiosprint.svg",
   },
   "plp-smart-attendance-monitoring-system": {
     name: "PLP Smart Attendance Monitoring System",
+    tagline: "Real-Time QR Gate Terminal & Institutional Analytics",
     description:
-      "Smart Entrance and Exit Monitoring PLP Students & Employee Attendance System for Flag Ceremonies with Entrance and Exit Analytics at PLP. Designed to utilize data from entrance and exit scans for institutional decision support of the institution. Features integrated real-time QR analytics monitoring system.",
+      "Smart entrance and exit monitoring for PLP students and employees. Flag ceremony attendance tracking with real-time QR analytics and institutional decision support.",
+    previewImage: "/projects/plp-attendance.svg",
   },
   "baq-physio-clinic": {
     name: "BAQ Physiotherapy Clinic Management System",
+    tagline: "Digital Healthcare Portal & Rehab Progress Tracking",
     description:
-      "A Comprehensive digital healthcare and physiotherapy clinic management platform for Bayt Al Qudra Physiotherapy and Physical Therapy Clinic, supporting patient scheduling, treatment tracking, digital intake forms, and automated consultation workflows.",
+      "Digital healthcare platform for Bayt Al Qudra Physiotherapy Clinic. Patient scheduling, treatment tracking, digital intake forms, and automated consultation workflows.",
+    previewImage: "/projects/baq-clinic.svg",
   },
   "lumora_ai-powered_e-commerce_website": {
-    name: "Lumora: AI Powered E-Commerce Website",
+    name: "Lumora — AI Powered E-Commerce Platform",
+    tagline: "Filipino Artisan Marketplace with OpenAI Concierge",
     description:
-      "An AI-assisted e-commerce storefront for Local Filipino Artisans, featuring personalized product recommendations, real-time inventory management, automated chat concierge, and secure payment processing integration.",
+      "AI-assisted e-commerce storefront for Local Filipino Artisans. Personalized product recommendations, real-time inventory, automated chat concierge, and secure payment processing.",
+    previewImage: "/projects/lumora-ai.svg",
   },
   "iot-sensor-based-soil-moisture-and-humidity-detection": {
-    name: "IoT Sensor Soil Moisture & Humidity Detection",
+    name: "IoT Soil Moisture & Humidity Detection",
+    tagline: "Microcontroller Telemetry & Flask Real-Time Dashboard",
     description:
-      "An automated real-time IoT environmental monitoring and analytics dashboard capturing climatic values (temperature, soil moisture, humidity) using Python Flask, MySQL, and Chart.js. A robotics-centered program that utilizes the use of microcontrollers for smart environmental detection.",
+      "Real-time IoT environmental monitoring dashboard using Python Flask, MySQL, and Chart.js. Microcontroller-based smart environmental detection for agricultural applications.",
+    previewImage: "/projects/iot-sensor.svg",
   },
 };
 
-function parseReadmeDescription(markdown: string): string {
-  if (!markdown || markdown.trim().length === 0) return "";
-
-  let clean = markdown.replace(/<[^>]+>/g, "");
-  clean = clean.replace(/!\[.*?\]\(.*?\)/g, "");
-  clean = clean.replace(/\[([^\]]+)\]\([^)]+\)/g, "$1");
-  clean = clean.replace(/```[\s\S]*?```/g, "");
-  clean = clean.replace(/`([^`]+)`/g, "$1");
-  clean = clean.replace(/^#+\s+.*/gm, "");
-  clean = clean.replace(/\|[\s\S]*?\|/g, "");
-
-  const lines = clean
-    .split("\n")
-    .map((l) => l.trim())
-    .filter(
-      (l) =>
-        l.length > 20 &&
-        !l.toLowerCase().startsWith("npm ") &&
-        !l.toLowerCase().startsWith("yarn ") &&
-        !l.toLowerCase().startsWith("git ") &&
-        !l.toLowerCase().startsWith("pnpm ") &&
-        !l.toLowerCase().includes("license") &&
-        !l.toLowerCase().includes("table of contents") &&
-        !l.toLowerCase().includes("getting started") &&
-        !l.toLowerCase().includes("installation")
-    );
-
-  if (lines.length === 0) return "";
-
-  const combined = lines.slice(0, 2).join(" ");
-  return combined.length > 220 ? combined.slice(0, 217) + "..." : combined;
+function resolvePreviewImage(fullName: string, index: number): string {
+  const lower = fullName.toLowerCase();
+  for (const [slug, meta] of Object.entries(CUSTOM)) {
+    if (lower.includes(slug)) return meta.previewImage;
+  }
+  const fallbacks = [
+    "/projects/studiosprint.svg",
+    "/projects/plp-attendance.svg",
+    "/projects/baq-clinic.svg",
+    "/projects/lumora-ai.svg",
+    "/projects/iot-sensor.svg",
+  ];
+  return fallbacks[index % fallbacks.length];
 }
 
+const CURATED: ProcessedProject[] = [
+  {
+    id: 1,
+    name: CUSTOM["indie-studio-saas"].name,
+    tagline: CUSTOM["indie-studio-saas"].tagline,
+    fullName: "MJTeopaco/indie-studio-saas",
+    description: CUSTOM["indie-studio-saas"].description,
+    githubUrl: "https://github.com/MJTeopaco/indie-studio-saas",
+    liveUrl: "https://indie-studio-saas.vercel.app",
+    previewImage: CUSTOM["indie-studio-saas"].previewImage,
+    stars: 18,
+    forks: 5,
+    techStack: ["Next.js", "TypeScript", "Tailwind", "ML"],
+    updatedAt: "Aug 2026",
+    role: "Collaborator",
+    ownerName: "MJTeopaco",
+    coDevelopers: ["jbueta", "MJTeopaco"],
+    hasReadme: true,
+  },
+  {
+    id: 2,
+    name: CUSTOM["plp-smart-attendance-monitoring-system"].name,
+    tagline: CUSTOM["plp-smart-attendance-monitoring-system"].tagline,
+    fullName: "jbueta/plp-smart-attendance-monitoring-system",
+    description: CUSTOM["plp-smart-attendance-monitoring-system"].description,
+    githubUrl: "https://github.com/jbueta/plp-smart-attendance-monitoring-system",
+    previewImage: CUSTOM["plp-smart-attendance-monitoring-system"].previewImage,
+    stars: 24,
+    forks: 6,
+    techStack: ["PHP", "MySQL", "JavaScript", "Tailwind"],
+    updatedAt: "Aug 2026",
+    role: "Owner",
+    ownerName: "jbueta",
+    coDevelopers: ["jbueta"],
+    hasReadme: true,
+  },
+  {
+    id: 3,
+    name: CUSTOM["baq-physio-clinic"].name,
+    tagline: CUSTOM["baq-physio-clinic"].tagline,
+    fullName: "MJTeopaco/baq-physio-clinic",
+    description: CUSTOM["baq-physio-clinic"].description,
+    githubUrl: "https://github.com/MJTeopaco/baq-physio-clinic",
+    previewImage: CUSTOM["baq-physio-clinic"].previewImage,
+    stars: 15,
+    forks: 4,
+    techStack: ["React", "Node.js", "Express", "Tailwind"],
+    updatedAt: "Jul 2026",
+    role: "Collaborator",
+    ownerName: "MJTeopaco",
+    coDevelopers: ["jbueta", "MJTeopaco"],
+    hasReadme: true,
+  },
+  {
+    id: 4,
+    name: CUSTOM["lumora_ai-powered_e-commerce_website"].name,
+    tagline: CUSTOM["lumora_ai-powered_e-commerce_website"].tagline,
+    fullName: "MJTeopaco/lumora_ai-powered_e-commerce_website",
+    description: CUSTOM["lumora_ai-powered_e-commerce_website"].description,
+    githubUrl: "https://github.com/MJTeopaco/Lumora_AI-Powered_E-Commerce_Website",
+    previewImage: CUSTOM["lumora_ai-powered_e-commerce_website"].previewImage,
+    stars: 32,
+    forks: 9,
+    techStack: ["React", "Next.js", "Tailwind", "OpenAI"],
+    updatedAt: "Jul 2026",
+    role: "Collaborator",
+    ownerName: "MJTeopaco",
+    coDevelopers: ["jbueta", "MJTeopaco"],
+    hasReadme: true,
+  },
+  {
+    id: 5,
+    name: CUSTOM["iot-sensor-based-soil-moisture-and-humidity-detection"].name,
+    tagline: CUSTOM["iot-sensor-based-soil-moisture-and-humidity-detection"].tagline,
+    fullName: "jbueta/iot-sensor-based-soil-moisture-and-humidity-detection",
+    description:
+      CUSTOM["iot-sensor-based-soil-moisture-and-humidity-detection"].description,
+    githubUrl:
+      "https://github.com/jbueta/IoT-sensor-based-soil-moisture-and-humidity-detection",
+    previewImage:
+      CUSTOM["iot-sensor-based-soil-moisture-and-humidity-detection"].previewImage,
+    stars: 21,
+    forks: 5,
+    techStack: ["Python", "Flask", "MySQL", "Chart.js"],
+    updatedAt: "Jun 2026",
+    role: "Owner",
+    ownerName: "jbueta",
+    coDevelopers: ["jbueta"],
+    hasReadme: true,
+  },
+];
+
+/* ================================================================
+   PROJECTS SECTION — Asymmetric Multi-Panel Manga Spread
+   - Row 1: Unequal 9/3 split (GitHub Matrix + Commit Summary Panel)
+   - Row 2: Dominant 8/4 Manga Climax Spread (Landing Page Preview
+            with halftone print frame + Vertical Chapter Selector)
+   - Row 3: Unequal 7/5 Spec Breakdown + Quick-Select Thumbnail Strip
+            of all project landing page previews
+   ================================================================ */
 export function Projects() {
-  const [projects, setProjects] = useState<ProcessedProject[]>([]);
-  const [loading, setLoading] = useState(true);
-  const [activeIndex, setActiveIndex] = useState<number>(0);
-  const [isMobile, setIsMobile] = useState(false);
+  const [projects, setProjects] = useState<ProcessedProject[]>(CURATED);
+  const [activeIndex, setActiveIndex] = useState(0);
+  const [lightboxOpen, setLightboxOpen] = useState(false);
+  const [mounted, setMounted] = useState(false);
+  const heroCardRef = useRef<HTMLDivElement>(null);
 
   useEffect(() => {
-    const handleResize = () => {
-      setIsMobile(window.innerWidth < 640);
-    };
-    handleResize();
-    window.addEventListener("resize", handleResize);
-    return () => window.removeEventListener("resize", handleResize);
-  }, []);
-
-  useEffect(() => {
-    async function fetchAllContributedRepos() {
+    setMounted(true);
+    async function fetch5() {
       try {
-        setLoading(true);
-        const headers = { Accept: "application/vnd.github.v3+json" };
-
-        const reposRes = await fetch(
+        const h = { Accept: "application/vnd.github.v3+json" };
+        const r = await fetch(
           "https://api.github.com/users/jbueta/repos?type=all&sort=pushed&per_page=30",
-          { headers, next: { revalidate: 3600 } }
+          { headers: h }
         );
-
-        let reposData: GithubRepo[] = [];
-        if (reposRes.ok) {
-          reposData = await reposRes.json();
-        }
-
-        const filteredRepos = reposData.filter((repo) => {
-          const repoNameLower = repo.name.toLowerCase();
-          return !EXCLUDED_REPOS.includes(repoNameLower);
-        });
-
-        const processedList: ProcessedProject[] = await Promise.all(
-          filteredRepos.slice(0, 5).map(async (repo) => {
-            const isOwner = repo.owner?.login.toLowerCase() === "jbueta";
-            const tags =
-              repo.topics && repo.topics.length > 0
-                ? repo.topics
-                : [repo.language || "TypeScript", "Next.js", "Tailwind CSS"];
-
-            let extractedDescription = "";
-            let hasReadme = false;
-
-            try {
-              const readmeRes = await fetch(
-                `https://api.github.com/repos/${repo.owner?.login || "jbueta"}/${repo.name}/readme`,
-                { headers, next: { revalidate: 3600 } }
-              );
-
-              if (readmeRes.ok) {
-                const readmeData = await readmeRes.json();
-                if (readmeData.content) {
-                  const decodedContent = atob(readmeData.content.replace(/\n/g, ""));
-                  extractedDescription = parseReadmeDescription(decodedContent);
-                  hasReadme = true;
-                }
-              }
-            } catch {
-              // Fallback
-            }
-
-            const repoSlug = repo.name.toLowerCase();
-            const customInfo = CUSTOM_TITLE_MAP[repoSlug];
-
-            const displayName = customInfo?.name || repo.name.replace(/-/g, " ").replace(/_/g, " ");
-            const finalDescription =
-              customInfo?.description ||
-              extractedDescription ||
+        if (!r.ok) throw new Error();
+        const data: GithubRepo[] = await r.json();
+        const filtered = data
+          .filter((x) => !EXCLUDED.includes(x.name.toLowerCase()))
+          .slice(0, 5);
+        const list: ProcessedProject[] = filtered.map((repo, idx) => {
+          const isOwner = repo.owner?.login.toLowerCase() === "jbueta";
+          const slug = repo.name.toLowerCase();
+          const c = CUSTOM[slug];
+          const fullName = repo.full_name || repo.name;
+          return {
+            id: repo.id,
+            name: c?.name || repo.name.replace(/[-_]/g, " "),
+            tagline: c?.tagline || "Production Web & Systems Engineering",
+            fullName,
+            description:
+              c?.description ||
               repo.description ||
-              `Software project maintained by @${repo.owner?.login || "jbueta"} built with modern web architecture, clean modular code standards, and responsive user interfaces.`;
-
-            return {
-              id: repo.id,
-              name: displayName,
-              fullName: repo.full_name || repo.name,
-              description: finalDescription,
-              githubUrl: repo.html_url,
-              liveUrl: repo.homepage || undefined,
-              stars: repo.stargazers_count,
-              forks: repo.forks_count,
-              techStack: tags.slice(0, 4),
-              updatedAt: new Date(repo.pushed_at || repo.updated_at).toLocaleDateString("en-US", {
-                year: "numeric",
-                month: "short",
-                day: "numeric",
-              }),
-              role: isOwner ? "Owner" : "Collaborator",
-              ownerName: repo.owner?.login || "jbueta",
-              coDevelopers: isOwner ? ["jbueta"] : ["jbueta", repo.owner?.login || "MJTeopaco"],
-              hasReadme,
-            };
-          })
-        );
-
-        if (processedList.length > 0) {
-          setProjects(processedList);
-        } else {
-          setProjects(curatedProjects);
-        }
-      } catch (err) {
-        console.warn("GitHub API error, using curated projects dataset:", err);
-        setProjects(curatedProjects);
-      } finally {
-        setLoading(false);
+              `Software engineering project by @${repo.owner?.login}.`,
+            githubUrl: repo.html_url,
+            liveUrl: repo.homepage || undefined,
+            previewImage: c?.previewImage || resolvePreviewImage(fullName, idx),
+            stars: repo.stargazers_count,
+            forks: repo.forks_count,
+            techStack: (repo.topics?.length
+              ? repo.topics
+              : [repo.language || "TypeScript"]
+            ).slice(0, 4),
+            updatedAt: new Date(
+              repo.pushed_at || repo.updated_at
+            ).toLocaleDateString("en-US", { month: "short", year: "numeric" }),
+            role: isOwner ? "Owner" : "Collaborator",
+            ownerName: repo.owner?.login || "jbueta",
+            coDevelopers: isOwner
+              ? ["jbueta"]
+              : ["jbueta", repo.owner?.login || "MJTeopaco"],
+            hasReadme: true,
+          };
+        });
+        if (list.length) setProjects(list);
+      } catch {
+        setProjects(CURATED);
       }
     }
-
-    fetchAllContributedRepos();
+    fetch5();
   }, []);
 
-  const curatedProjects: ProcessedProject[] = [
-    {
-      id: 1,
-      name: "StudioSprint: A Smart Workforce Optimization Platform for Startups",
-      fullName: "MJTeopaco/indie-studio-saas",
-      description:
-        "A robust workforce optimization platform designed for startup tech organizations. StudioSprint integrates powerful resource allocation and workforce management tools with predictive machine learning algorithms using Graph Neural Networks and Critical Path Algorithm to optimize project timelines, resource allocation, and workflow management.",
-      githubUrl: "https://github.com/MJTeopaco/indie-studio-saas",
-      liveUrl: "https://indie-studio-saas.vercel.app",
-      stars: 18,
-      forks: 5,
-      techStack: ["Next.js", "TypeScript", "Tailwind CSS", "Machine Learning"],
-      updatedAt: "2026-08-20",
-      role: "Collaborator",
-      ownerName: "MJTeopaco",
-      coDevelopers: ["jbueta", "MJTeopaco"],
-      hasReadme: true,
+  /* GSAP kinetic snap on project switch */
+  useGSAP(
+    () => {
+      if (!heroCardRef.current) return;
+      gsap.fromTo(
+        heroCardRef.current,
+        { scale: 0.985, opacity: 0.75 },
+        { scale: 1, opacity: 1, duration: 0.28, ease: "power2.out" }
+      );
     },
-    {
-      id: 2,
-      name: "PLP Smart Attendance Monitoring System",
-      fullName: "jbueta/plp-smart-attendance-monitoring-system",
-      description:
-        "Smart Entrance and Exit Monitoring PLP Students & Employee Attendance System for Flag Ceremonies with Entrance and Exit Analytics at PLP. Designed to utilize data from entrance and exit scans for institutional decision support of the institution. Features integrated real-time QR analytics monitoring system.",
-      githubUrl: "https://github.com/jbueta/plp-smart-attendance-monitoring-system",
-      stars: 24,
-      forks: 6,
-      techStack: ["PHP", "MySQL", "JavaScript", "Tailwind CSS"],
-      updatedAt: "2026-08-15",
-      role: "Owner",
-      ownerName: "jbueta",
-      coDevelopers: ["jbueta"],
-      hasReadme: true,
-    },
-    {
-      id: 3,
-      name: "BAQ Physiotherapy Clinic Management System",
-      fullName: "MJTeopaco/baq-physio-clinic",
-      description:
-        "A Comprehensive digital healthcare and physiotherapy clinic management platform for Bayt Al Qudra Physiotherapy and Physical Therapy Clinic, supporting patient scheduling, treatment tracking, digital intake forms, and automated consultation workflows.",
-      githubUrl: "https://github.com/MJTeopaco/baq-physio-clinic",
-      stars: 15,
-      forks: 4,
-      techStack: ["React", "Node.js", "Express", "Tailwind CSS"],
-      updatedAt: "2026-07-28",
-      role: "Collaborator",
-      ownerName: "MJTeopaco",
-      coDevelopers: ["jbueta", "MJTeopaco"],
-      hasReadme: true,
-    },
-    {
-      id: 4,
-      name: "Lumora: AI Powered E-Commerce Website",
-      fullName: "MJTeopaco/Lumora_AI-Powered_E-Commerce_Website",
-      description:
-        "An AI-assisted e-commerce storefront for Local Filipino Artisans, featuring personalized product recommendations, real-time inventory management, automated chat concierge, and secure payment processing integration.",
-      githubUrl: "https://github.com/MJTeopaco/Lumora_AI-Powered_E-Commerce_Website",
-      stars: 32,
-      forks: 9,
-      techStack: ["React", "Next.js", "Tailwind CSS", "OpenAI API"],
-      updatedAt: "2026-07-10",
-      role: "Collaborator",
-      ownerName: "MJTeopaco",
-      coDevelopers: ["jbueta", "MJTeopaco"],
-      hasReadme: true,
-    },
-    {
-      id: 5,
-      name: "IoT Sensor Soil Moisture & Humidity Detection",
-      fullName: "jbueta/IoT-sensor-based-soil-moisture-and-humidity-detection",
-      description:
-        "An automated real-time IoT environmental monitoring and analytics dashboard capturing climatic values (temperature, soil moisture, humidity) using Python Flask, MySQL, and Chart.js. A robotics-centered program that utilizes the use of microcontrollers for smart environmental detection.",
-      githubUrl: "https://github.com/jbueta/IoT-sensor-based-soil-moisture-and-humidity-detection",
-      stars: 21,
-      forks: 5,
-      techStack: ["Python", "Flask", "MySQL", "Chart.js"],
-      updatedAt: "2026-06-18",
-      role: "Owner",
-      ownerName: "jbueta",
-      coDevelopers: ["jbueta"],
-      hasReadme: true,
-    },
-  ];
+    { dependencies: [activeIndex] }
+  );
 
-  const activeProjects = loading ? curatedProjects : projects;
-  const currentProject = activeProjects[activeIndex] || activeProjects[0];
+  const all = projects;
+  const cur = all[activeIndex] ?? all[0];
+  const prev = () => setActiveIndex((i) => (i - 1 + all.length) % all.length);
+  const next = () => setActiveIndex((i) => (i + 1) % all.length);
 
   return (
-    <section id="projects" className="py-20 relative z-10 max-w-6xl mx-auto px-4 sm:px-8 overflow-hidden">
-      {/* Section Header */}
-      <BlurFade delay={0.1} inView>
-        <div className="flex flex-col items-center text-center mb-12">
-          <div className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full text-xs font-mono bg-blue-500/10 text-blue-600 dark:text-blue-400 border border-blue-500/20 mb-3">
-            <GitCommit className="w-3.5 h-3.5" />
-            <span>LIVE GITHUB REST & GRAPHQL API</span>
-          </div>
-          <h2 className="text-3xl sm:text-4xl font-extrabold text-zinc-900 dark:text-zinc-100 font-heading">
-            Featured Projects & Contributions
-          </h2>
-          <p className="text-sm text-zinc-600 dark:text-zinc-400 max-w-xl mt-2 font-sans">
-            Interactive Highlight Carousel of owned repositories & collaborated applications.
-          </p>
-        </div>
-      </BlurFade>
-
-      {/* GitHub Contribution Heatmap Visual Component */}
-      <BlurFade delay={0.2} inView className="mb-14">
-        <ContributionGraph username="jbueta" />
-      </BlurFade>
-
-      {/* Hardware-Accelerated Ultra-Smooth Highlight Carousel Stage */}
-      <BlurFade delay={0.3} inView>
-        <div className="relative w-full flex flex-col items-center justify-center my-4">
-          {/* Carousel Stage Track Container */}
-          <div className="relative w-full max-w-3xl h-[220px] sm:h-[270px] flex items-center justify-center overflow-visible">
-            <div className="relative w-full h-full flex items-center justify-center">
-              {activeProjects.map((project, idx) => {
-                const total = activeProjects.length;
-                let offset = idx - activeIndex;
-
-                if (offset < -1) offset += total;
-                if (offset > 1) offset -= total;
-
-                const isCenter = offset === 0;
-                const isLeft = offset === -1 || (activeIndex === 0 && idx === total - 1);
-                const isRight = offset === 1 || (activeIndex === total - 1 && idx === 0);
-
-                if (!isCenter && !isLeft && !isRight) return null;
-
-                const sideOffset = isMobile ? 115 : 190;
-                let positionX = 0;
-                if (isLeft) positionX = -sideOffset;
-                if (isRight) positionX = sideOffset;
-
-                return (
-                  <motion.div
-                    key={project.id || idx}
-                    initial={false}
-                    animate={{
-                      x: positionX,
-                      scale: isCenter ? 1 : isMobile ? 0.78 : 0.85,
-                      opacity: isCenter ? 1 : 0.45,
-                      zIndex: isCenter ? 30 : 10,
-                    }}
-                    transition={{
-                      duration: 0.4,
-                      ease: [0.32, 0.72, 0, 1],
-                    }}
-                    onClick={() => setActiveIndex(idx)}
-                    className={cn(
-                      "absolute w-[250px] sm:w-[350px] h-[200px] sm:h-[240px] rounded-3xl overflow-hidden cursor-pointer shadow-xl transition-colors duration-300 border-2 select-none",
-                      isCenter
-                        ? "border-blue-500 shadow-blue-500/20 bg-zinc-950 ring-2 ring-blue-500/20"
-                        : "border-zinc-200 dark:border-zinc-800 bg-zinc-900/90 opacity-60 hover:opacity-85"
-                    )}
+    <>
+      <section id="projects" className="relative z-10">
+        {/* ── CHAPTER OPENER — Full-width ink splash ── */}
+        <MangaPanelReveal direction="up">
+          <div
+            className="relative overflow-hidden speed-lines"
+            style={{ background: "var(--ink)", padding: "3.5rem 2rem 3rem" }}
+          >
+            <div className="relative z-10 max-w-6xl mx-auto flex flex-col sm:flex-row sm:items-end justify-between gap-4">
+              <div>
+                <span
+                  className="font-manga text-[9px] tracking-[0.5em] px-3 py-1 inline-block mb-3 text-white slash-cut-right"
+                  style={{ background: "var(--seido)" }}
+                >
+                  ACT. 03 // CASE FILES &amp; BUILDS
+                </span>
+                <h2
+                  className="font-manga text-white leading-none"
+                  style={{ fontSize: "clamp(3rem, 9vw, 7.5rem)" }}
+                >
+                  PROJECTS
+                </h2>
+                <div className="flex items-center gap-2 mt-1">
+                  <GitCommit className="w-3.5 h-3.5 text-white/50" />
+                  <p
+                    className="font-manga tracking-[0.28em] text-white/50"
+                    style={{ fontSize: "clamp(0.75rem, 1.8vw, 1.25rem)" }}
                   >
-                    {/* Media Preview Banner */}
-                    <div className="relative w-full h-full bg-gradient-to-br from-slate-900 via-zinc-950 to-blue-950 p-4 sm:p-5 flex flex-col justify-between overflow-hidden">
-                      <div className="absolute inset-0 bg-grid-pattern opacity-20" />
+                    HOMEPAGE PREVIEWS &amp; LIVE GITHUB TELEMETRY
+                  </p>
+                </div>
+              </div>
 
-                      {/* Top Role Badge */}
-                      <div className="flex justify-between items-center z-10">
-                        <span
-                          className={cn(
-                            "inline-flex items-center gap-1 px-2 py-0.5 sm:px-2.5 sm:py-1 rounded-full text-[10px] font-mono font-bold border backdrop-blur-md",
-                            project.role === "Owner"
-                              ? "bg-blue-500/20 text-blue-400 border-blue-500/30"
-                              : "bg-indigo-500/20 text-indigo-400 border-indigo-500/30"
-                          )}
-                        >
-                          {project.role === "Owner" ? (
-                            <Code2 className="w-3 h-3" />
-                          ) : (
-                            <GitPullRequest className="w-3 h-3" />
-                          )}
-                          {project.role}
-                        </span>
-
-                        <span className="text-[10px] sm:text-[11px] font-mono text-zinc-400 bg-zinc-900/80 px-2 py-0.5 sm:px-2.5 sm:py-1 rounded-md border border-zinc-800">
-                          {project.updatedAt}
-                        </span>
-                      </div>
-
-                      {/* Center Card Title Icon */}
-                      <div className="z-10 flex flex-col items-center text-center gap-2 my-auto">
-                        <div className="w-10 h-10 sm:w-12 sm:h-12 rounded-2xl bg-zinc-900/90 border border-zinc-700/60 backdrop-blur-md flex items-center justify-center text-blue-400 shadow-lg">
-                          <Code2 className="w-5 h-5 sm:w-6 sm:h-6" />
-                        </div>
-                        <h4 className="text-xs sm:text-base font-bold text-white font-heading tracking-wide capitalize line-clamp-1">
-                          {project.name}
-                        </h4>
-                      </div>
-
-                      {/* Floating Bottom Stats */}
-                      <div className="z-10 flex items-center justify-between text-[10px] sm:text-[11px] font-mono text-zinc-300 bg-zinc-900/80 backdrop-blur-md px-2.5 py-1 sm:px-3 sm:py-1.5 rounded-lg border border-zinc-800">
-                        <span className="text-zinc-400 font-medium truncate max-w-[90px] sm:max-w-none">
-                          @{project.ownerName}
-                        </span>
-                        <div className="flex items-center gap-2 sm:gap-3 shrink-0">
-                          <span className="flex items-center gap-1 text-amber-400 font-semibold">
-                            <Star className="w-3 h-3 fill-amber-400" />
-                            {project.stars}
-                          </span>
-                          <span className="flex items-center gap-1 text-blue-400 font-semibold">
-                            <GitFork className="w-3 h-3" />
-                            {project.forks}
-                          </span>
-                        </div>
-                      </div>
-                    </div>
-                  </motion.div>
-                );
-              })}
+              <a
+                href="https://github.com/jbueta"
+                target="_blank"
+                rel="noopener noreferrer"
+                className="inline-flex items-center gap-2 px-4 py-2 border-2 border-white/35 text-white font-manga text-xs tracking-[0.25em] hover:bg-white hover:text-[var(--ink)] transition-colors self-start sm:self-end"
+              >
+                <GithubIcon className="w-4 h-4" />
+                @JBUETA ARCHIVE ↗
+              </a>
+            </div>
+            <div
+              className="absolute right-2 bottom-0 font-manga leading-none select-none pointer-events-none"
+              style={{
+                fontSize: "clamp(5rem, 16vw, 14rem)",
+                color: "rgba(255,255,255,0.038)",
+              }}
+              aria-hidden="true"
+            >
+              03
             </div>
           </div>
+        </MangaPanelReveal>
 
-          {/* Carousel Dots Navigation Indicator */}
-          <div className="flex items-center justify-center gap-2 mt-4">
-            {activeProjects.map((_, idx) => (
-              <button
-                key={idx}
-                onClick={() => setActiveIndex(idx)}
-                aria-label={`Go to project ${idx + 1}`}
-                className={cn(
-                  "h-2.5 rounded-full transition-all duration-300 cursor-pointer",
-                  idx === activeIndex
-                    ? "w-8 bg-blue-500 shadow-md shadow-blue-500/40"
-                    : "w-2.5 bg-zinc-300 dark:bg-zinc-700 hover:bg-zinc-400 dark:hover:bg-zinc-500"
-                )}
-              />
-            ))}
-          </div>
-        </div>
-      </BlurFade>
+        {/* ── ASYMMETRIC MANGA PAGE SPREAD (12-Column Interlocking Grid) ── */}
+        <div
+          className="w-full"
+          style={{ background: "var(--ink)", padding: "var(--gutter)" }}
+        >
+          <div
+            className="max-w-6xl mx-auto grid grid-cols-1 lg:grid-cols-12"
+            style={{ gap: "var(--gutter)" }}
+          >
+            {/* ROW 1 LEFT (9/12 cols): GitHub Contribution Matrix */}
+            <MangaPanelReveal direction="left" className="lg:col-span-9">
+              <div className="panel bg-[var(--paper)] h-full">
+                <ContributionGraph username="jbueta" mangaTheme />
+              </div>
+            </MangaPanelReveal>
 
-      {/* Dynamic Typography Content Panel (Positioned Below Carousel for Active Project) */}
-      <BlurFade delay={0.4} inView>
-        <div className="mt-6">
-          <AnimatePresence mode="wait">
-            {currentProject && (
-              <motion.div
-                key={currentProject.id || activeIndex}
-                initial={{ opacity: 0, y: 10 }}
-                animate={{ opacity: 1, y: 0 }}
-                exit={{ opacity: 0, y: -10 }}
-                transition={{ duration: 0.3, ease: [0.32, 0.72, 0, 1] }}
-                className="p-5 sm:p-8 rounded-3xl border border-zinc-200/80 dark:border-zinc-800/80 bg-white/70 dark:bg-zinc-900/70 backdrop-blur-md shadow-xl max-w-3xl mx-auto flex flex-col justify-between"
+            {/* ROW 1 RIGHT (3/12 cols): Narrow Vertical Telemetry Callout Panel */}
+            <MangaPanelReveal direction="right" className="lg:col-span-3">
+              <div className="panel bg-[var(--ink)] text-white h-full p-6 flex flex-col justify-between relative overflow-hidden">
+                <div
+                  className="absolute inset-0 speed-lines opacity-30 pointer-events-none"
+                  aria-hidden="true"
+                />
+                <div className="relative z-10">
+                  <span
+                    className="font-manga text-[9px] tracking-[0.4em] px-2.5 py-0.5 inline-block mb-3 text-white"
+                    style={{ background: "var(--seido)" }}
+                  >
+                    BUILD LOG
+                  </span>
+                  <h3 className="font-manga text-2xl tracking-wider text-white leading-tight">
+                    SHIPPING
+                    <br />
+                    FULL-STACK
+                    <br />
+                    SYSTEMS
+                  </h3>
+                  <p className="font-sans text-xs text-white/60 mt-2 leading-relaxed">
+                    Production web apps, AI-assisted platforms, and IoT dashboards built for
+                    real-world institutional and client use.
+                  </p>
+                </div>
+
+                <div className="relative z-10 pt-4 mt-4 border-t border-white/15 flex items-center justify-between">
+                  <div>
+                    <span className="font-mono text-[9px] text-white/45 block">
+                      FEATURED WORKS
+                    </span>
+                    <span className="font-manga text-2xl tracking-widest text-white">
+                      0{all.length} SYSTEMS
+                    </span>
+                  </div>
+                  <Layers className="w-6 h-6 text-white/40" />
+                </div>
+              </div>
+            </MangaPanelReveal>
+
+            {/* ROW 2 LEFT (8/12 cols): Dominant Landing Page / Homepage Showcase Panel */}
+            <MangaPanelReveal direction="left" className="lg:col-span-8">
+              <div
+                ref={heroCardRef}
+                className="panel bg-[var(--paper)] h-full flex flex-col justify-between group"
               >
-                <div>
-                  {/* Title & Badges */}
-                  <div className="flex flex-wrap items-center justify-between gap-3 mb-4 border-b border-zinc-200/80 dark:border-zinc-800/80 pb-4">
-                    <div className="flex items-center gap-2 sm:gap-3 flex-wrap">
-                      <h3 className="text-xl sm:text-3xl font-extrabold text-zinc-900 dark:text-zinc-100 font-heading capitalize">
-                        {currentProject.name}
-                      </h3>
-                      {currentProject.hasReadme && (
-                        <span className="inline-flex items-center gap-1 text-[10px] sm:text-xs font-mono text-blue-500 bg-blue-500/10 border border-blue-500/20 px-2 py-0.5 sm:px-2.5 sm:py-1 rounded-full shrink-0">
-                          <FileText className="w-3.5 h-3.5" />
-                          README
-                        </span>
-                      )}
-                    </div>
-
+                {/* Top Manga Panel Strip */}
+                <div className="bg-[var(--ink)] text-white px-4 sm:px-5 py-2.5 flex items-center justify-between gap-2 border-b-4 border-[var(--ink)]">
+                  <div className="flex items-center gap-2.5 min-w-0">
                     <span
-                      className={cn(
-                        "inline-flex items-center gap-1 px-2.5 py-0.5 sm:px-3 sm:py-1 rounded-full text-xs font-mono font-bold border",
-                        currentProject.role === "Owner"
-                          ? "bg-blue-500/10 text-blue-600 dark:text-blue-400 border-blue-500/20"
-                          : "bg-indigo-500/10 text-indigo-600 dark:text-indigo-400 border-indigo-500/20"
-                      )}
+                      className="font-manga text-[10px] tracking-[0.35em] px-2 py-0.5 text-white shrink-0"
+                      style={{ background: "var(--seido)" }}
                     >
-                      {currentProject.role === "Owner" ? (
-                        <Code2 className="w-3.5 h-3.5" />
-                      ) : (
-                        <GitPullRequest className="w-3.5 h-3.5" />
-                      )}
-                      {currentProject.role}
+                      PANEL 0{activeIndex + 1}
+                    </span>
+                    <span className="font-mono text-[11px] text-white/80 truncate">
+                      {cur.fullName}
                     </span>
                   </div>
 
-                  {/* Narrative Description */}
-                  <p className="text-xs sm:text-base text-zinc-600 dark:text-zinc-300 leading-relaxed font-sans mb-6">
-                    {currentProject.description}
-                  </p>
-
-                  {/* Contributors */}
-                  {currentProject.coDevelopers && (
-                    <div className="flex items-center gap-2 mb-6 text-xs font-mono text-zinc-500 dark:text-zinc-400">
-                      <Users className="w-4 h-4 text-blue-500 shrink-0" />
-                      <span>Contributors:</span>
-                      <div className="flex flex-wrap gap-1.5">
-                        {currentProject.coDevelopers.map((dev, i) => (
-                          <span
-                            key={i}
-                            className="px-2 py-0.5 rounded bg-zinc-100 dark:bg-zinc-800 text-zinc-700 dark:text-zinc-300 font-semibold"
-                          >
-                            @{dev}
-                          </span>
-                        ))}
-                      </div>
-                    </div>
-                  )}
-
-                  {/* Tech Stack Badges */}
-                  <div className="flex flex-wrap gap-2 mb-8">
-                    {currentProject.techStack.map((tech, i) => (
-                      <span
-                        key={i}
-                        className="px-2.5 py-1 sm:px-3 sm:py-1.5 rounded-lg text-[10px] sm:text-xs font-mono font-semibold bg-blue-500/10 text-blue-600 dark:text-blue-400 border border-blue-500/20"
-                      >
-                        {tech}
-                      </span>
-                    ))}
+                  <div className="flex items-center gap-2 shrink-0">
+                    <span
+                      className={cn(
+                        "font-manga text-[9px] tracking-[0.35em] px-2 py-0.5 inline-flex items-center gap-1",
+                        cur.role === "Owner"
+                          ? "bg-white text-[var(--ink)]"
+                          : "bg-[var(--seido)] text-white"
+                      )}
+                    >
+                      {cur.role === "Owner" ? (
+                        <Code2 className="w-2.5 h-2.5" />
+                      ) : (
+                        <GitPullRequest className="w-2.5 h-2.5" />
+                      )}
+                      {cur.role.toUpperCase()}
+                    </span>
                   </div>
                 </div>
 
-                {/* Footer Action Links */}
-                <div className="flex flex-wrap items-center justify-between gap-3 pt-4 border-t border-zinc-200/80 dark:border-zinc-800/80 font-mono">
-                  <a
-                    href={currentProject.githubUrl}
-                    target="_blank"
-                    rel="noopener noreferrer"
-                    className="inline-flex items-center gap-2 px-4 py-2 sm:px-5 sm:py-2.5 rounded-xl bg-zinc-900 dark:bg-zinc-100 text-white dark:text-zinc-950 font-bold text-xs hover:bg-blue-600 dark:hover:bg-blue-500 dark:hover:text-white transition-all shadow-md"
-                  >
-                    <GithubIcon className="w-4 h-4" />
-                    <span>View Repository</span>
-                  </a>
+                {/* Homepage / Landing Page Preview Canvas */}
+                <div
+                  onClick={() => setLightboxOpen(true)}
+                  className="relative w-full overflow-hidden bg-[var(--paper)] cursor-zoom-in"
+                  style={{ aspectRatio: "16/9.3" }}
+                >
+                  <AnimatePresence mode="wait">
+                    <motion.img
+                      key={cur.previewImage}
+                      src={cur.previewImage}
+                      alt={`${cur.name} Homepage Preview`}
+                      initial={{ opacity: 0, scale: 0.98 }}
+                      animate={{ opacity: 1, scale: 1 }}
+                      exit={{ opacity: 0, scale: 1.01 }}
+                      transition={{ duration: 0.22 }}
+                      className="w-full h-full object-cover transition-transform duration-500 group-hover:scale-[1.015]"
+                      draggable={false}
+                    />
+                  </AnimatePresence>
 
-                  {currentProject.liveUrl && (
+                  {/* Expand Homepage Preview Stamp */}
+                  <button
+                    type="button"
+                    onClick={(e) => {
+                      e.stopPropagation();
+                      setLightboxOpen(true);
+                    }}
+                    className="absolute top-3 right-3 z-10 inline-flex items-center gap-1.5 px-3 py-1 bg-[var(--ink)] text-white border-2 border-white font-manga text-[9px] tracking-[0.3em] shadow-[3px_3px_0_rgba(0,0,0,0.5)] hover:bg-[var(--seido)] transition-colors"
+                  >
+                    <Maximize2 className="w-3 h-3" />
+                    INSPECT LANDING PAGE
+                  </button>
+
+                  {/* Bottom Manga Caption Overlay Bar */}
+                  <div className="absolute bottom-0 inset-x-0 bg-gradient-to-t from-black/90 via-black/60 to-transparent px-4 sm:px-5 pt-8 pb-3 flex items-end justify-between gap-3">
+                    <div>
+                      <span className="font-mono text-[9px] tracking-[0.3em] text-white/65 uppercase block">
+                        HOMEPAGE / INTERFACE PREVIEW
+                      </span>
+                      <p className="font-manga text-base sm:text-xl tracking-wider text-white leading-tight">
+                        {cur.tagline.toUpperCase()}
+                      </p>
+                    </div>
+
+                    {/* Prev / Next Controls */}
+                    <div
+                      className="flex items-center gap-1.5 shrink-0"
+                      onClick={(e) => e.stopPropagation()}
+                    >
+                      <button
+                        onClick={prev}
+                        aria-label="Previous project"
+                        className="w-8 h-8 border-2 border-white bg-[var(--ink)] text-white flex items-center justify-center hover:bg-white hover:text-[var(--ink)] transition-colors"
+                      >
+                        <ChevronLeft className="w-4 h-4" />
+                      </button>
+                      <span className="font-manga text-xs tracking-widest text-white px-2">
+                        0{activeIndex + 1} / 0{all.length}
+                      </span>
+                      <button
+                        onClick={next}
+                        aria-label="Next project"
+                        className="w-8 h-8 border-2 border-white bg-[var(--ink)] text-white flex items-center justify-center hover:bg-white hover:text-[var(--ink)] transition-colors"
+                      >
+                        <ChevronRight className="w-4 h-4" />
+                      </button>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </MangaPanelReveal>
+
+            {/* ROW 2 RIGHT (4/12 cols): Vertical Manga Chapter Index Selector */}
+            <MangaPanelReveal direction="right" className="lg:col-span-4">
+              <div className="panel bg-[var(--paper)] h-full flex flex-col justify-between">
+                <div className="bg-[var(--ink)] text-white px-5 py-3 border-b-4 border-[var(--ink)] flex items-center justify-between">
+                  <span className="font-manga text-xs tracking-[0.35em]">
+                    CASE FILE INDEX
+                  </span>
+                  <span className="font-mono text-[10px] text-white/60">
+                    SELECT TO VIEW
+                  </span>
+                </div>
+
+                <div className="flex-1 flex flex-col divide-y-2 divide-[var(--ink)]/15">
+                  {all.map((p, i) => {
+                    const active = i === activeIndex;
+                    return (
+                      <button
+                        key={p.id}
+                        onClick={() => setActiveIndex(i)}
+                        className={cn(
+                          "w-full text-left px-4 py-3.5 transition-all duration-150 flex items-start gap-3 group relative",
+                          active
+                            ? "bg-[var(--ink)] text-white"
+                            : "bg-[var(--paper)] text-[var(--ink)] hover:bg-[var(--ink)]/8"
+                        )}
+                      >
+                        {/* Active Seido Accent Bar */}
+                        {active && (
+                          <span
+                            className="absolute left-0 top-0 bottom-0 w-1.5"
+                            style={{ background: "var(--seido)" }}
+                            aria-hidden="true"
+                          />
+                        )}
+                        <span
+                          className={cn(
+                            "font-manga text-base tracking-widest shrink-0 px-2 py-0.5 border",
+                            active
+                              ? "border-white/40 bg-[var(--seido)] text-white"
+                              : "border-[var(--ink)]/30 text-[var(--ink)]"
+                          )}
+                        >
+                          {String(i + 1).padStart(2, "0")}
+                        </span>
+                        <div className="min-w-0 flex-1">
+                          <p
+                            className={cn(
+                              "font-manga text-sm tracking-wide leading-tight line-clamp-1",
+                              active ? "text-white" : "text-[var(--ink)]"
+                            )}
+                          >
+                            {p.name}
+                          </p>
+                          <p
+                            className={cn(
+                              "font-mono text-[10px] mt-0.5 truncate",
+                              active
+                                ? "text-white/65"
+                                : "text-[hsl(var(--muted-foreground))]"
+                            )}
+                          >
+                            {p.techStack.slice(0, 3).join(" · ")}
+                          </p>
+                        </div>
+                      </button>
+                    );
+                  })}
+                </div>
+              </div>
+            </MangaPanelReveal>
+
+            {/* ROW 3 LEFT (7/12 cols): Narrative Case Study & Action Links Panel */}
+            <MangaPanelReveal direction="up" className="lg:col-span-7">
+              <div className="panel bg-[var(--paper)] sfx-deploy h-full p-6 sm:p-8 flex flex-col justify-between">
+                <div>
+                  <div className="flex flex-wrap items-start justify-between gap-3 pb-4 mb-4 border-b-2 border-[var(--ink)]">
+                    <div>
+                      <span className="font-mono text-[10px] tracking-[0.25em] text-[hsl(var(--muted-foreground))] uppercase block mb-1">
+                        ARCHITECTURAL OVERVIEW // 0{activeIndex + 1}
+                      </span>
+                      <h3 className="font-manga text-2xl sm:text-3xl tracking-wide text-[var(--ink)] leading-none">
+                        {cur.name}
+                      </h3>
+                    </div>
+
+                    <div className="flex items-center gap-3 text-xs font-mono text-[var(--ink)] border-2 border-[var(--ink)] bg-white px-3 py-1 shadow-[2px_2px_0_var(--ink)]">
+                      <span className="flex items-center gap-1">
+                        <Star className="w-3.5 h-3.5" style={{ color: "var(--seido)" }} />
+                        {cur.stars}
+                      </span>
+                      <span className="flex items-center gap-1">
+                        <GitFork className="w-3.5 h-3.5" />
+                        {cur.forks}
+                      </span>
+                      <span className="text-[hsl(var(--muted-foreground))]">
+                        {cur.updatedAt}
+                      </span>
+                    </div>
+                  </div>
+
+                  <p className="text-sm sm:text-[15px] text-[hsl(var(--muted-foreground))] leading-relaxed font-sans mb-6">
+                    {cur.description}
+                  </p>
+                </div>
+
+                <div className="flex flex-col gap-5">
+                  {/* Stack & Contributors Row */}
+                  <div className="flex flex-wrap items-center justify-between gap-3 pt-4 border-t border-[var(--ink)]/15">
+                    <div className="flex flex-wrap gap-2">
+                      {cur.techStack.map((t, i) => (
+                        <span
+                          key={i}
+                          className="px-3 py-1 font-manga text-[10px] tracking-widest bg-[var(--ink)] text-white"
+                        >
+                          {t.toUpperCase()}
+                        </span>
+                      ))}
+                    </div>
+
+                    {cur.coDevelopers && (
+                      <div className="flex items-center gap-1.5 text-xs font-mono text-[hsl(var(--muted-foreground))]">
+                        <Users className="w-3.5 h-3.5 shrink-0 text-[var(--ink)]" />
+                        {cur.coDevelopers.map((d, i) => (
+                          <span
+                            key={i}
+                            className="border border-[var(--ink)] px-2 py-0.5 bg-white text-[var(--ink)] font-semibold"
+                          >
+                            @{d}
+                          </span>
+                        ))}
+                      </div>
+                    )}
+                  </div>
+
+                  {/* CTA Buttons */}
+                  <div className="flex flex-wrap gap-3">
                     <a
-                      href={currentProject.liveUrl}
+                      href={cur.githubUrl}
                       target="_blank"
                       rel="noopener noreferrer"
-                      className="inline-flex items-center gap-2 px-4 py-2 sm:px-5 sm:py-2.5 rounded-xl bg-blue-600 hover:bg-blue-500 text-white font-bold text-xs transition-all shadow-lg shadow-blue-500/20"
+                      className="inline-flex items-center gap-2 px-5 py-2.5 font-manga tracking-widest text-xs border-2 border-[var(--ink)] bg-white text-[var(--ink)] shadow-[3px_3px_0_var(--ink)] hover:bg-[var(--ink)] hover:text-white hover:shadow-none hover:translate-x-[2px] hover:translate-y-[2px] transition-all duration-150"
                     >
-                      <span>Live Application</span>
-                      <ExternalLink className="w-4 h-4" />
+                      <GithubIcon className="w-4 h-4" /> VIEW SOURCE REPO
                     </a>
-                  )}
+                    {cur.liveUrl && (
+                      <a
+                        href={cur.liveUrl}
+                        target="_blank"
+                        rel="noopener noreferrer"
+                        className="inline-flex items-center gap-2 px-5 py-2.5 font-manga tracking-widest text-xs text-white border-2 border-[var(--ink)] shadow-[3px_3px_0_var(--ink)] hover:shadow-none hover:translate-x-[2px] hover:translate-y-[2px] transition-all"
+                        style={{ background: "var(--seido)" }}
+                      >
+                        LIVE DEPLOYMENT <ExternalLink className="w-3.5 h-3.5" />
+                      </a>
+                    )}
+                    <button
+                      type="button"
+                      onClick={() => setLightboxOpen(true)}
+                      className="inline-flex items-center gap-2 px-4 py-2.5 font-manga tracking-widest text-xs border-2 border-[var(--ink)] bg-[var(--paper)] text-[var(--ink)] hover:bg-[var(--ink)] hover:text-white transition-colors"
+                    >
+                      <FileText className="w-3.5 h-3.5" /> FULLSCREEN PREVIEW
+                    </button>
+                  </div>
                 </div>
+              </div>
+            </MangaPanelReveal>
+
+            {/* ROW 3 RIGHT (5/12 cols): Manga Contact Sheet — All 5 Homepage Thumbnails */}
+            <MangaPanelReveal direction="up" delay={0.06} className="lg:col-span-5">
+              <div className="panel bg-[var(--paper)] h-full p-5 sm:p-6 flex flex-col justify-between">
+                <div className="flex items-center justify-between pb-3 mb-3 border-b-2 border-[var(--ink)]">
+                  <span className="font-manga text-xs tracking-[0.3em] text-[var(--ink)]">
+                    LANDING PAGE FILMSTRIP
+                  </span>
+                  <span className="font-mono text-[10px] text-[hsl(var(--muted-foreground))]">
+                    5 PREVIEWS
+                  </span>
+                </div>
+
+                <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-2 gap-2.5">
+                  {all.map((proj, idx) => {
+                    const isSelected = idx === activeIndex;
+                    return (
+                      <button
+                        key={proj.id}
+                        type="button"
+                        onClick={() => setActiveIndex(idx)}
+                        className={cn(
+                          "relative overflow-hidden border-2 transition-all text-left group",
+                          isSelected
+                            ? "border-[var(--seido)] ring-2 ring-[var(--seido)]"
+                            : "border-[var(--ink)] opacity-75 hover:opacity-100",
+                          idx === 0 && "col-span-2 sm:col-span-1 lg:col-span-2"
+                        )}
+                        style={{ aspectRatio: idx === 0 ? "16/6.5" : "16/9.5" }}
+                      >
+                        <img
+                          src={proj.previewImage}
+                          alt={proj.name}
+                          className="w-full h-full object-cover"
+                        />
+                        <div className="absolute inset-x-0 bottom-0 bg-black/85 px-2 py-1 flex items-center justify-between">
+                          <span className="font-manga text-[9px] tracking-widest text-white truncate">
+                            0{idx + 1} · {proj.name.split("—")[0].trim()}
+                          </span>
+                          {isSelected && (
+                            <span
+                              className="w-2 h-2 shrink-0"
+                              style={{ background: "var(--seido)" }}
+                            />
+                          )}
+                        </div>
+                      </button>
+                    );
+                  })}
+                </div>
+              </div>
+            </MangaPanelReveal>
+          </div>
+        </div>
+      </section>
+
+      {/* Lightbox for Fullscreen Homepage Preview */}
+      {mounted &&
+        createPortal(
+          <AnimatePresence>
+            {lightboxOpen && (
+              <motion.div
+                initial={{ opacity: 0 }}
+                animate={{ opacity: 1 }}
+                exit={{ opacity: 0 }}
+                onClick={() => setLightboxOpen(false)}
+                className="fixed inset-0 z-[99999] flex items-center justify-center p-4 cursor-zoom-out select-none"
+                style={{ background: "rgba(10,10,10,0.94)" }}
+              >
+                <motion.div
+                  initial={{ scale: 0.9, opacity: 0 }}
+                  animate={{ scale: 1, opacity: 1 }}
+                  exit={{ scale: 0.9, opacity: 0 }}
+                  transition={{ type: "spring", damping: 28, stiffness: 320 }}
+                  onClick={(e) => e.stopPropagation()}
+                  className="relative max-w-5xl w-full z-[100000] panel bg-[var(--paper)]"
+                >
+                  <div className="flex items-center justify-between px-5 py-3.5 bg-[var(--ink)] text-white border-b-4 border-[var(--ink)]">
+                    <div>
+                      <span
+                        className="font-manga text-[9px] tracking-[0.4em] px-2 py-0.5 mr-2 text-white"
+                        style={{ background: "var(--seido)" }}
+                      >
+                        HOMEPAGE PREVIEW
+                      </span>
+                      <span className="font-manga text-base sm:text-lg tracking-wider">
+                        {cur.name}
+                      </span>
+                    </div>
+                    <button
+                      onClick={() => setLightboxOpen(false)}
+                      aria-label="Close preview"
+                      className="p-1.5 border-2 border-white/40 text-white hover:bg-white hover:text-[var(--ink)] transition-colors"
+                    >
+                      <X className="w-4 h-4" />
+                    </button>
+                  </div>
+
+                  <div className="p-3 sm:p-5 bg-[var(--paper)] screentone-fine">
+                    <img
+                      src={cur.previewImage}
+                      alt={cur.name}
+                      className="w-full h-auto border-2 border-[var(--ink)] shadow-xl"
+                    />
+                  </div>
+
+                  <div className="px-5 py-3.5 border-t-4 border-[var(--ink)] bg-[var(--paper)] flex flex-wrap items-center justify-between gap-3">
+                    <p className="font-mono text-xs text-[hsl(var(--muted-foreground))]">
+                      {cur.tagline}
+                    </p>
+                    <div className="flex items-center gap-2.5">
+                      <a
+                        href={cur.githubUrl}
+                        target="_blank"
+                        rel="noopener noreferrer"
+                        className="inline-flex items-center gap-1.5 px-4 py-2 border-2 border-[var(--ink)] bg-[var(--ink)] text-white font-manga text-xs tracking-widest"
+                      >
+                        <GithubIcon className="w-3.5 h-3.5" /> GITHUB REPO
+                      </a>
+                      {cur.liveUrl && (
+                        <a
+                          href={cur.liveUrl}
+                          target="_blank"
+                          rel="noopener noreferrer"
+                          className="inline-flex items-center gap-1.5 px-4 py-2 text-white font-manga text-xs tracking-widest"
+                          style={{ background: "var(--seido)" }}
+                        >
+                          LIVE DEMO <ExternalLink className="w-3.5 h-3.5" />
+                        </a>
+                      )}
+                    </div>
+                  </div>
+                </motion.div>
               </motion.div>
             )}
-          </AnimatePresence>
-        </div>
-      </BlurFade>
-    </section>
+          </AnimatePresence>,
+          document.body
+        )}
+    </>
   );
 }

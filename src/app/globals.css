@@ -1,83 +1,72 @@
 @import "tailwindcss";
 
-@variant dark (&:where(.dark, .dark *));
+/* ============================================================
+   MANGA DESIGN TOKENS — Ace of Diamond
+   Single mode: paper/ink light only.
+   Accent: Seido Navy (#003087) — used sparingly.
+   ============================================================ */
 
 @layer base {
   :root {
-    --background: 210 40% 98%;
-    --foreground: 222 47% 11%;
-    --card: 0 0% 100%;
-    --card-foreground: 222 47% 11%;
-    --popover: 0 0% 100%;
-    --popover-foreground: 222 47% 11%;
-    --primary: 217 91% 60%;
-    --primary-foreground: 210 40% 98%;
-    --secondary: 217 32% 91%;
-    --secondary-foreground: 222 47% 11%;
-    --muted: 217 32% 91%;
-    --muted-foreground: 215 16% 47%;
-    --accent: 217 32% 91%;
-    --accent-foreground: 222 47% 11%;
-    --destructive: 0 84.2% 60.2%;
-    --destructive-foreground: 210 40% 98%;
-    --border: 214 32% 91%;
-    --input: 214 32% 91%;
-    --ring: 217 91% 60%;
-    --radius: 0.75rem;
-  }
+    --background:          40 18% 96%;   /* off-white manga paper */
+    --foreground:          0  0%  5%;    /* near-black ink */
+    --card:                40 10% 98%;
+    --card-foreground:     0  0%  5%;
+    --popover:             40 10% 98%;
+    --popover-foreground:  0  0%  5%;
+    --primary:             220 100% 27%; /* Seido navy */
+    --primary-foreground:  0   0% 98%;
+    --secondary:           0   0% 90%;
+    --secondary-foreground:0   0% 10%;
+    --muted:               0   0% 88%;
+    --muted-foreground:    0   0% 42%;
+    --accent:              220 100% 27%;
+    --accent-foreground:   0   0% 98%;
+    --destructive:         0  72% 51%;
+    --destructive-foreground: 0 0% 98%;
+    --border:              0   0% 10%;
+    --input:               0   0% 85%;
+    --ring:                220 100% 27%;
+    --radius:              0rem;
 
-  .dark {
-    --background: 222 47% 6%;
-    --foreground: 210 40% 98%;
-    --card: 222 40% 9%;
-    --card-foreground: 210 40% 98%;
-    --popover: 222 40% 9%;
-    --popover-foreground: 210 40% 98%;
-    --primary: 217 91% 60%;
-    --primary-foreground: 222 47% 6%;
-    --secondary: 217 33% 15%;
-    --secondary-foreground: 210 40% 98%;
-    --muted: 217 33% 15%;
-    --muted-foreground: 215 20.2% 65.1%;
-    --accent: 217 33% 15%;
-    --accent-foreground: 210 40% 98%;
-    --destructive: 0 62.8% 30.6%;
-    --destructive-foreground: 210 40% 98%;
-    --border: 217 33% 16%;
-    --input: 217 33% 16%;
-    --ring: 217 91% 60%;
+    /* Named manga palette */
+    --ink:    #0a0a0a;
+    --paper:  #f5f0e8;
+    --seido:  #003087;   /* Seido High navy — the ONE accent colour */
+    --gutter: 6px;       /* ink gutter between panels */
   }
 }
+
+/* ============================================================
+   KEYFRAMES
+   ============================================================ */
 
 @keyframes marquee {
-  from {
-    transform: translateX(0);
-  }
-  to {
-    transform: translateX(calc(-100% - var(--gap)));
-  }
+  from { transform: translateX(0); }
+  to   { transform: translateX(calc(-100% - var(--gap))); }
 }
-
 @keyframes marquee-vertical {
-  from {
-    transform: translateY(0);
-  }
-  to {
-    transform: translateY(calc(-100% - var(--gap)));
-  }
+  from { transform: translateY(0); }
+  to   { transform: translateY(calc(-100% - var(--gap))); }
+}
+@keyframes speed-breathe {
+  0%,100% { opacity: 0.55; }
+  50%      { opacity: 0.80; }
+}
+@keyframes halftone-breathe {
+  0%,100% { opacity: 0.022; }
+  50%      { opacity: 0.044; }
+}
+@keyframes panel-entry {
+  from { opacity: 0; filter: blur(6px); }
+  to   { opacity: 1; filter: blur(0px); }
 }
 
-.animate-marquee {
-  animation: marquee var(--duration, 40s) linear infinite;
-}
+/* ============================================================
+   GLOBAL BASE
+   ============================================================ */
 
-.animate-marquee-vertical {
-  animation: marquee-vertical var(--duration, 40s) linear infinite;
-}
-
-html {
-  scroll-behavior: smooth;
-}
+html { scroll-behavior: smooth; }
 
 body {
   background-color: hsl(var(--background));
@@ -90,17 +79,128 @@ h1, h2, h3, h4, h5, h6, .font-heading {
   font-family: var(--font-league-spartan), system-ui, sans-serif;
 }
 
-/* Custom scrollbar matching Navy theme */
-::-webkit-scrollbar {
-  width: 8px;
+.font-manga {
+  font-family: var(--font-bebas-neue), "Impact", "Arial Black", system-ui, sans-serif;
+  letter-spacing: 0.04em;
 }
-::-webkit-scrollbar-track {
-  background: transparent;
+
+.animate-marquee          { animation: marquee var(--duration, 40s) linear infinite; }
+.animate-marquee-vertical { animation: marquee-vertical var(--duration, 40s) linear infinite; }
+
+/* ============================================================
+   MANGA PANEL SYSTEM
+   .panel         — 4px solid ink border, no radius
+   .panel-seido   — 4px Seido navy border (use once/twice max)
+   The page background IS the gutter colour (--ink).
+   Panels sit flush against each other, gap = visible ink strip.
+   ============================================================ */
+
+.panel {
+  border: 4px solid var(--ink);
+  position: relative;
+  overflow: hidden;
 }
-::-webkit-scrollbar-thumb {
-  background: rgba(59, 130, 246, 0.3);
-  border-radius: 4px;
+
+.panel-seido {
+  border: 4px solid var(--seido);
+  position: relative;
+  overflow: hidden;
 }
-::-webkit-scrollbar-thumb:hover {
-  background: rgba(59, 130, 246, 0.6);
+
+/* ============================================================
+   MANGA PAGE SPREAD GRID — Asymmetric kinetic panel layouts
+   ============================================================ */
+
+.manga-spread {
+  display: grid;
+  gap: var(--gutter);
+  background: var(--ink);
+  padding: var(--gutter) 0;
+}
+
+/* Diagonal slash badge / header accent */
+.slash-cut-right {
+  clip-path: polygon(0 0, 100% 0, calc(100% - 18px) 100%, 0 100%);
+}
+.slash-cut-left {
+  clip-path: polygon(18px 0, 100% 0, 100% 100%, 0 100%);
+}
+
+/* Manga ink print filter for portraits & screenshots */
+.manga-ink-portrait {
+  filter: contrast(1.38) grayscale(0.85) brightness(0.96);
+}
+.manga-ink-screen {
+  filter: contrast(1.22) saturate(0.25) brightness(0.95);
+  transition: filter 0.3s ease, transform 0.4s cubic-bezier(0.22, 1, 0.36, 1);
+}
+.group:hover .manga-ink-screen {
+  filter: contrast(1.08) saturate(0.85) brightness(1);
+}
+
+/* ============================================================
+   SCREENTONE — halftone dot grid
+   ============================================================ */
+
+.screentone {
+  background-image: radial-gradient(circle, rgba(10,10,10,0.14) 1px, transparent 1px);
+  background-size: 7px 7px;
+}
+.screentone-fine {
+  background-image: radial-gradient(circle, rgba(10,10,10,0.09) 0.65px, transparent 0.65px);
+  background-size: 4.5px 4.5px;
+}
+.screentone-coarse {
+  background-image: radial-gradient(circle, rgba(10,10,10,0.18) 1.4px, transparent 1.4px);
+  background-size: 11px 11px;
+}
+
+/* ============================================================
+   SPEED LINES — radial burst from centre, used as bg on panels
+   ============================================================ */
+
+.speed-lines {
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 400 400'%3E%3Cg stroke='%23000' stroke-width='0.7' opacity='0.18'%3E%3Cline x1='200' y1='200' x2='0' y2='0'/%3E%3Cline x1='200' y1='200' x2='50' y2='0'/%3E%3Cline x1='200' y1='200' x2='100' y2='0'/%3E%3Cline x1='200' y1='200' x2='150' y2='0'/%3E%3Cline x1='200' y1='200' x2='200' y2='0'/%3E%3Cline x1='200' y1='200' x2='250' y2='0'/%3E%3Cline x1='200' y1='200' x2='300' y2='0'/%3E%3Cline x1='200' y1='200' x2='350' y2='0'/%3E%3Cline x1='200' y1='200' x2='400' y2='0'/%3E%3Cline x1='200' y1='200' x2='400' y2='50'/%3E%3Cline x1='200' y1='200' x2='400' y2='100'/%3E%3Cline x1='200' y1='200' x2='400' y2='150'/%3E%3Cline x1='200' y1='200' x2='400' y2='200'/%3E%3Cline x1='200' y1='200' x2='400' y2='250'/%3E%3Cline x1='200' y1='200' x2='400' y2='300'/%3E%3Cline x1='200' y1='200' x2='400' y2='350'/%3E%3Cline x1='200' y1='200' x2='400' y2='400'/%3E%3Cline x1='200' y1='200' x2='350' y2='400'/%3E%3Cline x1='200' y1='200' x2='300' y2='400'/%3E%3Cline x1='200' y1='200' x2='250' y2='400'/%3E%3Cline x1='200' y1='200' x2='200' y2='400'/%3E%3Cline x1='200' y1='200' x2='150' y2='400'/%3E%3Cline x1='200' y1='200' x2='100' y2='400'/%3E%3Cline x1='200' y1='200' x2='50' y2='400'/%3E%3Cline x1='200' y1='200' x2='0' y2='400'/%3E%3Cline x1='200' y1='200' x2='0' y2='350'/%3E%3Cline x1='200' y1='200' x2='0' y2='300'/%3E%3Cline x1='200' y1='200' x2='0' y2='250'/%3E%3Cline x1='200' y1='200' x2='0' y2='200'/%3E%3Cline x1='200' y1='200' x2='0' y2='150'/%3E%3Cline x1='200' y1='200' x2='0' y2='100'/%3E%3Cline x1='200' y1='200' x2='0' y2='50'/%3E%3C/g%3E%3C/svg%3E");
+  background-size: cover;
+  background-position: center;
+  background-repeat: no-repeat;
+}
+
+/* ============================================================
+   SFX WATERMARK — barely-visible ghost text in backgrounds
+   ============================================================ */
+
+.sfx-code::after,
+.sfx-deploy::after,
+.sfx-scholar::after,
+.sfx-build::after {
+  position: absolute;
+  font-family: var(--font-bebas-neue), "Impact", sans-serif;
+  font-size: clamp(5rem, 18vw, 16rem);
+  letter-spacing: 0.08em;
+  color: rgba(10, 10, 10, 0.028);
+  pointer-events: none;
+  user-select: none;
+  right: -1rem;
+  bottom: -0.5rem;
+  line-height: 1;
+  z-index: 0;
+}
+.sfx-code::after    { content: "CODE"; }
+.sfx-deploy::after  { content: "DEPLOY"; }
+.sfx-scholar::after { content: "SCHOLAR"; }
+.sfx-build::after   { content: "BUILD"; }
+
+/* ============================================================
+   SCROLLBAR
+   ============================================================ */
+
+::-webkit-scrollbar       { width: 5px; }
+::-webkit-scrollbar-track { background: transparent; }
+::-webkit-scrollbar-thumb { background: rgba(10,10,10,0.22); border-radius: 0; }
+::-webkit-scrollbar-thumb:hover { background: rgba(10,10,10,0.5); }
+
+::selection {
+  background: rgba(0, 48, 135, 0.18);
+  color: var(--ink);
 }

@@ -62,19 +62,19 @@ export function TechCard({ icon, name, category, className }: TechCardProps) {
   return (
     <div
       className={cn(
-        "flex items-center gap-3 px-4 py-3 rounded-xl border border-zinc-200/80 dark:border-zinc-800/80 bg-white/60 dark:bg-zinc-900/60 backdrop-blur-md hover:border-emerald-500/50 dark:hover:border-emerald-500/50 hover:bg-white dark:hover:bg-zinc-800/80 transition-all duration-300 shadow-sm hover:shadow-md cursor-pointer select-none",
+        "flex items-center gap-3 px-4 py-3 border-2 border-[var(--ink)] bg-white hover:bg-[var(--ink)] group transition-colors duration-150 shadow-[2px_2px_0_var(--ink)] cursor-pointer select-none",
         className
       )}
     >
-      <div className="flex items-center justify-center w-9 h-9 p-1.5 shrink-0 rounded-xl bg-zinc-100 dark:bg-zinc-800/80 border border-zinc-200/50 dark:border-zinc-700/50 group-hover:scale-110 transition-transform duration-300">
+      <div className="flex items-center justify-center w-8 h-8 p-1 shrink-0 bg-[var(--paper)] border border-[var(--ink)]/30">
         {icon}
       </div>
       <div className="flex flex-col">
-        <span className="text-sm font-semibold text-zinc-800 dark:text-zinc-100 font-mono">
-          {name}
+        <span className="text-sm font-manga tracking-widest text-[var(--ink)] group-hover:text-white">
+          {name.toUpperCase()}
         </span>
         {category && (
-          <span className="text-[10px] text-zinc-500 dark:text-zinc-400">
+          <span className="text-[10px] font-mono uppercase tracking-wider text-[hsl(var(--muted-foreground))] group-hover:text-white/65">
             {category}
           </span>
         )}

@@ -1,0 +1,127 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 960 560" width="960" height="560">
+  <defs>
+    <pattern id="tone" width="6" height="6" patternUnits="userSpaceOnUse">
+      <circle cx="3" cy="3" r="1.1" fill="#0a0a0a" opacity="0.14"/>
+    </pattern>
+    <pattern id="tone-dark" width="5" height="5" patternUnits="userSpaceOnUse">
+      <circle cx="2.5" cy="2.5" r="1.2" fill="#ffffff" opacity="0.12"/>
+    </pattern>
+  </defs>
+
+  <!-- Paper base -->
+  <rect width="960" height="560" fill="#f5f0e8"/>
+  <rect width="960" height="560" fill="url(#tone)"/>
+
+  <!-- Browser Window Frame -->
+  <rect x="28" y="24" width="904" height="512" fill="#fbf9f4" stroke="#0a0a0a" stroke-width="5"/>
+  <!-- Browser Top Bar -->
+  <rect x="28" y="24" width="904" height="44" fill="#0a0a0a"/>
+  <rect x="46" y="38" width="14" height="14" fill="#f5f0e8"/>
+  <rect x="68" y="38" width="14" height="14" fill="#003087"/>
+  <rect x="90" y="38" width="14" height="14" fill="#f5f0e8" opacity="0.4"/>
+  <!-- URL Bar -->
+  <rect x="128" y="33" width="460" height="26" fill="#1a1a1a" stroke="#f5f0e8" stroke-width="1.5"/>
+  <text x="144" y="50" font-family="monospace" font-size="12" fill="#f5f0e8" letter-spacing="1">https://indie-studio-saas.vercel.app/dashboard/critical-path</text>
+  <rect x="780" y="33" width="134" height="26" fill="#003087"/>
+  <text x="800" y="50" font-family="Impact, sans-serif" font-size="13" fill="#ffffff" letter-spacing="2">GNN ENGINE v2.4</text>
+
+  <!-- Left Sidebar -->
+  <rect x="28" y="68" width="190" height="468" fill="#0a0a0a"/>
+  <rect x="28" y="68" width="190" height="468" fill="url(#tone-dark)"/>
+  <text x="48" y="106" font-family="Impact, sans-serif" font-size="22" fill="#ffffff" letter-spacing="2">STUDIOSPRINT</text>
+  <rect x="48" y="116" width="80" height="3" fill="#003087"/>
+
+  <!-- Nav items -->
+  <rect x="44" y="140" width="158" height="32" fill="#003087" stroke="#ffffff" stroke-width="1.5"/>
+  <text x="58" y="161" font-family="monospace" font-size="11" font-weight="bold" fill="#ffffff">01 // GNN WORKFORCE</text>
+  <rect x="44" y="184" width="158" height="30" fill="none" stroke="#ffffff" stroke-width="1" opacity="0.35"/>
+  <text x="58" y="204" font-family="monospace" font-size="11" fill="#ffffff" opacity="0.7">02 // CRITICAL PATH</text>
+  <rect x="44" y="226" width="158" height="30" fill="none" stroke="#ffffff" stroke-width="1" opacity="0.35"/>
+  <text x="58" y="246" font-family="monospace" font-size="11" fill="#ffffff" opacity="0.7">03 // SPRINT VELOCITY</text>
+  <rect x="44" y="268" width="158" height="30" fill="none" stroke="#ffffff" stroke-width="1" opacity="0.35"/>
+  <text x="58" y="288" font-family="monospace" font-size="11" fill="#ffffff" opacity="0.7">04 // ML ALLOCATION</text>
+
+  <!-- Sidebar telemetry stamp -->
+  <rect x="44" y="420" width="158" height="94" fill="#141414" stroke="#ffffff" stroke-width="1.5"/>
+  <text x="56" y="444" font-family="monospace" font-size="10" fill="#ffffff" opacity="0.6">BOTTLENECK RISK</text>
+  <text x="56" y="478" font-family="Impact, sans-serif" font-size="34" fill="#ffffff" letter-spacing="1">-42.8%</text>
+  <text x="56" y="498" font-family="monospace" font-size="9" fill="#60a5fa">OPTIMIZED BY GNN</text>
+
+  <!-- Main Workspace Header -->
+  <rect x="238" y="86" width="674" height="58" fill="#f5f0e8" stroke="#0a0a0a" stroke-width="3"/>
+  <text x="256" y="112" font-family="Impact, sans-serif" font-size="20" fill="#0a0a0a" letter-spacing="1.5">WORKFORCE GRAPH &amp; CRITICAL PATH TOPOLOGY</text>
+  <text x="256" y="130" font-family="monospace" font-size="11" fill="#444444">Predictive resource allocation across 24 active sprint nodes</text>
+  <rect x="772" y="98" width="124" height="34" fill="#0a0a0a"/>
+  <text x="790" y="120" font-family="Impact, sans-serif" font-size="14" fill="#ffffff" letter-spacing="2">RUN SIMULATION</text>
+
+  <!-- KPI Row -->
+  <g>
+    <rect x="238" y="158" width="214" height="86" fill="#ffffff" stroke="#0a0a0a" stroke-width="3"/>
+    <rect x="238" y="158" width="8" height="86" fill="#003087"/>
+    <text x="258" y="180" font-family="monospace" font-size="10" fill="#555555">SPRINT EFFICIENCY</text>
+    <text x="258" y="218" font-family="Impact, sans-serif" font-size="38" fill="#0a0a0a">94.2%</text>
+    <text x="360" y="216" font-family="monospace" font-size="11" fill="#003087" font-weight="bold">+18.4%</text>
+
+    <rect x="468" y="158" width="214" height="86" fill="#ffffff" stroke="#0a0a0a" stroke-width="3"/>
+    <text x="484" y="180" font-family="monospace" font-size="10" fill="#555555">CRITICAL PATH NODES</text>
+    <text x="484" y="218" font-family="Impact, sans-serif" font-size="38" fill="#0a0a0a">12 / 48</text>
+    <text x="605" y="216" font-family="monospace" font-size="10" fill="#0a0a0a">ZERO SLACK</text>
+
+    <rect x="698" y="158" width="214" height="86" fill="#0a0a0a" stroke="#0a0a0a" stroke-width="3"/>
+    <text x="714" y="180" font-family="monospace" font-size="10" fill="#ffffff" opacity="0.65">ACTIVE ENGINEERS</text>
+    <text x="714" y="218" font-family="Impact, sans-serif" font-size="38" fill="#ffffff">36 DEV</text>
+    <rect x="826" y="196" width="70" height="22" fill="#003087"/>
+    <text x="836" y="211" font-family="Impact, sans-serif" font-size="12" fill="#ffffff" letter-spacing="1">BALANCED</text>
+  </g>
+
+  <!-- GNN Topology Canvas Panel -->
+  <rect x="238" y="258" width="434" height="258" fill="#ffffff" stroke="#0a0a0a" stroke-width="3"/>
+  <rect x="238" y="258" width="434" height="258" fill="url(#tone)"/>
+  <rect x="238" y="258" width="434" height="30" fill="#0a0a0a"/>
+  <text x="252" y="278" font-family="Impact, sans-serif" font-size="13" fill="#ffffff" letter-spacing="2">GRAPH NEURAL NETWORK // DEPENDENCY MAP</text>
+
+  <!-- Edges -->
+  <line x1="295" y1="360" x2="395" y2="325" stroke="#0a0a0a" stroke-width="2" stroke-dasharray="5 3"/>
+  <line x1="295" y1="360" x2="395" y2="405" stroke="#003087" stroke-width="4"/>
+  <line x1="395" y1="325" x2="510" y2="355" stroke="#0a0a0a" stroke-width="2"/>
+  <line x1="395" y1="405" x2="510" y2="355" stroke="#003087" stroke-width="4"/>
+  <line x1="395" y1="405" x2="510" y2="445" stroke="#0a0a0a" stroke-width="2" stroke-dasharray="5 3"/>
+  <line x1="510" y1="355" x2="615" y2="390" stroke="#003087" stroke-width="4"/>
+  <line x1="510" y1="445" x2="615" y2="390" stroke="#0a0a0a" stroke-width="2"/>
+
+  <!-- Nodes -->
+  <circle cx="295" cy="360" r="20" fill="#003087" stroke="#0a0a0a" stroke-width="3"/>
+  <text x="284" y="364" font-family="monospace" font-size="10" font-weight="bold" fill="#ffffff">N-01</text>
+
+  <circle cx="395" cy="325" r="18" fill="#f5f0e8" stroke="#0a0a0a" stroke-width="3"/>
+  <text x="384" y="329" font-family="monospace" font-size="10" font-weight="bold" fill="#0a0a0a">N-02</text>
+
+  <circle cx="395" cy="405" r="22" fill="#003087" stroke="#0a0a0a" stroke-width="3"/>
+  <text x="384" y="409" font-family="monospace" font-size="10" font-weight="bold" fill="#ffffff">N-03</text>
+
+  <circle cx="510" cy="355" r="22" fill="#003087" stroke="#0a0a0a" stroke-width="3"/>
+  <text x="499" y="359" font-family="monospace" font-size="10" font-weight="bold" fill="#ffffff">N-04</text>
+
+  <circle cx="510" cy="445" r="18" fill="#f5f0e8" stroke="#0a0a0a" stroke-width="3"/>
+  <text x="499" y="449" font-family="monospace" font-size="10" font-weight="bold" fill="#0a0a0a">N-05</text>
+
+  <circle cx="615" cy="390" r="24" fill="#0a0a0a" stroke="#003087" stroke-width="4"/>
+  <text x="601" y="394" font-family="monospace" font-size="10" font-weight="bold" fill="#ffffff">SHIP</text>
+
+  <!-- Right Gantt / Timeline Panel -->
+  <rect x="686" y="258" width="226" height="258" fill="#ffffff" stroke="#0a0a0a" stroke-width="3"/>
+  <rect x="686" y="258" width="226" height="30" fill="#0a0a0a"/>
+  <text x="700" y="278" font-family="Impact, sans-serif" font-size="13" fill="#ffffff" letter-spacing="2">SPRINT TIMELINE</text>
+
+  <text x="700" y="314" font-family="monospace" font-size="10" fill="#0a0a0a">API CORE</text>
+  <rect x="700" y="320" width="140" height="14" fill="#003087" stroke="#0a0a0a" stroke-width="2"/>
+
+  <text x="700" y="358" font-family="monospace" font-size="10" fill="#0a0a0a">GNN MODEL</text>
+  <rect x="730" y="364" width="150" height="14" fill="#0a0a0a"/>
+
+  <text x="700" y="402" font-family="monospace" font-size="10" fill="#0a0a0a">UI PIPELINE</text>
+  <rect x="715" y="408" width="115" height="14" fill="#f5f0e8" stroke="#0a0a0a" stroke-width="2"/>
+
+  <text x="700" y="446" font-family="monospace" font-size="10" fill="#0a0a0a">QA &amp; DEPLOY</text>
+  <rect x="780" y="452" width="116" height="14" fill="#003087" stroke="#0a0a0a" stroke-width="2"/>
+</svg>

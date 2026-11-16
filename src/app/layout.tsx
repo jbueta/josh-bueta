@@ -1,7 +1,6 @@
 import type { Metadata } from "next";
-import { League_Spartan, Montserrat } from "next/font/google";
+import { League_Spartan, Montserrat, Bebas_Neue } from "next/font/google";
 import "./globals.css";
-import { ThemeProvider } from "@/components/theme-provider";
 
 const leagueSpartan = League_Spartan({
   variable: "--font-league-spartan",
@@ -13,6 +12,12 @@ const montserrat = Montserrat({
   variable: "--font-montserrat",
   subsets: ["latin"],
   weight: ["300", "400", "500", "600", "700", "800"],
+});
+
+const bebasNeue = Bebas_Neue({
+  variable: "--font-bebas-neue",
+  subsets: ["latin"],
+  weight: "400",
 });
 
 export const metadata: Metadata = {
@@ -46,17 +51,10 @@ export default function RootLayout({
     <html
       lang="en"
       suppressHydrationWarning
-      className={`${leagueSpartan.variable} ${montserrat.variable} h-full antialiased`}
+      className={`${leagueSpartan.variable} ${montserrat.variable} ${bebasNeue.variable} h-full antialiased`}
     >
-      <body className="min-h-full flex flex-col bg-slate-50 dark:bg-zinc-950 text-zinc-900 dark:text-zinc-100 transition-colors duration-300 font-sans">
-        <ThemeProvider
-          attribute="class"
-          defaultTheme="dark"
-          enableSystem
-          disableTransitionOnChange={false}
-        >
-          {children}
-        </ThemeProvider>
+      <body className="min-h-full flex flex-col bg-[hsl(var(--background))] text-[hsl(var(--foreground))] font-sans antialiased overflow-x-hidden">
+        {children}
       </body>
     </html>
   );

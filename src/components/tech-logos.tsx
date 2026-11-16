@@ -17,17 +17,17 @@ export function TypeScriptLogo(props: React.SVGProps<SVGSVGElement>) {
 export function NextjsLogo(props: React.SVGProps<SVGSVGElement>) {
   return (
     <svg viewBox="0 0 180 180" width="100%" height="100%" fill="none" {...props}>
-      <circle cx="90" cy="90" r="90" className="fill-zinc-900 dark:fill-white" />
+      <circle cx="90" cy="90" r="90" className="fill-zinc-900" />
       <path
         d="M149.508 157.52L69.142 54H54V126H67.08V70.626L137.324 161.264C141.677 160.279 145.748 159.014 149.508 157.52Z"
-        className="fill-white dark:fill-zinc-900"
+        className="fill-white"
       />
       <rect
         x="115"
         y="54"
         width="13"
         height="72"
-        className="fill-white dark:fill-zinc-900"
+        className="fill-white"
       />
     </svg>
   );

@@ -1,7 +1,6 @@
 "use client";
 
 import React, { useEffect, useRef } from "react";
-import { useTheme } from "next-themes";
 import { cn } from "@/lib/utils";
 
 interface GlyphMatrixProps {
@@ -10,7 +9,6 @@ interface GlyphMatrixProps {
 
 export function GlyphMatrix({ className }: GlyphMatrixProps) {
   const canvasRef = useRef<HTMLCanvasElement | null>(null);
-  const { resolvedTheme } = useTheme();
 
   useEffect(() => {
     const canvas = canvasRef.current;
@@ -29,9 +27,9 @@ export function GlyphMatrix({ className }: GlyphMatrixProps) {
     resizeCanvas();
     window.addEventListener("resize", resizeCanvas);
 
-    // Characters for matrix stream (katakana, latin, symbols)
-    const chars = "01MJB<>/{};:_+=~#$@&%?!¥アカサタナハマヤラワ";
-    const fontSize = 14;
+    // Full katakana block + manga symbols for Ace of Diamond rain
+    const chars = "ァアィイゥウェエォオカキクケコサシスセソタチツテトナニヌネノハヒフヘホマミムメモヤユヨラリルレロワヲン01<>/{}#$";
+    const fontSize = 16;
     const columns = Math.floor(canvas.width / fontSize);
 
     // Track drop Y coordinate per column
@@ -39,11 +37,9 @@ export function GlyphMatrix({ className }: GlyphMatrixProps) {
       Math.floor(Math.random() * -50)
     );
 
-    const isDark = resolvedTheme === "dark";
-
     const draw = () => {
-      // Trail effect with deep navy backdrop
-      ctx.fillStyle = isDark ? "rgba(8, 13, 26, 0.08)" : "rgba(241, 245, 249, 0.12)";
+      // Ink bleed trail — manga paper/ink feel (single light mode)
+      ctx.fillStyle = "rgba(245, 240, 232, 0.14)";
       ctx.fillRect(0, 0, canvas.width, canvas.height);
 
       ctx.font = `${fontSize}px monospace`;
@@ -53,13 +49,16 @@ export function GlyphMatrix({ className }: GlyphMatrixProps) {
         const x = i * fontSize;
         const y = drops[i] * fontSize;
 
-        // Head glyph vs trail color (Royal / Sapphire Navy Blue)
-        if (Math.random() > 0.95) {
-          ctx.fillStyle = isDark ? "#ffffff" : "#0f172a";
+        const rand = Math.random();
+        if (rand > 0.97) {
+          // 3% accent — Seido Navy flash
+          ctx.fillStyle = "#003087";
+        } else if (rand > 0.90) {
+          // 7% bright head glyph
+          ctx.fillStyle = "#0a0a0a";
         } else {
-          ctx.fillStyle = isDark
-            ? "rgba(59, 130, 246, 0.45)" // Royal blue in dark
-            : "rgba(37, 99, 235, 0.35)"; // Sapphire blue in light
+          // 90% body glyph — faint ink
+          ctx.fillStyle = "rgba(10, 10, 10, 0.14)";
         }
 
         ctx.fillText(text, x, y);
@@ -79,13 +78,13 @@ export function GlyphMatrix({ className }: GlyphMatrixProps) {
       window.removeEventListener("resize", resizeCanvas);
       cancelAnimationFrame(animationFrameId);
     };
-  }, [resolvedTheme]);
+  }, []);
 
   return (
     <canvas
       ref={canvasRef}
       className={cn(
-        "fixed inset-0 pointer-events-none z-0 opacity-40 dark:opacity-50 transition-opacity duration-500",
+        "fixed inset-0 pointer-events-none z-0 opacity-60 transition-opacity duration-500",
         className
       )}
     />
