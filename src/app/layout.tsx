@@ -1,19 +1,17 @@
 import type { Metadata, Viewport } from "next";
-import { League_Spartan, Montserrat, Bebas_Neue, Space_Mono } from "next/font/google";
+import { Space_Grotesk, Bebas_Neue, Space_Mono } from "next/font/google";
 import "./globals.css";
 import { SITE } from "@/content/site";
 
-const leagueSpartan = League_Spartan({
-  variable: "--font-league-spartan",
+/*
+ * Reading text and titles share one face: Space Grotesk is drawn alongside
+ * Space Mono, so copy and data sit in the same family, and Bebas Neue supplies
+ * the condensed contrast for stamps. Montserrat and League Spartan were both
+ * geometric sans, which left titles and body reading as one voice at two sizes.
+ */
+const spaceGrotesk = Space_Grotesk({
+  variable: "--font-space-grotesk",
   subsets: ["latin"],
-  weight: ["400", "600", "700", "800"],
-  display: "swap",
-});
-
-const montserrat = Montserrat({
-  variable: "--font-montserrat",
-  subsets: ["latin"],
-  weight: ["400", "500", "600", "700"],
   display: "swap",
 });
 
@@ -80,7 +78,7 @@ export default function RootLayout({
     <html
       lang="en"
       suppressHydrationWarning
-      className={`${leagueSpartan.variable} ${montserrat.variable} ${bebasNeue.variable} ${spaceMono.variable} h-full antialiased`}
+      className={`${spaceGrotesk.variable} ${bebasNeue.variable} ${spaceMono.variable} h-full antialiased`}
     >
       <body className="flex min-h-full flex-col overflow-x-hidden bg-[hsl(var(--background))] font-sans text-[hsl(var(--foreground))] antialiased">
         {children}

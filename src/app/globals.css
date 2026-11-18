@@ -2,15 +2,15 @@
 
 /*
  * The utilities were pointing at Tailwind's default stacks, so `font-sans`
- * (33 usages) rendered system-ui instead of Montserrat and `font-mono` (75
- * usages) rendered the OS mono. `inline` keeps the next/font variables live on
- * <html> instead of resolving them at :root.
+ * (33 usages) rendered system-ui instead of the reading face and `font-mono`
+ * (75 usages) rendered the OS mono. `inline` keeps the next/font variables
+ * live on <html> instead of resolving them at :root.
  */
 @theme inline {
-  --font-sans: var(--font-montserrat), ui-sans-serif, system-ui, sans-serif;
+  --font-sans: var(--font-space-grotesk), ui-sans-serif, system-ui, sans-serif;
   --font-mono: var(--font-space-mono), ui-monospace, SFMono-Regular, Menlo, monospace;
   --font-display: var(--font-bebas-neue), "Impact", "Arial Black", system-ui, sans-serif;
-  --font-heading: var(--font-league-spartan), system-ui, sans-serif;
+  --font-heading: var(--font-space-grotesk), ui-sans-serif, system-ui, sans-serif;
 }
 
 /* ============================================================
@@ -151,12 +151,17 @@
                                           never anything whose casing
                                           carries meaning (names,
                                           emails) — the face is caps-only.
-   heading   League Spartan  h1–h6         Section, card and item
-                             .font-heading titles.
-   body      Montserrat      .font-sans    Paragraphs, descriptions,
+   title     Space Grotesk   h1–h6         Section, card and item titles.
+                             .font-heading
+   body      Space Grotesk   .font-sans    Paragraphs, descriptions,
                                           form fields.
    mono      Space Mono      .font-mono    Data: dates, counts, ids,
                                           emails, links, tech lists.
+   ------------------------------------------------------------
+   Three faces, two families: Grotesk and Mono were drawn together, so
+   titles, copy and data share a skeleton, and Bebas is the one condensed
+   voice for stamps. (Montserrat + League Spartan were both geometric sans,
+   which left titles and body reading as one face at two sizes.)
    ============================================================ */
 
 /*
@@ -188,6 +193,11 @@
     overflow-x: hidden;
   }
 
+  /*
+   * 500 rather than the inherited 400: at display sizes Space Grotesk 400 is
+   * noticeably lighter than the face it replaced, and the chapter titles lost
+   * their presence against the ink panels.
+   */
   h1,
   h2,
   h3,
@@ -196,6 +206,7 @@
   h6,
   .font-heading {
     font-family: var(--font-heading);
+    font-weight: 500;
   }
 }
 
@@ -415,7 +426,7 @@
 .sfx-deploy::after,
 .sfx-scholar::after {
   position: absolute;
-  font-family: var(--font-bebas-neue), "Impact", sans-serif;
+  font-family: var(--font-display);
   font-size: clamp(5rem, 18vw, 15rem);
   letter-spacing: 0.08em;
   color: rgba(10, 10, 10, 0.032);
