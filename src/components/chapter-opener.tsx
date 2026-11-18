@@ -51,7 +51,7 @@ export function ChapterOpener({
               {actKicker(act)}{" // "}{label}
             </span>
             <h2
-              className="font-manga leading-none text-white"
+              className="leading-none tracking-[0.04em] text-white"
               style={{ fontSize: "clamp(2.6rem, 6.2vw, 5.2rem)" }}
             >
               {title}

@@ -145,7 +145,7 @@ function ProjectFile({ project, index, onOpen }: ProjectFileProps) {
           </div>
 
           <div>
-            <h3 className="font-manga text-2xl leading-none tracking-wide text-[var(--ink)] sm:text-3xl">
+            <h3 className="text-2xl leading-none tracking-wide text-[var(--ink)] sm:text-3xl">
               {project.name}
             </h3>
             <p
@@ -285,7 +285,7 @@ export function Projects({ data }: ProjectsProps) {
                   ACT. 03 // CASE FILES &amp; BUILDS
                 </span>
                 <h2
-                  className="font-manga leading-none text-white"
+                  className="leading-none tracking-[0.04em] text-white"
                   style={{ fontSize: "clamp(2.6rem, 6.2vw, 5.2rem)" }}
                 >
                   PROJECTS
@@ -373,7 +373,7 @@ export function Projects({ data }: ProjectsProps) {
                   {String((openIndex ?? 0) + 1).padStart(2, "0")} /{" "}
                   {String(catalog.length).padStart(2, "0")}
                 </span>
-                <span className="font-manga truncate text-sm tracking-wider sm:text-lg">
+                <span className="truncate font-heading text-sm tracking-wider sm:text-lg">
                   {active.name}
                 </span>
               </div>

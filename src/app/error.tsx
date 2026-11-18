@@ -39,7 +39,7 @@ export default function Error({
                 <AlertTriangle className="h-6 w-6" aria-hidden="true" />
               </div>
               <h1
-                className="font-manga leading-[0.9] tracking-wide text-[var(--ink)]"
+                className="leading-[0.9] tracking-wide text-[var(--ink)]"
                 style={{ fontSize: "clamp(2.4rem, 7vw, 4.4rem)" }}
               >
                 SOMETHING

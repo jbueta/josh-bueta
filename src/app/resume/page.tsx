@@ -69,7 +69,7 @@ export default function ResumePage() {
               <div className="flex flex-wrap items-start justify-between gap-3">
                 <div>
                   <h1
-                    className="font-manga leading-none tracking-wide text-[var(--ink)]"
+                    className="leading-none tracking-wide text-[var(--ink)]"
                     style={{ fontSize: "clamp(2.1rem, 4.8vw, 3.4rem)" }}
                   >
                     {SITE.name.toUpperCase()}
@@ -100,7 +100,7 @@ export default function ResumePage() {
             </header>
 
             <section className="mt-6">
-              <h2 className="font-manga border-b-2 border-[var(--ink)] pb-1 text-sm tracking-[0.35em] text-[var(--ink)]">
+              <h2 className="border-b-2 border-[var(--ink)] pb-1 text-sm tracking-[0.35em] text-[var(--ink)]">
                 SUMMARY
               </h2>
               <p className="mt-2 font-sans text-sm leading-relaxed text-[hsl(var(--muted-foreground))]">
@@ -112,11 +112,11 @@ export default function ResumePage() {
             </section>
 
             <section className="mt-6">
-              <h2 className="font-manga border-b-2 border-[var(--ink)] pb-1 text-sm tracking-[0.35em] text-[var(--ink)]">
+              <h2 className="border-b-2 border-[var(--ink)] pb-1 text-sm tracking-[0.35em] text-[var(--ink)]">
                 EDUCATION
               </h2>
               <div className="mt-2 flex flex-wrap items-baseline justify-between gap-2">
-                <h3 className="font-manga text-lg tracking-wide text-[var(--ink)]">
+                <h3 className="text-lg tracking-wide text-[var(--ink)]">
                   {EDUCATION.degree}
                 </h3>
                 <span className="font-mono text-[11px] text-[hsl(var(--muted-foreground))]">
@@ -133,7 +133,7 @@ export default function ResumePage() {
             </section>
 
             <section className="mt-6">
-              <h2 className="font-manga border-b-2 border-[var(--ink)] pb-1 text-sm tracking-[0.35em] text-[var(--ink)]">
+              <h2 className="border-b-2 border-[var(--ink)] pb-1 text-sm tracking-[0.35em] text-[var(--ink)]">
                 LEADERSHIP
               </h2>
               <ul className="mt-2 flex flex-col gap-2">
@@ -149,7 +149,7 @@ export default function ResumePage() {
             </section>
 
             <section className="mt-6">
-              <h2 className="font-manga border-b-2 border-[var(--ink)] pb-1 text-sm tracking-[0.35em] text-[var(--ink)]">
+              <h2 className="border-b-2 border-[var(--ink)] pb-1 text-sm tracking-[0.35em] text-[var(--ink)]">
                 SCHOLARSHIPS &amp; GRANTS
               </h2>
                           <ul className="mt-2 flex flex-col gap-2 print-cols">
@@ -167,7 +167,7 @@ export default function ResumePage() {
             </section>
 
             <section className="mt-6">
-              <h2 className="font-manga border-b-2 border-[var(--ink)] pb-1 text-sm tracking-[0.35em] text-[var(--ink)]">
+              <h2 className="border-b-2 border-[var(--ink)] pb-1 text-sm tracking-[0.35em] text-[var(--ink)]">
                 CERTIFICATIONS ({ALL_CERTIFICATIONS.length})
               </h2>
               {[...groups.entries()].map(([issuer, titles]) => (
@@ -187,7 +187,7 @@ export default function ResumePage() {
             </section>
 
             <section className="mt-6">
-              <h2 className="font-manga border-b-2 border-[var(--ink)] pb-1 text-sm tracking-[0.35em] text-[var(--ink)]">
+              <h2 className="border-b-2 border-[var(--ink)] pb-1 text-sm tracking-[0.35em] text-[var(--ink)]">
                 TECHNICAL SKILLS
               </h2>
               <p className="mt-2 font-sans text-xs leading-relaxed text-[hsl(var(--muted-foreground))] print-cols">

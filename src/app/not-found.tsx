@@ -34,7 +34,7 @@ export default function NotFound() {
                 <FileQuestion className="h-6 w-6" aria-hidden="true" />
               </div>
               <h1
-                className="font-manga leading-[0.9] tracking-wide text-[var(--ink)]"
+                className="leading-[0.9] tracking-wide text-[var(--ink)]"
                 style={{ fontSize: "clamp(2.6rem, 8vw, 5rem)" }}
               >
                 404

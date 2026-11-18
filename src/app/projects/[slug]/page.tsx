@@ -147,7 +147,7 @@ export default async function ProjectPage({ params }: PageProps) {
             </span>
 
             <h1
-              className="font-manga leading-[0.92] tracking-wide text-[var(--ink)]"
+              className="leading-[0.92] tracking-wide text-[var(--ink)]"
               style={{ fontSize: "clamp(2rem, 4.6vw, 3.5rem)" }}
             >
               {project.name}
@@ -204,7 +204,7 @@ export default async function ProjectPage({ params }: PageProps) {
                   >
                     {chapter.code}
                   </span>
-                  <h2 className="font-manga text-lg tracking-[0.3em] text-[var(--ink)] sm:text-xl">
+                  <h2 className="text-lg tracking-[0.3em] text-[var(--ink)] sm:text-xl">
                     {chapter.title}
                   </h2>
                 </div>

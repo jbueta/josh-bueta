@@ -220,7 +220,7 @@ export function TimelineTitle({
   return (
     <h4
       className={cn(
-        "text-base font-manga tracking-wide text-[var(--ink)] group-hover:text-[var(--seido)] transition-colors",
+        "text-base font-heading tracking-wide text-[var(--ink)] group-hover:text-[var(--seido)] transition-colors",
         className
       )}
       {...props}

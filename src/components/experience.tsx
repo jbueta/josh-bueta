@@ -69,7 +69,7 @@ export function Experience() {
                       <span className="block font-mono text-[10px] tracking-[0.3em] text-[hsl(var(--muted-foreground))]">
                         PANEL 02-A // ACADEMICS
                       </span>
-                      <h3 className="font-manga text-lg leading-none tracking-widest sm:text-xl">
+                      <h3 className="text-lg leading-none tracking-widest sm:text-xl">
                         ACADEMIC FOUNDATION
                       </h3>
                     </div>
@@ -85,7 +85,7 @@ export function Experience() {
                 </div>
 
                 <h4
-                  className="font-manga mb-4 leading-none tracking-wide text-[var(--ink)]"
+                  className="mb-4 leading-none tracking-wide text-[var(--ink)]"
                   style={{ fontSize: "clamp(1.6rem, 3.2vw, 2.5rem)" }}
                 >
                   {EDUCATION.degree.toUpperCase()}
@@ -157,7 +157,7 @@ export function Experience() {
                   </span>
                 </div>
                 <h3
-                  className="font-manga mb-3 leading-[0.92] text-[var(--ink)]"
+                  className="mb-3 leading-[0.92] text-[var(--ink)]"
                   style={{ fontSize: "clamp(2rem, 3.8vw, 3.1rem)" }}
                 >
                   PLP COMPUTER
@@ -207,7 +207,7 @@ export function Experience() {
                     <TimelineContent>
                       <TimelineHeader>
                         <div className="flex flex-wrap items-center gap-2">
-                          <TimelineTitle className="font-manga text-lg tracking-wide text-[var(--ink)] group-hover:text-[var(--seido)]">
+                          <TimelineTitle className="text-lg tracking-wide text-[var(--ink)] group-hover:text-[var(--seido)]">
                             {position.role}
                           </TimelineTitle>
                           <span className="border border-[var(--ink)] bg-white px-1.5 py-0.5 font-mono text-[10px] text-[var(--ink)]">
@@ -249,11 +249,13 @@ export function Experience() {
                       key={scholarship.code}
                       className="border-l-4 border-[var(--ink)] py-0.5 pl-3.5"
                     >
-                      <div className="mb-1 flex items-center justify-between gap-2 font-mono text-[10px] text-[hsl(var(--muted-foreground))]">
+                      {/* Wraps the period onto its own line before either
+                          label is forced to break mid-phrase. */}
+                      <div className="mb-1 flex flex-wrap items-center justify-between gap-x-2 gap-y-0.5 font-mono text-[10px] text-[hsl(var(--muted-foreground))]">
                         <span className="font-bold text-[var(--ink)]">{scholarship.organization}</span>
-                        <span>{scholarship.period}</span>
+                        <span className="whitespace-nowrap">{scholarship.period}</span>
                       </div>
-                      <h4 className="font-manga mb-1 text-base tracking-wide text-[var(--ink)] sm:text-lg">
+                      <h4 className="mb-1 text-base tracking-wide text-[var(--ink)] sm:text-lg">
                         {scholarship.title}
                       </h4>
                       <p className="font-sans text-xs leading-relaxed text-[hsl(var(--muted-foreground))]">
@@ -284,11 +286,11 @@ export function Experience() {
                       key={grant.code}
                       className="border-l-4 border-[var(--seido)] py-0.5 pl-3.5"
                     >
-                      <div className="mb-1 flex items-center justify-between gap-2 font-mono text-[10px] text-[hsl(var(--muted-foreground))]">
+                      <div className="mb-1 flex flex-wrap items-center justify-between gap-x-2 gap-y-0.5 font-mono text-[10px] text-[hsl(var(--muted-foreground))]">
                         <span className="font-bold text-[var(--ink)]">{grant.organization}</span>
-                        <span>{grant.period}</span>
+                        <span className="whitespace-nowrap">{grant.period}</span>
                       </div>
-                      <h4 className="font-manga mb-1 text-base tracking-wide text-[var(--ink)] sm:text-lg">
+                      <h4 className="mb-1 text-base tracking-wide text-[var(--ink)] sm:text-lg">
                         {grant.title}
                       </h4>
                       <p className="font-sans text-xs leading-relaxed text-[hsl(var(--muted-foreground))]">
@@ -309,7 +311,7 @@ export function Experience() {
                 <div className="mb-3 inline-flex border-2 border-white/30 p-2">
                   <Award className="h-5 w-5 text-white" aria-hidden="true" />
                 </div>
-                <h3 className="font-manga text-xl leading-tight tracking-[0.2em] text-white">
+                <h3 className="text-xl leading-tight tracking-[0.2em] text-white">
                   4x SCHOLAR
                   <br />
                   <span className="text-xs tracking-[0.3em] text-white/65">STEM &amp; CLOUD</span>

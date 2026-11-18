@@ -86,10 +86,10 @@ export function Contact() {
                 <div className="mb-3 inline-flex border-2 border-white/30 p-2">
                   <MessageSquare className="h-4 w-4 text-white" aria-hidden="true" />
                 </div>
-                <h3 className="font-manga text-2xl leading-tight tracking-[0.18em] text-white">DIRECT <br /> CHANNELS</h3>
+                <h3 className="text-2xl leading-tight tracking-[0.18em] text-white">DIRECT <br /> CHANNELS</h3>
                 <p className="mt-2 font-sans text-xs leading-relaxed text-white/70">Prefer email? Reach me directly — the form sends to the same inbox.</p>
 
-                <a href={`mailto:${SITE.email}`} className="font-manga mt-5 inline-flex items-center gap-2 border border-white/40 px-3 py-2 text-[10px] tracking-[0.25em] text-white transition-colors hover:bg-white hover:text-[var(--ink)]">
+                <a href={`mailto:${SITE.email}`} className="mt-5 inline-flex items-center gap-2 border border-white/40 px-3 py-2 font-mono text-[11px] text-white transition-colors hover:bg-white hover:text-[var(--ink)]">
                   <Mail className="h-3.5 w-3.5" aria-hidden="true" />
                   {SITE.email}
                 </a>
@@ -127,7 +127,7 @@ export function Contact() {
               <div className="screentone-fine pointer-events-none absolute inset-0 opacity-40" aria-hidden="true" />
               <div className="relative z-10">
                 <div className="mb-5 flex flex-wrap items-center justify-between gap-2 border-b-2 border-[var(--ink)] pb-3">
-                  <h3 className="font-manga text-xl tracking-[0.28em] text-[var(--ink)]">SEND A MESSAGE</h3>
+                  <h3 className="text-xl tracking-[0.28em] text-[var(--ink)]">SEND A MESSAGE</h3>
                   <span className="font-mono text-[10px] tracking-[0.2em] text-[hsl(var(--muted-foreground))]">NO ACCOUNT REQUIRED</span>
                 </div>
 

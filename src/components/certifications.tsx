@@ -143,7 +143,7 @@ export function Certifications() {
                       <span className="block font-mono text-[10px] tracking-[0.35em] text-white/60">
                         {category.code}
                       </span>
-                      <h3 className="font-manga text-base leading-none tracking-[0.22em] text-white sm:text-lg">
+                      <h3 className="text-base leading-none tracking-[0.22em] text-white sm:text-lg">
                         {category.category.toUpperCase()}
                       </h3>
                     </div>
@@ -203,7 +203,7 @@ export function Certifications() {
 
                           <span
                             id={titleId}
-                            className="font-manga mb-2 flex items-start justify-between gap-2 text-lg tracking-wide text-[var(--ink)] group-hover:text-white sm:text-xl"
+                            className="mb-2 flex items-start justify-between gap-2 font-heading text-lg tracking-wide text-[var(--ink)] group-hover:text-white sm:text-xl"
                           >
                             <span>{cert.title}</span>
                           </span>
@@ -256,7 +256,7 @@ export function Certifications() {
                   <Award className="h-4 w-4 text-white" aria-hidden="true" />
                 </div>
                 <div>
-                  <h3 className="font-manga text-sm tracking-wide text-white sm:text-base">
+                                     <h3 className="text-sm tracking-wide text-white sm:text-base">
                     {selectedCert.title.toUpperCase()}
                   </h3>
                   <p className="font-mono text-[10px] text-white/70">

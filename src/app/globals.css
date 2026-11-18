@@ -141,27 +141,62 @@
    GLOBAL BASE
    ============================================================ */
 
-html {
-  scroll-behavior: smooth;
-  /* Anchor targets must clear the fixed navbar. */
-  scroll-padding-top: calc(var(--header-h) + 10px);
-}
+/* ============================================================
+   TYPE ROLES — one face per job, defined once
+   ------------------------------------------------------------
+   display   Bebas Neue      .font-manga   All-caps stamps only:
+                                          kickers, act breaks, tags,
+                                          chips, buttons, numerals.
+                                          Never a heading, never prose,
+                                          never anything whose casing
+                                          carries meaning (names,
+                                          emails) — the face is caps-only.
+   heading   League Spartan  h1–h6         Section, card and item
+                             .font-heading titles.
+   body      Montserrat      .font-sans    Paragraphs, descriptions,
+                                          form fields.
+   mono      Space Mono      .font-mono    Data: dates, counts, ids,
+                                          emails, links, tech lists.
+   ============================================================ */
 
-body {
-  background-color: var(--paper);
-  color: var(--ink);
-  font-family: var(--font-montserrat), system-ui, -apple-system, sans-serif;
-  overflow-x: hidden;
-}
+/*
+ * Base layer on purpose: left unlayered, the `font-family` on h1–h6 outranked
+ * `.font-manga` in the components layer, so every heading rendered League
+ * Spartan whatever face its markup asked for, and `body` outranked any
+ * `font-*` / `text-*` utility applied to it.
+ *
+ * Everything that a utility could plausibly want to set now sits in a layer:
+ * type (above and `.font-manga`), colour and background on `body`, the
+ * focus ring, panel/canvas surfaces, and the clip-path cuts. What is still
+ * unlayered is paint and motion only, with no competing utility in the
+ * codebase: `.screentone*`, `.speed-lines`, `.sfx-*::after`, the
+ * `.panel-reveal` states, `.animate-marquee*`, `.pdf-ios-fallback`,
+ * `::selection`, scrollbar styling, and the print sheet (which is
+ * `!important` by design).
+ */
+@layer base {
+  html {
+    scroll-behavior: smooth;
+    /* Anchor targets must clear the fixed navbar. */
+    scroll-padding-top: calc(var(--header-h) + 10px);
+  }
 
-h1,
-h2,
-h3,
-h4,
-h5,
-h6,
-.font-heading {
-  font-family: var(--font-league-spartan), system-ui, sans-serif;
+  body {
+    background-color: var(--paper);
+    color: var(--ink);
+    font-family: var(--font-sans);
+    overflow-x: hidden;
+  }
+
+  h1,
+  h2,
+  h3,
+  h4,
+  h5,
+  h6,
+  .font-heading {
+    font-family: var(--font-heading);
+  }
 }
 
 /*
@@ -172,7 +207,7 @@ h6,
  */
 @layer components {
   .font-manga {
-    font-family: var(--font-bebas-neue), "Impact", "Arial Black", system-ui, sans-serif;
+    font-family: var(--font-display);
     letter-spacing: 0.04em;
   }
 }
@@ -315,23 +350,25 @@ h6,
 }
 
 /* Diagonal Polygon Cuts for Chapter Openers & Project Showcase */
-.chapter-cut-bottom {
-  clip-path: polygon(0 0, 100% 0, 100% calc(100% - 22px), 0 100%);
-}
+@layer components {
+  .chapter-cut-bottom {
+    clip-path: polygon(0 0, 100% 0, 100% calc(100% - 22px), 0 100%);
+  }
 
-.chapter-cut-top {
-  clip-path: polygon(0 22px, 100% 0, 100% 100%, 0 100%);
-}
-.panel-cut-corner {
-  clip-path: polygon(0 0, calc(100% - 24px) 0, 100% 24px, 100% 100%, 24px 100%, 0 calc(100% - 24px));
-}
+  .chapter-cut-top {
+    clip-path: polygon(0 22px, 100% 0, 100% 100%, 0 100%);
+  }
+  .panel-cut-corner {
+    clip-path: polygon(0 0, calc(100% - 24px) 0, 100% 24px, 100% 100%, 24px 100%, 0 calc(100% - 24px));
+  }
 
-.slash-cut-right {
-  clip-path: polygon(0 0, 100% 0, calc(100% - 14px) 100%, 0 100%);
-}
+  .slash-cut-right {
+    clip-path: polygon(0 0, 100% 0, calc(100% - 14px) 100%, 0 100%);
+  }
 
-.slash-cut-left {
-  clip-path: polygon(14px 0, 100% 0, 100% 100%, 0 100%);
+  .slash-cut-left {
+    clip-path: polygon(14px 0, 100% 0, 100% 100%, 0 100%);
+  }
 }
 
 /* ============================================================
@@ -461,9 +498,16 @@ h6,
    FOCUS VISIBILITY — visible on paper and on ink panels
    ============================================================ */
 
-:where(a, button, input, textarea, select, summary, [tabindex]):focus-visible {
-  outline: 3px solid var(--seido);
-  outline-offset: 3px;
+/*
+ * Also layered: unlayered, this outranked every `focus-visible:outline-*`
+ * utility, so cards asking for an inset `outline-4` still got the global
+ * 3px outset ring (clipped by `overflow: hidden` panels).
+ */
+@layer base {
+  :where(a, button, input, textarea, select, summary, [tabindex]):focus-visible {
+    outline: 3px solid var(--seido);
+    outline-offset: 3px;
+  }
 }
 
 /* ============================================================

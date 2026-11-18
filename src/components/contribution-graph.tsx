@@ -206,7 +206,7 @@ export function ContributionGraph({
     >
       <div className="mb-4 flex flex-wrap items-start justify-between gap-2">
         <div>
-          <h3 className="font-manga text-sm tracking-widest text-[var(--ink)] sm:text-base">
+          <h3 className="text-sm tracking-widest text-[var(--ink)] sm:text-base">
             {data ? (
               <>
                 <span className="tabular-nums" style={{ color: "var(--seido)" }}>

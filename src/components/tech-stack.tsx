@@ -54,7 +54,7 @@ export function TechStack() {
                 <div className="mb-3 inline-flex border-2 border-white/30 p-2">
                   <Cpu className="h-4 w-4 text-white" aria-hidden="true" />
                 </div>
-                <h3 className="font-manga text-xl leading-tight tracking-[0.2em] text-white">
+                <h3 className="text-xl leading-tight tracking-[0.2em] text-white">
                   {TECH_COUNT} CORE
                   <br />
                   TECHNOLOGIES
