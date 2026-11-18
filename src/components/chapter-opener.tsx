@@ -48,18 +48,18 @@ export function ChapterOpener({
               className="font-manga slash-cut-right mb-3 inline-block px-3 py-1 text-[10px] tracking-[0.5em] text-white"
               style={{ background: "var(--seido)" }}
             >
-              {actKicker(act)} // {label}
+              {actKicker(act)}{" // "}{label}
             </span>
             <h2
               className="font-manga leading-none text-white"
-              style={{ fontSize: "clamp(3.2rem, 9vw, 7.5rem)" }}
+              style={{ fontSize: "clamp(2.6rem, 6.2vw, 5.2rem)" }}
             >
               {title}
             </h2>
             {subtitle ? (
               <p
                 className="font-manga mt-1 max-w-2xl text-balance tracking-[0.28em] text-white/60"
-                style={{ fontSize: "clamp(0.8rem, 2vw, 1.35rem)" }}
+                style={{ fontSize: "clamp(0.75rem, 1.4vw, 1rem)" }}
               >
                 {subtitle}
               </p>
@@ -71,7 +71,7 @@ export function ChapterOpener({
         <div
           className="font-manga pointer-events-none absolute bottom-0 right-2 select-none leading-none tabular-nums"
           style={{
-            fontSize: "clamp(5rem, 16vw, 14rem)",
+            fontSize: "clamp(3.75rem, 11vw, 8.5rem)",
             color: "rgba(255,255,255,0.042)",
           }}
           aria-hidden="true"

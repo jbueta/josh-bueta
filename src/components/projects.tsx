@@ -5,7 +5,6 @@ import Link from "next/link";
 import { MangaPanelReveal } from "@/components/manga-panel-reveal";
 import { ContributionGraph } from "@/components/contribution-graph";
 import { MangaDialog } from "@/components/ui/manga-dialog";
-import { ChapterOpener } from "@/components/chapter-opener";
 import { GithubIcon } from "@/components/icons";
 import { gsap } from "gsap";
 import { useGSAP } from "@gsap/react";
@@ -135,7 +134,7 @@ export function Projects({ data }: ProjectsProps) {
                 </span>
                 <h2
                   className="font-manga leading-none text-white"
-                  style={{ fontSize: "clamp(3rem, 9vw, 7.5rem)" }}
+                  style={{ fontSize: "clamp(2.6rem, 6.2vw, 5.2rem)" }}
                 >
                   PROJECTS
                 </h2>
@@ -143,7 +142,7 @@ export function Projects({ data }: ProjectsProps) {
                   <GitCommit className="h-3.5 w-3.5 text-white/60" aria-hidden="true" />
                   <p
                     className="font-manga tracking-[0.28em] text-white/60"
-                    style={{ fontSize: "clamp(0.75rem, 1.8vw, 1.25rem)" }}
+                    style={{ fontSize: "clamp(0.72rem, 1.3vw, 0.95rem)" }}
                   >
                     HOMEPAGE PREVIEWS &amp; LIVE GITHUB TELEMETRY
                   </p>
@@ -163,7 +162,7 @@ export function Projects({ data }: ProjectsProps) {
             <div
               className="font-manga pointer-events-none absolute bottom-0 right-2 select-none leading-none"
               style={{
-                fontSize: "clamp(5rem, 16vw, 14rem)",
+                fontSize: "clamp(3.75rem, 11vw, 8.5rem)",
                 color: "rgba(255,255,255,0.038)",
               }}
               aria-hidden="true"
@@ -405,7 +404,7 @@ export function Projects({ data }: ProjectsProps) {
 
             {/* Row 3 left: overview */}
             <MangaPanelReveal direction="up" className="lg:col-span-7">
-              <div className="panel sfx-deploy flex h-full flex-col justify-between bg-[var(--paper)] p-6 sm:p-8">
+              <div className="panel panel-cut-corner sfx-deploy flex h-full flex-col justify-between bg-[var(--paper)] p-6 sm:p-8">
                 <div>
                   <div className="mb-4 flex flex-wrap items-start justify-between gap-3 border-b-2 border-[var(--ink)] pb-4">
                     <div>
@@ -493,7 +492,7 @@ export function Projects({ data }: ProjectsProps) {
 
             {/* Row 3 right: thumbnail strip */}
             <MangaPanelReveal direction="right" className="lg:col-span-5">
-              <div className="panel flex h-full flex-col justify-between bg-[var(--paper)] p-4">
+              <div className="panel panel-cut-corner flex h-full flex-col justify-between bg-[var(--paper)] p-4">
                 <div className="mb-3 flex items-center justify-between">
                   <span className="font-manga text-xs tracking-[0.3em] text-[var(--ink)]">
                     QUICK SELECT

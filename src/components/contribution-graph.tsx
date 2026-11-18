@@ -127,7 +127,7 @@ export function ContributionGraph({
 
   const monthLabels = useMemo(
     () =>
-      flat.map(({ week, dayInWeek }) => {
+      flat.map(({ week }) => {
         const first = firstDay(visibleWeeks.slice(week, week + 7));
         if (!first) return "";
         const month = Number(first[0].slice(5, 7)) - 1;
@@ -136,7 +136,7 @@ export function ContributionGraph({
         const previousMonth = previous ? Number(previous[0].slice(5, 7)) - 1 : -1;
         return month !== previousMonth ? MONTH_ABBR[month] : "";
       }),
-    [visibleWeeks],
+    [flat, visibleWeeks],
   );
 
   const weekColumns = Math.max(visibleWeeks.length, 1);
@@ -152,20 +152,13 @@ export function ContributionGraph({
   const total = data?.total ?? 0;
 
   function moveFocus(from: string, delta: number) {
-    const target = flat.find(({ day }) => day !== null && day[0] === from);
-    if (!target) return;
     const index = flat.findIndex(({ day }) => day !== null && day[0] === from);
-    let next = index;
-    if (delta < 0) {
-      while (next > 0 && flat[next - 1].day === null) next -= 1;
-      next -= 1;
-    } else {
-      while (next < flat.length - 1 && flat[next + 1].day === null) next += 1;
-      next += 1;
-    }
-    const { week, dayInWeek } = flat[next] ?? target;
-    const candidate = visibleWeeks[week + dayInWeek];
-    if (candidate === null) return;
+    if (index === -1) return;
+    // Step past padded cells so focus always lands on a real day.
+    let next = index + delta;
+    while (next >= 0 && next < flat.length && flat[next]?.day == null) next += delta;
+    const candidate = next >= 0 && next < flat.length ? flat[next]?.day ?? null : null;
+    if (!candidate) return;
     const node = gridRef.current?.querySelector<HTMLElement>(`[data-day="${candidate[0]}"]`);
     if (node) {
       node.focus();
@@ -175,7 +168,7 @@ export function ContributionGraph({
 
   function onCellKeyDown(event: React.KeyboardEvent<HTMLButtonElement>) {
     const day = flat.find((f) => f.day !== null && f.day[0] === focusedDay)?.day;
-    if (day === null) return;
+    if (!day) return;
     if (event.key === "ArrowLeft" || event.key === "ArrowRight") {
       event.preventDefault();
       moveFocus(day[0], event.key === "ArrowLeft" ? -1 : 1);

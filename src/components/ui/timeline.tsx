@@ -78,6 +78,9 @@ export function TimelineDot({
   isLast, // Destructured to prevent passing unknown DOM prop to div
   ...props
 }: TimelineDotProps) {
+  // Accepted only so the timeline can pass flags down; never rendered.
+  void isLast;
+
   return (
     <div
       className={cn(
@@ -137,6 +140,11 @@ export function TimelineContent({
   isLast, // Destructured to prevent passing unknown DOM prop to div
   ...props
 }: TimelineSubProps) {
+  // Kept off the DOM: timeline children receive these flags, the rendered
+  // element must not.
+  void isActive;
+  void isLast;
+
   return (
     <div className={cn("ml-4 flex-1 pb-2", className)} {...props}>
       {children}
@@ -151,6 +159,9 @@ export function TimelineHeader({
   isLast, // Destructured
   ...props
 }: TimelineSubProps) {
+  void isActive;
+  void isLast;
+
   return (
     <div
       className={cn("flex flex-col sm:flex-row sm:items-center justify-between gap-1 mb-1", className)}
@@ -174,6 +185,9 @@ export function TimelineTime({
   isLast, // Destructured
   ...props
 }: TimelineTimeProps) {
+  void isActive;
+  void isLast;
+
   return (
     <time
       dateTime={dateTime}
@@ -200,6 +214,9 @@ export function TimelineTitle({
   isLast, // Destructured
   ...props
 }: TimelineTextProps) {
+  void isActive;
+  void isLast;
+
   return (
     <h4
       className={cn(
@@ -220,6 +237,9 @@ export function TimelineDescription({
   isLast, // Destructured
   ...props
 }: TimelineTextProps) {
+  void isActive;
+  void isLast;
+
   return (
     <p
       className={cn(

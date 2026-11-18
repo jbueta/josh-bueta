@@ -70,7 +70,7 @@ export default function ResumePage() {
                 <div>
                   <h1
                     className="font-manga leading-none tracking-wide text-[var(--ink)]"
-                    style={{ fontSize: "clamp(2.4rem, 7vw, 4.2rem)" }}
+                    style={{ fontSize: "clamp(2.1rem, 4.8vw, 3.4rem)" }}
                   >
                     {SITE.name.toUpperCase()}
                   </h1>

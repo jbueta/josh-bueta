@@ -48,7 +48,7 @@ export function TechStack() {
       <div className="w-full" style={{ background: "var(--ink)", padding: "var(--gutter)" }}>
         <div className="canvas grid grid-cols-1 lg:grid-cols-12" style={{ gap: "var(--gutter)" }}>
           <MangaPanelReveal direction="left" index={0} className="lg:col-span-3">
-            <div className="panel relative flex h-full flex-col justify-between overflow-hidden bg-[var(--ink)] p-6 text-white">
+            <div className="panel panel-cut-corner relative flex h-full flex-col justify-between overflow-hidden bg-[var(--ink)] p-6 text-white">
               <div className="speed-lines pointer-events-none absolute inset-0 opacity-30" aria-hidden="true" />
               <div className="relative z-10">
                 <div className="mb-3 inline-flex border-2 border-white/30 p-2">
@@ -71,7 +71,7 @@ export function TechStack() {
           </MangaPanelReveal>
 
           <MangaPanelReveal direction="right" index={1} className="lg:col-span-9">
-            <div className="panel relative flex h-full items-center overflow-hidden bg-[var(--paper)]">
+            <div className="panel panel-cut-corner relative flex h-full items-center overflow-hidden bg-[var(--paper)]">
               <div className="screentone-fine pointer-events-none absolute inset-0 opacity-45" aria-hidden="true" />
               <div className="relative flex w-full flex-col items-center gap-3 overflow-hidden py-7">
                 <Marquee pauseOnHover className="[--duration:22s] [--gap:0.6rem]">

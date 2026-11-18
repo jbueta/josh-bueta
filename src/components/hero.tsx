@@ -188,7 +188,7 @@ export function Hero() {
 
               <h1
                 className="font-manga mb-5 leading-[0.86] tracking-wide text-[var(--ink)]"
-                style={{ fontSize: "clamp(3.4rem, 6.5vw, 6.8rem)" }}
+                style={{ fontSize: "clamp(2.7rem, 5.2vw, 5rem)" }}
               >
                 MARK
                 <br />

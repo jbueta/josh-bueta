@@ -94,7 +94,7 @@ export function Footer({ telemetry }: FooterProps) {
             <div className="flex flex-col gap-4 md:col-span-5">
               <div
                 className="font-manga select-none leading-none tracking-widest text-white"
-                style={{ fontSize: "clamp(3.5rem, 10vw, 6.5rem)" }}
+                style={{ fontSize: "clamp(2.75rem, 6vw, 4.8rem)" }}
               >
                 {SITE.shortName}
               </div>
@@ -193,7 +193,7 @@ export function Footer({ telemetry }: FooterProps) {
             className="fixed bottom-6 right-6 z-40 border-2 border-[var(--ink)] bg-[var(--paper)] p-4 text-[var(--ink)] shadow-[3px_3px_0_var(--ink)] transition-colors duration-150 hover:bg-[var(--ink)] hover:text-[var(--paper)] hover:shadow-none active:translate-x-[2px] active:translate-y-[2px]"
           >
             <ArrowUp className="h-5 w-5" aria-hidden="true" />
-          </button>
+          </motion.button>
         )}
       </AnimatePresence>
     </>

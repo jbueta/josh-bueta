@@ -23,7 +23,6 @@ export default async function ProjectOpengraphImage({ params }: ImageProps) {
   const project = getProject(slug);
   const title = project?.name ?? "Case file";
   const tagline = project?.tagline ?? SITE.role;
-  const tech = project?.techStack.join(" · ") ?? "";
   const techNode = project ? (project.techStack ? formatTech(project.techStack) : undefined) : undefined;
 
   return new ImageResponse(
@@ -117,5 +116,25 @@ export default async function ProjectOpengraphImage({ params }: ImageProps) {
       </div>
     ),
     { ...size },
+  );
+}
+
+function formatTech(techStack: string[]) {
+  return (
+    <div style={{ display: "flex", flexWrap: "wrap", gap: 8 }}>
+      {techStack.map((tech) => (
+        <span
+          key={tech}
+          style={{
+            border: "2px solid rgba(255,255,255,0.35)",
+            padding: "6px 12px",
+            fontSize: 18,
+            letterSpacing: 1,
+          }}
+        >
+          {tech}
+        </span>
+      ))}
+    </div>
   );
 }

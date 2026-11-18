@@ -162,7 +162,10 @@ export function Certifications() {
                         aria-describedby={descriptionId}
                         className={cn(
                           spanClass,
-                          "panel group relative flex flex-col justify-between bg-white p-5 text-left transition-colors duration-150 hover:bg-[var(--ink)] focus-visible:outline-4 focus-visible:outline-offset-[-4px] focus-visible:outline-[var(--seido)]",
+                          // Alternating tilt turns the mosaic into a board of
+                          // pasted-up panels instead of an even card grid.
+                          certIndex % 2 === 0 ? "panel-paste panel-paste-l" : "panel-paste panel-paste-r",
+                          "panel panel-cut-corner group relative flex flex-col justify-between bg-white p-5 text-left transition-colors duration-150 hover:bg-[var(--ink)] focus-visible:outline-4 focus-visible:outline-offset-[-4px] focus-visible:outline-[var(--seido)]",
                         )}
                       >
                         {cert.featured && (

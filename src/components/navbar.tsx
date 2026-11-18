@@ -67,6 +67,9 @@ export function Navbar() {
   useEffect(() => {
     if (!mobileMenuOpen) return;
 
+    // Capture the toggle now: reading the ref inside cleanup warns, and the
+    // button is the same node for the life of the menu.
+    const toggle = toggleRef.current;
     const previousOverflow = document.body.style.overflow;
     document.body.style.overflow = "hidden";
 
@@ -107,7 +110,7 @@ export function Navbar() {
       window.clearTimeout(focusTimer);
       document.body.style.overflow = previousOverflow;
       document.removeEventListener("keydown", onKeyDown);
-      toggleRef.current?.focus();
+      toggle?.focus();
     };
   }, [mobileMenuOpen]);
 

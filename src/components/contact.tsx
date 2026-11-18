@@ -1,7 +1,7 @@
 "use client";
 
 import React, { useState } from "react";
-import { Copy, Mail, Send, Check, AlertTriangle, MessageSquare } from "@/components/icons";
+import { Copy, Mail, Send, Check, AlertTriangle, MessageSquare } from "lucide-react";
 import { GithubIcon, LinkedinIcon } from "@/components/icons";
 import { SITE } from "@/content/site";
 import { ChapterOpener } from "@/components/chapter-opener";
@@ -226,4 +226,3 @@ export function Contact() {
     </section>
   );
 }
-</write_file>

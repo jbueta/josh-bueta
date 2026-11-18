@@ -11,8 +11,6 @@ import {
 import { GithubIcon as GithubGlyph } from "@/components/icons";
 import { Navbar } from "@/components/navbar";
 import { Footer } from "@/components/footer";
-import { ChapterOpener } from "@/components/chapter-opener";
-import { ActBreak } from "@/components/act-break";
 import { PROJECTS, getProject } from "@/content/projects";
 
 export const dynamicParams = false;
@@ -150,7 +148,7 @@ export default async function ProjectPage({ params }: PageProps) {
 
             <h1
               className="font-manga leading-[0.92] tracking-wide text-[var(--ink)]"
-              style={{ fontSize: "clamp(2.2rem, 6vw, 4.4rem)" }}
+              style={{ fontSize: "clamp(2rem, 4.6vw, 3.5rem)" }}
             >
               {project.name}
             </h1>
