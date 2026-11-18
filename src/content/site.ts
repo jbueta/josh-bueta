@@ -2,7 +2,13 @@
  * Single source of truth for identity, links and SEO defaults.
  * Used by metadata, JSON-LD, the footer, the resume page and the contact form.
  */
-const rawUrl = process.env.NEXT_PUBLIC_SITE_URL ?? "http://localhost:3000";
+const rawUrl =
+  process.env.NEXT_PUBLIC_SITE_URL ??
+  (process.env.VERCEL_PROJECT_PRODUCTION_URL
+    ? `https://${process.env.VERCEL_PROJECT_PRODUCTION_URL}`
+    : undefined) ??
+  (process.env.VERCEL_URL ? `https://${process.env.VERCEL_URL}` : undefined) ??
+  "http://localhost:3000";
 
 export const SITE = {
   url: rawUrl.replace(/\/$/, ""),
