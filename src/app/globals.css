@@ -291,6 +291,18 @@ h6,
   }
 }
 
+/*
+ * Below the two-column spread the panels stack one per row and run almost
+ * gutter to gutter, where the crooked paste reads as a frame that missed the
+ * page edge. Keep them square until there are two columns to offset.
+ */
+@media (max-width: 1023px) {
+  .panel-paste-l,
+  .panel-paste-r {
+    transform: none;
+  }
+}
+
 /* Diagonal Polygon Cuts for Chapter Openers & Project Showcase */
 .chapter-cut-bottom {
   clip-path: polygon(0 0, 100% 0, 100% calc(100% - 22px), 0 100%);

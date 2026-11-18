@@ -123,7 +123,9 @@ export function Hero() {
           {/* PANEL 1 — dominant splash (7/12) */}
           <div
             ref={leftRef}
-            className="panel relative min-h-[440px] bg-white sm:min-h-[540px] lg:col-span-7 lg:row-span-3"
+            /* On a phone the portrait used to take the whole first screen, so
+               the name and the CV link only appeared after a scroll. */
+            className="panel relative min-h-[320px] bg-white sm:min-h-[540px] lg:col-span-7 lg:row-span-3"
           >
             <CinematicAvatar onClick={() => setIsLightboxOpen(true)} />
 
@@ -158,7 +160,7 @@ export function Hero() {
           {/* PANEL 3 — identity panel (5/12) */}
           <div
             ref={rightMidRef}
-            className="panel relative flex flex-col justify-center bg-[var(--paper)] py-10 pl-12 pr-7 sm:pl-14 sm:pr-10 lg:col-span-5 lg:py-9"
+            className="panel relative flex flex-col justify-center bg-[var(--paper)] py-8 pl-8 pr-6 sm:py-10 sm:pl-14 sm:pr-10 lg:col-span-5 lg:py-9"
           >
             {/* One spine label replaces the ghost "01" and the "CODE" watermark. */}
             <span
