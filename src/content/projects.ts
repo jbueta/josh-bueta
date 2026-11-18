@@ -28,6 +28,12 @@ export type Project = {
   liveUrl?: string;
   previewImage: string;
   previewAlt: string;
+  /**
+   * Your own capture for the homepage case file, e.g. `/projects/lumora.png`.
+   * Leave unset and the homepage renders a 16:10 placeholder frame instead.
+   */
+  screenshot?: string;
+  screenshotAlt?: string;
   role: ProjectRole;
   owner: string;
   collaborators: string[];

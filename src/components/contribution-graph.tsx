@@ -13,6 +13,8 @@ interface ContributionGraphProps {
   className?: string;
 }
 
+type Day = ContributionData["days"][number];
+
 /** One coherent five-step navy ramp; no arbitrary blues. */
 const LEVEL_CLASS: Record<0 | 1 | 2 | 3 | 4, string> = {
   0: "bg-[var(--seido-0)] border border-white/10",
@@ -34,67 +36,48 @@ function formatDay(isoDate: string): string {
   return DATE_FORMAT.format(new Date(Date.UTC(year, month - 1, day)));
 }
 
-function formatStamp(iso: string): string {
-  return formatSyncStamp(iso);
-}
-
 /**
  * Groups days into Sunday-started calendar weeks (GitHub's layout).
  *
- * The series is sorted defensively and the first week is padded, so the grid
- * rows really are Mon…Sun and a single column is one week. Slicing the raw
- * array every 7 entries assumed the source was already sorted and aligned.
+ * Each entry is a whole week, so column and row indices are known up front and
+ * a month label belongs to a *column*, not to a day cell.
  */
-function groupWeeks(days: ContributionData["days"]): (ContributionData["days"][number] | null)[] {
+function groupWeeks(days: Day[]): (Day | null)[][] {
   if (days.length === 0) return [];
 
   const ordered = [...days].sort((a, b) => a[0].localeCompare(b[0]));
-  const weeks: (ContributionData["days"][number] | null)[] = [];
-  let week: (ContributionData["days"][number] | null)[] = [];
+  const weeks: (Day | null)[][] = [];
 
   const firstWeekday = new Date(`${ordered[0][0]}T00:00:00Z`).getUTCDay();
-  for (let pad = 0; pad < firstWeekday; pad += 1) week.push(null);
+  let week: (Day | null)[] = Array.from({ length: firstWeekday }, () => null);
 
   for (const day of ordered) {
     week.push(day);
     if (week.length === 7) {
-      weeks.push(...week);
+      weeks.push(week);
       week = [];
     }
   }
 
   if (week.length > 0) {
     while (week.length < 7) week.push(null);
-    weeks.push(...week);
+    weeks.push(week);
   }
 
   return weeks;
 }
 
-/** Flatten the week grid into one row for roving tabindex and arrow-key moves. */
-function flattenWeeks(weeks: (ContributionData["days"][number] | null)[]): {
-  week: number;
-  dayInWeek: number;
-  day: ContributionData["days"][number] | null;
-}[] {
-  const flat: { week: number; dayInWeek: number; day: ContributionData["days"][number] | null }[] = [];
-  for (let w = 0; w < weeks.length; w += 7) {
-    for (let d = 0; d < 7; d += 1) {
-      flat.push({ week: w, dayInWeek: d, day: weeks[w + d] ?? null });
-    }
-  }
-  return flat;
-}
-
-const firstDay = (week: (ContributionData["days"][number] | null)[]): ContributionData["days"][number] | null =>
-  week.find((day): day is ContributionData["days"][number] => day !== null) ?? null;
+const firstDayOf = (week: (Day | null)[] | undefined): Day | null =>
+  week?.find((day): day is Day => day !== null) ?? null;
 
 const MONTH_ABBR = [
   "JAN", "FEB", "MAR", "APR", "MAY", "JUN",
   "JUL", "AUG", "SEP", "OCT", "NOV", "DEC",
 ];
 
+/** 18 columns keeps the squares legible on a phone; below that they turn to mush. */
 const SMALL_QUERY = "(max-width: 639px)";
+const SMALL_WEEKS = 18;
 
 function subscribeSmall(onChange: () => void) {
   if (typeof window === "undefined") return () => {};
@@ -119,30 +102,47 @@ export function ContributionGraph({
   const isSmall = useSyncExternalStore(subscribeSmall, getSmallSnapshot, () => false);
 
   const weeks = useMemo(() => (data ? groupWeeks(data.days) : []), [data]);
-  /** Only the last 26 weeks so the grid fits a small phone without a scroll box. */
-  const visibleWeeks = isSmall ? weeks.slice(-26) : weeks;
-
-  const flat: { week: number; dayInWeek: number; day: ContributionData["days"][number] | null }[] =
-    useMemo(() => flattenWeeks(visibleWeeks), [visibleWeeks]);
-
-  const monthLabels = useMemo(
-    () =>
-      flat.map(({ week }) => {
-        const first = firstDay(visibleWeeks.slice(week, week + 7));
-        if (!first) return "";
-        const month = Number(first[0].slice(5, 7)) - 1;
-        const previousWeek = week - 7;
-        const previous = previousWeek >= 0 ? firstDay(visibleWeeks.slice(previousWeek, previousWeek + 7)) : null;
-        const previousMonth = previous ? Number(previous[0].slice(5, 7)) - 1 : -1;
-        return month !== previousMonth ? MONTH_ABBR[month] : "";
-      }),
-    [flat, visibleWeeks],
+  const visibleWeeks = useMemo(
+    () => (isSmall ? weeks.slice(-SMALL_WEEKS) : weeks),
+    [isSmall, weeks],
   );
 
   const weekColumns = Math.max(visibleWeeks.length, 1);
   const gridStyle: React.CSSProperties = {
     gridTemplateColumns: `repeat(${weekColumns}, minmax(0, 1fr))`,
   };
+
+  /**
+   * One label per week column, shown only when the month actually turns over
+   * and never closer than three columns to the previous label. The old code
+   * emitted a label per *day cell* and placed the 180+ of them by grid column
+   * index, which blew the grid out and pushed the whole calendar sideways.
+   */
+  const monthLabels = useMemo(() => {
+    let lastShown = -99;
+    return visibleWeeks.map((week, column) => {
+      const first = firstDayOf(week);
+      if (!first) return "";
+      const month = Number(first[0].slice(5, 7)) - 1;
+      const previous = firstDayOf(visibleWeeks[column - 1]);
+      const previousMonth = previous ? Number(previous[0].slice(5, 7)) - 1 : -1;
+      if (month === previousMonth || column - lastShown < 3) return "";
+      lastShown = column;
+      return MONTH_ABBR[month];
+    });
+  }, [visibleWeeks]);
+
+  const flat = useMemo(
+    () =>
+      visibleWeeks.flatMap((week, column) =>
+        Array.from({ length: 7 }, (_, dayInWeek) => ({
+          column,
+          dayInWeek,
+          day: week[dayInWeek] ?? null,
+        })),
+      ),
+    [visibleWeeks],
+  );
 
   const sourceBadge =
     meta.source === "live"
@@ -151,6 +151,13 @@ export function ContributionGraph({
 
   const total = data?.total ?? 0;
 
+  function focusDay(iso: string) {
+    const node = gridRef.current?.querySelector<HTMLElement>(`[data-day="${iso}"]`);
+    if (!node) return;
+    node.focus();
+    setFocusedDay(iso);
+  }
+
   function moveFocus(from: string, delta: number) {
     const index = flat.findIndex(({ day }) => day !== null && day[0] === from);
     if (index === -1) return;
@@ -158,17 +165,13 @@ export function ContributionGraph({
     let next = index + delta;
     while (next >= 0 && next < flat.length && flat[next]?.day == null) next += delta;
     const candidate = next >= 0 && next < flat.length ? flat[next]?.day ?? null : null;
-    if (!candidate) return;
-    const node = gridRef.current?.querySelector<HTMLElement>(`[data-day="${candidate[0]}"]`);
-    if (node) {
-      node.focus();
-      setFocusedDay(candidate[0]);
-    }
+    if (candidate) focusDay(candidate[0]);
   }
 
   function onCellKeyDown(event: React.KeyboardEvent<HTMLButtonElement>) {
-    const day = flat.find((f) => f.day !== null && f.day[0] === focusedDay)?.day;
+    const day = flat.find((cell) => cell.day !== null && cell.day[0] === focusedDay)?.day;
     if (!day) return;
+
     if (event.key === "ArrowLeft" || event.key === "ArrowRight") {
       event.preventDefault();
       moveFocus(day[0], event.key === "ArrowLeft" ? -1 : 1);
@@ -177,20 +180,12 @@ export function ContributionGraph({
       moveFocus(day[0], event.key === "ArrowUp" ? -7 : 7);
     } else if (event.key === "Home") {
       event.preventDefault();
-      const first = flat.find((f) => f.day !== null)?.day;
-      if (first) {
-        const node = gridRef.current?.querySelector<HTMLElement>(`[data-day="${first[0]}"]`);
-        node?.focus();
-        setFocusedDay(first[0]);
-      }
+      const first = flat.find((cell) => cell.day !== null)?.day;
+      if (first) focusDay(first[0]);
     } else if (event.key === "End") {
       event.preventDefault();
-      const last = flat.findLast((f) => f.day !== null)?.day;
-      if (last) {
-        const node = gridRef.current?.querySelector<HTMLElement>(`[data-day="${last[0]}"]`);
-        node?.focus();
-        setFocusedDay(last[0]);
-      }
+      const last = flat.findLast((cell) => cell.day !== null)?.day;
+      if (last) focusDay(last[0]);
     }
   }
 
@@ -206,15 +201,18 @@ export function ContributionGraph({
           <h3 className="font-manga text-sm tracking-widest text-[var(--ink)] sm:text-base">
             {data ? (
               <>
-                <span className="text-[var(--seido)] tabular-nums">{total}</span>{" "}
-                CONTRIBUTIONS IN THE LAST YEAR
+                <span className="tabular-nums" style={{ color: "var(--seido)" }}>
+                  {total}
+                </span>{" "}
+                CONTRIBUTIONS {isSmall ? "IN 18 WEEKS" : "IN THE LAST YEAR"}
               </>
             ) : (
               "CONTRIBUTION SYNC UNAVAILABLE"
             )}
           </h3>
           <p className="mt-1 font-mono text-[10px] uppercase tracking-[0.2em] text-[hsl(var(--muted-foreground))]">
-            SYNCED {formatStamp(meta.syncedAt)} · {meta.source === "live" ? "GITHUB API" : "REPO SNAPSHOT"}
+            SYNCED {formatSyncStamp(meta.syncedAt)} ·{" "}
+            {meta.source === "live" ? "GITHUB API" : "REPO SNAPSHOT"}
           </p>
         </div>
         <span
@@ -230,122 +228,111 @@ export function ContributionGraph({
       {data ? (
         <>
           <div className="sr-only">
-            Contribution calendar for the last year: {total} contributions. On a visible
-            day, focus it and use the arrow keys to move between dates; Home and End jump
-            to the first and last day shown.
+            Contribution calendar: {total} contributions. Focus a visible day and use the
+            arrow keys to move between dates; Home and End jump to the first and last day
+            shown.
           </div>
 
-          <div className="relative w-full border-2 border-[var(--ink)] bg-[#0a0a0a] p-3 sm:p-4">
-            {/* pt-10 reserves room inside the scroll box for the top row's
-                tooltip, which would otherwise be clipped by overflow. */}
-            <div className="w-full overflow-x-auto overflow-y-hidden pb-2 pt-10">
-              <div className="flex w-full min-w-[560px] sm:min-w-[680px] flex-col">
-                <div className="mb-2 flex w-full">
-                  <div className="w-8 shrink-0 pr-3" aria-hidden="true" />
-                  <div
-                    className="grid w-full flex-1 gap-[3px] font-mono text-[11px] text-white/65 sm:gap-[4px]"
-                    style={gridStyle}
-                    aria-hidden="true"
-                  >
-                    {monthLabels.map((label, index) => (
-                      <span
-                        key={index}
-                        className="min-w-0 whitespace-nowrap text-left"
-                        style={{ gridColumnStart: index + 1 }}
-                      >
-                        {label}
-                      </span>
-                    ))}
-                    {isSmall ? (
-                      <span
-                        className="min-w-0 whitespace-nowrap text-left text-[hsl(var(--muted-foreground))]"
-                        style={{ gridColumnStart: weekColumns + 1, writingMode: "vertical-rl" }}
-                      >
-                        LAST 6 MONTHS ({String(visibleWeeks.length).padStart(2, "0")} WEEKS)
-                      </span>
-                    ) : null}
-                  </div>
+          <div className="relative w-full border-2 border-[var(--ink)] bg-[#0a0a0a] px-2.5 pb-3 pt-2 sm:px-4 sm:pb-4">
+            <div className="w-full pb-1 pt-9 sm:pt-10">
+              {/* Month labels: one per week column, same track as the squares. */}
+              <div className="mb-1.5 flex w-full" aria-hidden="true">
+                <div className="w-7 shrink-0 sm:w-8" />
+                <div
+                  className="grid min-w-0 flex-1 gap-[2px] font-mono text-[9px] leading-none text-white/60 sm:gap-1 sm:text-[10px]"
+                  style={gridStyle}
+                >
+                  {monthLabels.map((label, column) => (
+                    <span
+                      key={column}
+                      className="whitespace-nowrap pl-[1px] text-left"
+                      style={{ gridColumnStart: column + 1 }}
+                    >
+                      {label}
+                    </span>
+                  ))}
+                </div>
+              </div>
+
+              <div className="flex w-full items-stretch">
+                <div
+                  className="relative w-7 shrink-0 pr-2 font-mono text-[9px] text-white/55 sm:w-8 sm:text-[10px]"
+                  aria-hidden="true"
+                >
+                  {["Mon", "Wed", "Fri"].map((label, index) => (
+                    <span
+                      key={label}
+                      className="absolute right-2 -translate-y-1/2 leading-none"
+                      style={{ top: `${(((index * 2 + 1) / 7) * 100).toFixed(2)}%` }}
+                    >
+                      {label}
+                    </span>
+                  ))}
                 </div>
 
-                <div className="flex w-full items-stretch">
-                  <div
-                    className="grid w-8 shrink-0 gap-[3px] pr-3 font-mono text-[11px] text-white/65 sm:gap-[4px]"
-                    aria-hidden="true"
-                    style={{ gridTemplateRows: "repeat(7, minmax(0, 1fr))" }}
-                  >
-                    <span />
-                    <span>Mon</span>
-                    <span />
-                    <span>Wed</span>
-                    <span />
-                    <span>Fri</span>
-                    <span />
-                  </div>
-
-                  <div
-                    ref={gridRef}
-                    role="grid"
-                    aria-label="Contribution days"
-                    className="grid w-full flex-1 gap-[3px] sm:gap-[4px]"
-                    style={gridStyle}
-                  >
-                    {flat.map(({ week, dayInWeek, day }) =>
-                      day ? (
-                        <button
-                          key={day[0]}
-                          type="button"
-                          tabIndex={focusedDay === day[0] ? 0 : -1}
-                          data-day={day[0]}
-                          aria-label={`${day[1]} contribution${day[1] === 1 ? "" : "s"} on ${formatDay(day[0])}`}
-                          onMouseEnter={() => setActive({ date: day[0], count: day[1] })}
-                          onMouseLeave={() => setActive(null)}
-                          onFocus={() => {
-                            setFocusedDay(day[0]);
-                            setActive({ date: day[0], count: day[1] });
-                          }}
-                          onBlur={() => {
-                            setActive(null);
-                            setFocusedDay(null);
-                          }}
-                          onKeyDown={onCellKeyDown}
-                          className={cn(
-                            "relative aspect-square min-h-[10px] min-w-[10px] cursor-pointer rounded-none transition-all duration-200 hover:scale-125",
-                            LEVEL_CLASS[day[2] as 0 | 1 | 2 | 3 | 4],
-                          )}
-                        >
-                          {active?.date === day[0] && (
-                            <span
-                              className={cn(
-                                "pointer-events-none absolute bottom-full z-50 mb-2.5 whitespace-nowrap border-2 border-white bg-[#0a0a0a] px-3 py-1.5 font-mono text-[11px] font-medium text-white",
-                                week > 36
+                <div
+                  ref={gridRef}
+                  role="grid"
+                  aria-label="Contribution days"
+                  className="grid min-w-0 flex-1 gap-[2px] sm:gap-1"
+                  style={gridStyle}
+                >
+                  {flat.map(({ column, dayInWeek, day }) =>
+                    day ? (
+                      <button
+                        key={day[0]}
+                        type="button"
+                        tabIndex={focusedDay === day[0] ? 0 : -1}
+                        data-day={day[0]}
+                        aria-label={`${day[1]} contribution${day[1] === 1 ? "" : "s"} on ${formatDay(day[0])}`}
+                        onMouseEnter={() => setActive({ date: day[0], count: day[1] })}
+                        onMouseLeave={() => setActive(null)}
+                        onFocus={() => {
+                          setFocusedDay(day[0]);
+                          setActive({ date: day[0], count: day[1] });
+                        }}
+                        onBlur={() => {
+                          setActive(null);
+                          setFocusedDay(null);
+                        }}
+                        onKeyDown={onCellKeyDown}
+                        className={cn(
+                          "relative aspect-square w-full min-w-0 cursor-pointer rounded-none transition-transform duration-150 hover:scale-110",
+                          LEVEL_CLASS[day[2] as 0 | 1 | 2 | 3 | 4],
+                        )}
+                      >
+                        {active?.date === day[0] && (
+                          <span
+                            className={cn(
+                              "pointer-events-none absolute bottom-full z-50 mb-2 whitespace-nowrap border-2 border-white bg-[#0a0a0a] px-2.5 py-1 font-mono text-[10px] font-medium text-white shadow-lg sm:px-3 sm:py-1.5 sm:text-[11px]",
+                              column < 3
+                                ? "left-0"
+                                : column > weekColumns - 4
                                   ? "right-0"
-                                  : week < 6
-                                    ? "left-0"
-                                    : "left-1/2 -translate-x-1/2",
-                              )}
-                            >
-                              <span className="font-bold text-[#60a5fa]">
-                                {day[1] === 0 ? "No" : day[1]} contribution
-                                {day[1] === 1 ? "" : "s"}
-                              </span>{" "}
-                              on {formatDay(day[0])}
-                            </span>
-                          )}
-                        </button>
-                      ) : (
-                        <span
-                          key={`pad-${week}-${dayInWeek}`}
-                          aria-hidden="true"
-                          className="aspect-square min-h-[10px] min-w-[10px]"
-                        />
-                      ),
-                    )}
-                  </div>
+                                  : "left-1/2 -translate-x-1/2",
+                            )}
+                          >
+                            <span className="font-bold" style={{ color: "#8fb6ff" }}>
+                              {day[1] === 0 ? "No" : day[1]} contribution
+                              {day[1] === 1 ? "" : "s"}
+                            </span>{" "}
+                            on {formatDay(day[0])}
+                          </span>
+                        )}
+                      </button>
+                    ) : (
+                      <span
+                        key={`pad-${column}-${dayInWeek}`}
+                        aria-hidden="true"
+                        className="aspect-square w-full min-w-0"
+                      />
+                    ),
+                  )}
                 </div>
               </div>
             </div>
 
-            <div className="mt-1 flex items-center justify-end border-t border-white/15 pt-3 font-mono text-[11px] text-white/65">
+            <div className="mt-2 flex items-center justify-end border-t border-white/15 pt-2.5 font-mono text-[10px] text-white/60 sm:text-[11px]">
               <div className="flex items-center gap-1.5">
                 <span>Less</span>
                 <div className="flex items-center gap-1">

@@ -263,9 +263,18 @@ export function Navbar() {
                     exit={{ opacity: 0, x: -30 }}
                     transition={{ delay: 0.06 + index * 0.06, duration: 0.25 }}
                     onClick={() => setMobileMenuOpen(false)}
-                    className="font-manga border-b-2 border-transparent pb-1 text-[clamp(2.5rem,10vw,4.5rem)] leading-tight tracking-wide text-[hsl(var(--foreground))] transition-colors duration-100 hover:border-[hsl(var(--foreground))] hover:text-[hsl(var(--background))]"
+                    /* Hover paints Seido: the old rule turned the label white on
+                       a white overlay, so the item vanished under the cursor.
+                       Focus/active mirror it — touch devices rarely fire hover. */
+                    className="font-manga flex items-baseline gap-3 border-b-2 border-transparent pb-1 text-[clamp(2.5rem,10vw,4.5rem)] leading-tight tracking-wide text-[hsl(var(--foreground))] transition-colors duration-150 hover:border-[var(--seido)] hover:text-[var(--seido)] focus-visible:border-[var(--seido)] focus-visible:text-[var(--seido)] focus-visible:outline-none active:border-[var(--seido)] active:text-[var(--seido)]"
                   >
-                    {link.name.toUpperCase()}
+                    <span
+                      className="font-mono text-[10px] tracking-[0.24em] text-[var(--seido)]/35"
+                      aria-hidden="true"
+                    >
+                      {String(index + 1).padStart(2, "0")}
+                    </span>
+                    <span>{link.name.toUpperCase()}</span>
                   </motion.a>
                 ))}
               </nav>

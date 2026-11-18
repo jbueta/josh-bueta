@@ -1,40 +1,33 @@
 "use client";
 
-import React, { useCallback, useEffect, useMemo, useRef, useState } from "react";
+import React, { useCallback, useEffect, useMemo, useState } from "react";
 import Link from "next/link";
 import { MangaPanelReveal } from "@/components/manga-panel-reveal";
 import { ContributionGraph } from "@/components/contribution-graph";
 import { MangaDialog } from "@/components/ui/manga-dialog";
 import { GithubIcon } from "@/components/icons";
-import { gsap } from "gsap";
-import { useGSAP } from "@gsap/react";
 import {
-  ExternalLink,
-  GitCommit,
-  Star,
-  GitFork,
-  Users,
-  Code2,
-  GitPullRequest,
+  ArrowRight,
   ChevronLeft,
   ChevronRight,
-  Maximize2,
-  X,
-  Layers,
-  ArrowRight,
   Clock,
+  ExternalLink,
+  GitFork,
+  ImageIcon,
+  Star,
+  X,
 } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { PROJECTS, type Project } from "@/content/projects";
 import type { GithubData, RepoStat } from "@/lib/github";
-
-gsap.registerPlugin(useGSAP);
 
 const MONTH_YEAR = new Intl.DateTimeFormat("en-US", {
   month: "short",
   year: "numeric",
   timeZone: "UTC",
 });
+
+type CatalogProject = Project & { stats?: RepoStat };
 
 function formatUpdated(iso?: string): string | null {
   if (!iso) return null;
@@ -49,16 +42,188 @@ function repoHref(project: Project): string | undefined {
   return undefined;
 }
 
+/**
+ * The slot where each project's own capture goes.
+ *
+ * Set `screenshot` (and optionally `screenshotAlt`) in `src/content/projects.ts`
+ * once the capture is in `/public/projects/`, and this frame renders it. Until
+ * then it draws a labelled placeholder in the same 16:10 footprint, so the
+ * layout does not shift when the real image lands.
+ */
+function ScreenshotFrame({ project }: { project: CatalogProject }) {
+  if (project.screenshot) {
+    return (
+      /* eslint-disable-next-line @next/next/no-img-element -- user-supplied capture inside a fixed-ratio frame */
+      <img
+        src={project.screenshot}
+        alt={project.screenshotAlt ?? `${project.name} screenshot`}
+        width={1600}
+        height={1000}
+        loading="lazy"
+        decoding="async"
+        className="h-full w-full object-cover"
+      />
+    );
+  }
+
+  return (
+    <div
+      className="relative flex h-full w-full flex-col items-center justify-center gap-2 overflow-hidden bg-[var(--tone)] p-4 text-center"
+      aria-hidden="true"
+    >
+      <span className="screentone-fine absolute inset-0 opacity-70" />
+      <span className="absolute left-2.5 top-2.5 h-3.5 w-3.5 border-l-2 border-t-2 border-[var(--ink)]/35" />
+      <span className="absolute right-2.5 top-2.5 h-3.5 w-3.5 border-r-2 border-t-2 border-[var(--ink)]/35" />
+      <span className="absolute bottom-2.5 left-2.5 h-3.5 w-3.5 border-b-2 border-l-2 border-[var(--ink)]/35" />
+      <span className="absolute bottom-2.5 right-2.5 h-3.5 w-3.5 border-b-2 border-r-2 border-[var(--ink)]/35" />
+
+      <ImageIcon className="relative h-6 w-6 text-[var(--ink)]/30" />
+      <span className="font-manga relative text-[11px] tracking-[0.36em] text-[var(--ink)]/60">
+        SCREENSHOT // PENDING
+      </span>
+      <span className="relative max-w-full truncate font-mono text-[9px] uppercase tracking-[0.16em] text-[var(--ink)]/35">
+        16:10 · /projects/{project.slug}.png
+      </span>
+    </div>
+  );
+}
+
+interface ProjectFileProps {
+  project: CatalogProject;
+  index: number;
+  onOpen: () => void;
+}
+
+/** One case file in the spread: capture on one side, copy on the other. */
+function ProjectFile({ project, index, onOpen }: ProjectFileProps) {
+  const repo = repoHref(project);
+  const updated = formatUpdated(project.stats?.pushedAt) ?? project.year;
+  const stars = project.stats?.stars ?? 0;
+  const forks = project.stats?.forks ?? 0;
+  const imageRight = index % 2 === 1;
+
+  return (
+    <article className="group border-b-[3px] border-[var(--ink)] last:border-b-0">
+      <div className="grid grid-cols-1 md:grid-cols-12">
+        <div
+          className={cn(
+            "relative border-b-[3px] border-[var(--ink)] md:col-span-5 md:border-b-0",
+            imageRight ? "md:order-2 md:border-l-[3px]" : "md:border-r-[3px]",
+          )}
+        >
+          <button
+            type="button"
+            onClick={onOpen}
+            aria-label={`Open preview for ${project.name}`}
+            className="block w-full cursor-zoom-in focus-visible:outline-4 focus-visible:outline-offset-[-4px] focus-visible:outline-[var(--seido)]"
+          >
+            <span className="block w-full" style={{ aspectRatio: "16 / 10" }}>
+              <ScreenshotFrame project={project} />
+            </span>
+            <span className="font-manga absolute right-2 top-2 inline-flex items-center gap-1 border-2 border-[var(--ink)] bg-white px-2 py-0.5 text-[9px] tracking-[0.25em] text-[var(--ink)] shadow-[2px_2px_0_var(--ink)] transition-colors group-hover:bg-[var(--seido)] group-hover:text-white">
+              <ExternalLink className="h-2.5 w-2.5" aria-hidden="true" />
+              EXPAND
+            </span>
+          </button>
+        </div>
+
+        <div className="flex flex-col gap-3 p-5 sm:p-7 md:col-span-7">
+          <div className="flex flex-wrap items-center gap-x-2.5 gap-y-1 font-mono text-[10px] uppercase tracking-[0.2em] text-[hsl(var(--muted-foreground))]">
+            <span
+              className="font-manga px-1.5 py-0.5 text-[10px] tracking-[0.25em] text-white"
+              style={{ background: "var(--ink)" }}
+            >
+              FILE {String(index + 1).padStart(2, "0")}
+            </span>
+            <span>{project.role}</span>
+            <span aria-hidden="true">·</span>
+            <span>{project.year}</span>
+            <span className="ml-auto flex items-center gap-1.5">
+              <Clock className="h-3 w-3" aria-hidden="true" />
+              UPDATED {updated}
+            </span>
+          </div>
+
+          <div>
+            <h3 className="font-manga text-2xl leading-none tracking-wide text-[var(--ink)] sm:text-3xl">
+              {project.name}
+            </h3>
+            <p
+              className="font-manga mt-1.5 text-[11px] leading-relaxed tracking-[0.22em]"
+              style={{ color: "var(--seido)" }}
+            >
+              {project.tagline.toUpperCase()}
+            </p>
+          </div>
+
+          <p className="max-w-2xl font-sans text-sm leading-relaxed text-[hsl(var(--muted-foreground))]">
+            {project.summary}
+          </p>
+
+          <p className="flex flex-wrap items-center gap-x-1.5 gap-y-1 font-mono text-[10px] uppercase tracking-wider text-[var(--ink)]/70">
+            {project.techStack.map((tech, techIndex) => (
+              <React.Fragment key={tech}>
+                {techIndex > 0 && (
+                  <span className="text-[var(--ink)]/30" aria-hidden="true">
+                    ·
+                  </span>
+                )}
+                <span>{tech}</span>
+              </React.Fragment>
+            ))}
+            {(stars > 0 || forks > 0) && (
+              <span className="ml-auto flex items-center gap-2.5">
+                {stars > 0 && (
+                  <span className="flex items-center gap-1">
+                    <Star className="h-3 w-3" aria-hidden="true" />
+                    {stars}
+                  </span>
+                )}
+                {forks > 0 && (
+                  <span className="flex items-center gap-1">
+                    <GitFork className="h-3 w-3" aria-hidden="true" />
+                    {forks}
+                  </span>
+                )}
+              </span>
+            )}
+          </p>
+
+          <div className="mt-auto flex flex-wrap items-center gap-2 border-t-2 border-[var(--ink)]/15 pt-3.5">
+            <Link
+              href={`/projects/${project.slug}`}
+              className="font-manga inline-flex items-center gap-1.5 border-2 border-[var(--ink)] px-3 py-1.5 text-[10px] tracking-[0.24em] text-white transition-opacity hover:opacity-85 focus-visible:outline-4 focus-visible:outline-[var(--seido)]"
+              style={{ background: "var(--seido)" }}
+            >
+              READ CASE FILE
+              <ArrowRight className="h-3 w-3" aria-hidden="true" />
+            </Link>
+            {repo && (
+              <a
+                href={repo}
+                target="_blank"
+                rel="noopener noreferrer"
+                className="font-manga inline-flex items-center gap-1.5 border-2 border-[var(--ink)] bg-white px-3 py-1.5 text-[10px] tracking-[0.24em] text-[var(--ink)] transition-colors hover:bg-[var(--ink)] hover:text-white focus-visible:outline-4 focus-visible:outline-[var(--seido)]"
+              >
+                <GithubIcon className="h-3.5 w-3.5" aria-hidden="true" />
+                REPOSITORY
+              </a>
+            )}
+          </div>
+        </div>
+      </div>
+    </article>
+  );
+}
+
 interface ProjectsProps {
   data: GithubData;
 }
 
 export function Projects({ data }: ProjectsProps) {
-  const [activeIndex, setActiveIndex] = useState(0);
-  const [lightboxOpen, setLightboxOpen] = useState(false);
-  const heroCardRef = useRef<HTMLDivElement>(null);
+  const [openIndex, setOpenIndex] = useState<number | null>(null);
 
-  const catalog = useMemo(
+  const catalog = useMemo<CatalogProject[]>(
     () =>
       PROJECTS.map((project) => ({
         ...project,
@@ -69,33 +234,26 @@ export function Projects({ data }: ProjectsProps) {
     [data.repos],
   );
 
-  const current = catalog[activeIndex] ?? catalog[0];
-
-  useGSAP(
-    () => {
-      if (!heroCardRef.current) return;
-      if (window.matchMedia("(prefers-reduced-motion: reduce)").matches) return;
-      gsap.fromTo(
-        heroCardRef.current,
-        { scale: 0.985, opacity: 0.75 },
-        { scale: 1, opacity: 1, duration: 0.28, ease: "power2.out" },
-      );
-    },
-    { dependencies: [activeIndex] },
-  );
+  const active = openIndex === null ? null : catalog[openIndex];
 
   const prev = useCallback(
-    () => setActiveIndex((index) => (index - 1 + catalog.length) % catalog.length),
+    () =>
+      setOpenIndex((index) =>
+        index === null ? null : (index - 1 + catalog.length) % catalog.length,
+      ),
     [catalog.length],
   );
   const next = useCallback(
-    () => setActiveIndex((index) => (index + 1) % catalog.length),
+    () =>
+      setOpenIndex((index) =>
+        index === null ? null : (index + 1) % catalog.length,
+      ),
     [catalog.length],
   );
 
-  // ← / → page through previews while the lightbox is open.
+  // ← / → page through captures while the dialog is open.
   useEffect(() => {
-    if (!lightboxOpen) return;
+    if (openIndex === null) return;
     const onKeyDown = (event: KeyboardEvent) => {
       if (event.key === "ArrowLeft") {
         event.preventDefault();
@@ -107,13 +265,7 @@ export function Projects({ data }: ProjectsProps) {
     };
     window.addEventListener("keydown", onKeyDown);
     return () => window.removeEventListener("keydown", onKeyDown);
-  }, [lightboxOpen, next, prev]);
-
-  const repo = repoHref(current);
-  const updated = formatUpdated(current.stats?.pushedAt) ?? current.year;
-  const stars = current.stats?.stars ?? 0;
-  const forks = current.stats?.forks ?? 0;
-  const language = current.stats?.language ?? current.techStack[0];
+  }, [openIndex, next, prev]);
 
   return (
     <>
@@ -139,12 +291,12 @@ export function Projects({ data }: ProjectsProps) {
                   PROJECTS
                 </h2>
                 <div className="mt-1 flex items-center gap-2">
-                  <GitCommit className="h-3.5 w-3.5 text-white/60" aria-hidden="true" />
+                  <Clock className="h-3.5 w-3.5 text-white/60" aria-hidden="true" />
                   <p
                     className="font-manga tracking-[0.28em] text-white/60"
                     style={{ fontSize: "clamp(0.72rem, 1.3vw, 0.95rem)" }}
                   >
-                    HOMEPAGE PREVIEWS &amp; LIVE GITHUB TELEMETRY
+                    {String(catalog.length).padStart(2, "0")} SYSTEMS ON FILE
                   </p>
                 </div>
               </div>
@@ -172,478 +324,135 @@ export function Projects({ data }: ProjectsProps) {
           </div>
         </MangaPanelReveal>
 
-                    <div className="w-full" style={{ background: "var(--ink)", padding: "var(--gutter)" }}>
-          <div
-            className="canvas grid grid-cols-1 lg:grid-cols-12"
-            style={{ gap: "var(--gutter)" }}
-          >
-            {/* Row 1 left: contribution matrix */}
-            <MangaPanelReveal direction="left" className="lg:col-span-9">
-              <div className="panel h-full bg-[var(--paper)] flex items-start w-full">
+        {/* One board for the whole chapter: telemetry band, then the case files. */}
+        <div
+          className="w-full"
+          style={{ background: "var(--ink)", padding: "var(--gutter)" }}
+        >
+          <MangaPanelReveal direction="up" className="canvas">
+            <div className="panel bg-[var(--paper)]">
+              <div className="flex flex-wrap items-center justify-between gap-x-4 gap-y-1 border-b-[3px] border-[var(--ink)] bg-[var(--ink)] px-4 py-2.5 font-mono text-[10px] uppercase tracking-[0.24em] text-white/70 sm:px-5">
+                <span>BUILD LOG // SHIPPED WORK &amp; TELEMETRY</span>
+                <span className="text-white/45">HOVER A DAY · ← / → TO PAGE</span>
+              </div>
+
+              <div className="border-b-[3px] border-[var(--ink)]">
                 <ContributionGraph
                   data={data.contributions}
                   meta={data.contributionsMeta}
                 />
               </div>
-            </MangaPanelReveal>
 
-            {/* Row 1 right: telemetry callout */}
-            <MangaPanelReveal direction="right" className="lg:col-span-3">
-              <div className="panel relative flex h-full flex-col justify-between overflow-hidden bg-[var(--ink)] p-6 text-white">
-                <div className="speed-lines pointer-events-none absolute inset-0 opacity-30" aria-hidden="true" />
-                <div className="relative z-10">
-                  <span
-                    className="font-manga mb-3 inline-block px-2.5 py-0.5 text-[10px] tracking-[0.4em] text-white"
-                    style={{ background: "var(--seido)" }}
-                  >
-                    BUILD LOG
-                  </span>
-                  <h3 className="font-manga text-2xl leading-tight tracking-wider text-white">
-                    SHIPPING
-                    <br />
-                    FULL-STACK
-                    <br />
-                    SYSTEMS
-                  </h3>
-                  <p className="mt-2 font-sans text-xs leading-relaxed text-white/70">
-                    Production web apps, AI-assisted platforms, and IoT dashboards built for
-                    real-world institutional and client use.
-                  </p>
-                </div>
-
-                <div className="relative z-10 mt-4 flex items-center justify-between border-t border-white/15 pt-4">
-                  <div>
-                    <span className="block font-mono text-[10px] text-white/60">
-                      FEATURED WORKS
-                    </span>
-                    <span className="font-manga text-2xl tracking-widest text-white">
-                      {String(catalog.length).padStart(2, "0")} SYSTEMS
-                    </span>
-                  </div>
-                  <Layers className="h-6 w-6 text-white/50" aria-hidden="true" />
-                </div>
-              </div>
-            </MangaPanelReveal>
-
-            {/* Row 2 left: featured preview */}
-            <MangaPanelReveal direction="left" className="lg:col-span-8">
-              <div
-                ref={heroCardRef}
-                className="panel group flex h-full flex-col justify-between bg-[var(--paper)]"
-              >
-                <div className="flex items-center justify-between gap-2 border-b-4 border-[var(--ink)] bg-[var(--ink)] px-4 py-2.5 text-white sm:px-5">
-                  <div className="flex min-w-0 items-center gap-2.5">
-                    <span
-                      className="font-manga shrink-0 px-2 py-0.5 text-[10px] tracking-[0.35em] text-white"
-                      style={{ background: "var(--seido)" }}
-                    >
-                      PANEL {String(activeIndex + 1).padStart(2, "0")}
-                    </span>
-                    <span className="truncate font-mono text-[11px] text-white/85">
-                      {current.fullName ?? current.slug}
-                    </span>
-                  </div>
-
-                  <span
-                    className={cn(
-                      "font-manga inline-flex shrink-0 items-center gap-1 px-2 py-0.5 text-[10px] tracking-[0.35em]",
-                      current.role === "Owner"
-                        ? "bg-white text-[var(--ink)]"
-                        : "bg-[var(--seido)] text-white",
-                    )}
-                  >
-                    {current.role === "Owner" ? (
-                      <Code2 className="h-2.5 w-2.5" aria-hidden="true" />
-                    ) : (
-                      <GitPullRequest className="h-2.5 w-2.5" aria-hidden="true" />
-                    )}
-                    {current.role.toUpperCase()}
-                  </span>
-                </div>
-
-                <button
-                  type="button"
-                  onClick={() => setLightboxOpen(true)}
-                  aria-label={`Inspect ${current.name} homepage preview`}
-                  className="relative w-full cursor-zoom-in overflow-hidden bg-[var(--paper)] focus-visible:outline-4 focus-visible:outline-offset-[-4px] focus-visible:outline-[var(--seido)]"
-                  style={{ aspectRatio: "16/9.3" }}
-                >
-                  {/* eslint-disable-next-line @next/next/no-img-element -- SVG illustration, fixed-aspect frame */}
-                  <img
-                    src={current.previewImage}
-                    alt={current.previewAlt}
-                    width={1280}
-                    height={744}
-                    loading="lazy"
-                    decoding="async"
-                    className="h-full w-full object-cover transition-transform duration-500 group-hover:scale-[1.015]"
-                  />
-
-                  <span className="font-manga absolute right-3 top-3 z-10 inline-flex items-center gap-1.5 border-2 border-white bg-[var(--ink)] px-3 py-1 text-[10px] tracking-[0.3em] text-white shadow-[3px_3px_0_rgba(0,0,0,0.5)] transition-colors group-hover:bg-[var(--seido)]">
-                    <Maximize2 className="h-3 w-3" aria-hidden="true" />
-                    INSPECT LANDING PAGE
-                  </span>
-
-                  <span className="absolute inset-x-0 bottom-0 flex items-end justify-between gap-3 bg-gradient-to-t from-black/90 via-black/60 to-transparent px-4 pb-3 pt-8 sm:px-5">
-                    <span className="block text-left">
-                      <span className="block font-mono text-[10px] uppercase tracking-[0.3em] text-white/75">
-                        HOMEPAGE / INTERFACE PREVIEW
-                      </span>
-                      <span className="font-manga block text-base leading-tight tracking-wider text-white sm:text-xl">
-                        {current.tagline.toUpperCase()}
-                      </span>
-                    </span>
-                  </span>
-                </button>
-
-                <div className="flex flex-wrap items-center justify-between gap-3 border-t-2 border-[var(--ink)]/15 px-4 py-3 sm:px-5">
-                  <div className="flex items-center gap-1.5">
-                    <button
-                      type="button"
-                      onClick={prev}
-                      aria-label="Previous project"
-                      className="flex h-8 w-8 items-center justify-center border-2 border-[var(--ink)] bg-[var(--paper)] text-[var(--ink)] transition-colors hover:bg-[var(--ink)] hover:text-white focus-visible:outline-4 focus-visible:outline-[var(--seido)]"
-                    >
-                      <ChevronLeft className="h-4 w-4" aria-hidden="true" />
-                    </button>
-                    <span className="font-manga px-2 text-xs tracking-widest text-[var(--ink)]">
-                      {String(activeIndex + 1).padStart(2, "0")} /{" "}
-                      {String(catalog.length).padStart(2, "0")}
-                    </span>
-                    <button
-                      type="button"
-                      onClick={next}
-                      aria-label="Next project"
-                      className="flex h-8 w-8 items-center justify-center border-2 border-[var(--ink)] bg-[var(--paper)] text-[var(--ink)] transition-colors hover:bg-[var(--ink)] hover:text-white focus-visible:outline-4 focus-visible:outline-[var(--seido)]"
-                    >
-                      <ChevronRight className="h-4 w-4" aria-hidden="true" />
-                    </button>
-                  </div>
-
-                  <Link
-                    href={`/projects/${current.slug}`}
-                    className="font-manga inline-flex items-center gap-1.5 border-2 border-[var(--ink)] bg-[var(--seido)] px-3 py-1.5 text-[10px] tracking-[0.28em] text-white transition-opacity hover:opacity-85 focus-visible:outline-4 focus-visible:outline-[var(--seido)]"
-                  >
-                    READ CASE FILE
-                    <ArrowRight className="h-3 w-3" aria-hidden="true" />
-                  </Link>
-                </div>
-              </div>
-            </MangaPanelReveal>
-
-            {/* Row 2 right: index */}
-            <MangaPanelReveal direction="right" className="lg:col-span-4">
-              <div className="panel flex h-full flex-col justify-between bg-[var(--paper)]">
-                <div className="flex items-center justify-between border-b-4 border-[var(--ink)] bg-[var(--ink)] px-5 py-3 text-white">
-                  <span className="font-manga text-xs tracking-[0.35em]">CASE FILE INDEX</span>
-                  <span className="font-mono text-[10px] text-white/70">SELECT TO VIEW</span>
-                </div>
-
-                <div className="flex flex-1 flex-col divide-y-2 divide-[var(--ink)]/15">
-                  {catalog.map((project, index) => {
-                    const active = index === activeIndex;
-                    return (
-                      <button
-                        key={project.slug}
-                        type="button"
-                        onClick={() => setActiveIndex(index)}
-                        aria-pressed={active}
-                        aria-label={`View ${project.name}`}
-                        className={cn(
-                          "group relative flex w-full items-start gap-3 px-4 py-3.5 text-left transition-all duration-150 focus-visible:outline-4 focus-visible:outline-offset-[-4px] focus-visible:outline-[var(--seido)]",
-                          active
-                            ? "bg-[var(--ink)] text-white"
-                            : "bg-[var(--paper)] text-[var(--ink)] hover:bg-[var(--ink)]/10",
-                        )}
-                      >
-                        {active && (
-                          <span
-                            className="absolute bottom-0 left-0 top-0 w-1.5"
-                            style={{ background: "var(--seido)" }}
-                            aria-hidden="true"
-                          />
-                        )}
-                        <span
-                          className={cn(
-                            "font-manga shrink-0 border px-2 py-0.5 text-base tracking-widest",
-                            active
-                              ? "border-white/40 bg-[var(--seido)] text-white"
-                              : "border-[var(--ink)]/30 text-[var(--ink)]",
-                          )}
-                        >
-                          {String(index + 1).padStart(2, "0")}
-                        </span>
-                        <span className="min-w-0 flex-1">
-                          <span
-                            className={cn(
-                              "font-manga line-clamp-1 block text-sm leading-tight tracking-wide",
-                              active ? "text-white" : "text-[var(--ink)]",
-                            )}
-                          >
-                            {project.name}
-                          </span>
-                          <span
-                            className={cn(
-                              "mt-0.5 block truncate font-mono text-[10px]",
-                              active ? "text-white/70" : "text-[hsl(var(--muted-foreground))]",
-                            )}
-                          >
-                            {project.techStack.slice(0, 3).join(" · ")}
-                          </span>
-                        </span>
-                      </button>
-                    );
-                  })}
-                </div>
-
-                <p className="border-t-2 border-[var(--ink)]/15 px-4 py-2.5 font-mono text-[10px] leading-relaxed text-[hsl(var(--muted-foreground))]">
-                  PREVIEWS ARE ILLUSTRATED INTERFACE PANELS, NOT SCREENSHOTS.
-                </p>
-              </div>
-            </MangaPanelReveal>
-
-            {/* Row 3 left: overview */}
-            <MangaPanelReveal direction="up" className="lg:col-span-7">
-              <div className="panel panel-cut-corner sfx-deploy flex h-full flex-col justify-between bg-[var(--paper)] p-6 sm:p-8">
-                <div>
-                  <div className="mb-4 flex flex-wrap items-start justify-between gap-3 border-b-2 border-[var(--ink)] pb-4">
-                    <div>
-                      <span className="mb-1 block font-mono text-[10px] uppercase tracking-[0.25em] text-[hsl(var(--muted-foreground))]">
-                        ARCHITECTURAL OVERVIEW // {String(activeIndex + 1).padStart(2, "0")}
-                      </span>
-                      <h3 className="font-manga text-2xl leading-none tracking-wide text-[var(--ink)] sm:text-3xl">
-                        {current.name}
-                      </h3>
-                    </div>
-
-                    <div className="flex items-center gap-3 border-2 border-[var(--ink)] bg-white px-3 py-1 font-mono text-xs text-[var(--ink)] shadow-[2px_2px_0_var(--ink)]">
-                      {stars > 0 && (
-                        <span className="flex items-center gap-1">
-                          <Star className="h-3.5 w-3.5" aria-hidden="true" />
-                          {stars}
-                        </span>
-                      )}
-                      {forks > 0 && (
-                        <span className="flex items-center gap-1">
-                          <GitFork className="h-3.5 w-3.5" aria-hidden="true" />
-                          {forks}
-                        </span>
-                      )}
-                      <span className="flex items-center gap-1">
-                        <Clock className="h-3.5 w-3.5" aria-hidden="true" />
-                        {updated}
-                      </span>
-                    </div>
-                  </div>
-
-                  <p className="max-w-2xl font-sans text-sm leading-relaxed text-[hsl(var(--muted-foreground))]">
-                    {current.summary}
-                  </p>
-                  <p className="mt-2 max-w-2xl font-sans text-xs leading-relaxed text-[hsl(var(--muted-foreground))]">
-                    <span className="font-semibold text-[var(--ink)]">Problem: </span>
-                    {current.caseStudy.problem}
-                  </p>
-
-                  <div className="mt-4 flex flex-wrap gap-2">
-                    {current.techStack.map((tech) => (
-                      <span
-                        key={tech}
-                        className="border-2 border-[var(--ink)] bg-white px-2 py-0.5 font-mono text-[10px] uppercase tracking-wider text-[var(--ink)] shadow-[2px_2px_0_var(--ink)]"
-                      >
-                        {tech}
-                      </span>
-                    ))}
-                  </div>
-                </div>
-
-                <div className="mt-6 flex flex-wrap items-center justify-between gap-3 border-t-2 border-[var(--ink)]/15 pt-4">
-                  <div className="flex flex-wrap items-center gap-3 font-mono text-[10px] text-[hsl(var(--muted-foreground))]">
-                    <span className="flex items-center gap-1.5">
-                      <Users className="h-3.5 w-3.5" aria-hidden="true" />
-                      {current.collaborators.map((person) => `@${person}`).join(" · ")}
-                    </span>
-                    <span>{language}</span>
-                  </div>
-
-                  <div className="flex flex-wrap items-center gap-2">
-                    {repo && (
-                      <a
-                        href={repo}
-                        target="_blank"
-                        rel="noopener noreferrer"
-                        className="font-manga inline-flex items-center gap-1.5 border-2 border-[var(--ink)] bg-white px-3 py-1.5 text-[10px] tracking-[0.22em] text-[var(--ink)] transition-colors hover:bg-[var(--ink)] hover:text-white"
-                      >
-                        <GithubIcon className="h-3.5 w-3.5" aria-hidden="true" />
-                        REPOSITORY
-                      </a>
-                    )}
-                    <Link
-                      href={`/projects/${current.slug}`}
-                      className="font-manga inline-flex items-center gap-1.5 border-2 border-[var(--ink)] px-3 py-1.5 text-[10px] tracking-[0.22em] text-white transition-opacity hover:opacity-85"
-                      style={{ background: "var(--seido)" }}
-                    >
-                      FULL CASE FILE
-                      <ArrowRight className="h-3 w-3" aria-hidden="true" />
-                    </Link>
-                  </div>
-                </div>
-              </div>
-            </MangaPanelReveal>
-
-            {/* Row 3 right: thumbnail strip */}
-            <MangaPanelReveal direction="right" className="lg:col-span-5">
-              <div className="panel panel-cut-corner flex h-full flex-col justify-between bg-[var(--paper)] p-4">
-                <div className="mb-3 flex items-center justify-between">
-                  <span className="font-manga text-xs tracking-[0.3em] text-[var(--ink)]">
-                    QUICK SELECT
-                  </span>
-                  <span className="font-mono text-[10px] text-[hsl(var(--muted-foreground))]">
-                    {catalog.length} PANELS
-                  </span>
-                </div>
-                <div className="grid grid-cols-2 gap-2">
-                  {catalog.map((project, index) => {
-                    const active = index === activeIndex;
-                    return (
-                      <button
-                        key={project.slug}
-                        type="button"
-                        onClick={() => setActiveIndex(index)}
-                        aria-pressed={active}
-                        aria-label={`Select ${project.name}`}
-                        className={cn(
-                          "group relative overflow-hidden border-2 text-left transition-all focus-visible:outline-4 focus-visible:outline-[var(--seido)]",
-                          active
-                            ? "border-[var(--seido)] ring-2 ring-[var(--seido)]"
-                            : "border-[var(--ink)] opacity-80 hover:opacity-100",
-                          index === 0 && "col-span-2",
-                        )}
-                        style={{ aspectRatio: index === 0 ? "16/6.5" : "16/9.5" }}
-                      >
-                        {/* eslint-disable-next-line @next/next/no-img-element -- SVG illustration inside a fixed-ratio frame */}
-                        <img
-                          src={project.previewImage}
-                          alt={`${project.name} illustrated preview`}
-                          width={640}
-                          height={360}
-                          loading="lazy"
-                          decoding="async"
-                          className="h-full w-full object-cover"
-                        />
-                        <span className="absolute inset-x-0 bottom-0 flex items-center justify-between bg-black/85 px-2 py-1">
-                          <span className="font-manga truncate text-[10px] tracking-widest text-white">
-                            {String(index + 1).padStart(2, "0")} ·{" "}
-                            {project.name.split("—")[0].trim()}
-                          </span>
-                          {active && (
-                            <span
-                              className="h-2 w-2 shrink-0"
-                              style={{ background: "var(--seido)" }}
-                            />
-                          )}
-                        </span>
-                      </button>
-                    );
-                  })}
-                </div>
-              </div>
-            </MangaPanelReveal>
-          </div>
+              {catalog.map((project, index) => (
+                <ProjectFile
+                  key={project.slug}
+                  project={project}
+                  index={index}
+                  onOpen={() => setOpenIndex(index)}
+                />
+              ))}
+            </div>
+          </MangaPanelReveal>
         </div>
-
-        <p className="sr-only" aria-live="polite">
-          Now viewing {current.name}, {activeIndex + 1} of {catalog.length}
-        </p>
       </section>
 
       <MangaDialog
-        open={lightboxOpen}
-        onClose={() => setLightboxOpen(false)}
-        label={`${current.name} homepage preview`}
+        open={active !== null}
+        onClose={() => setOpenIndex(null)}
+        label={active ? `${active.name} preview` : "Project preview"}
         className="max-w-5xl bg-[var(--paper)]"
       >
-        <div className="flex items-center justify-between border-b-4 border-[var(--ink)] bg-[var(--ink)] px-5 py-3.5 text-white">
-          <div className="flex flex-wrap items-center gap-2">
-            <span
-              className="font-manga px-2 py-0.5 text-[10px] tracking-[0.4em] text-white"
-              style={{ background: "var(--seido)" }}
-            >
-              HOMEPAGE PREVIEW
-            </span>
-            <span className="font-manga text-base tracking-wider sm:text-lg">
-              {current.name}
-            </span>
-            <span className="hidden font-mono text-[10px] tracking-[0.2em] text-white/50 sm:inline">
-              ← / → TO PAGE
-            </span>
-          </div>
-          <button
-            type="button"
-            onClick={() => setLightboxOpen(false)}
-            aria-label="Close preview"
-            className="border-2 border-white/40 p-1.5 text-white transition-colors hover:bg-white hover:text-[var(--ink)] focus-visible:outline-4 focus-visible:outline-white/60"
-          >
-            <X className="h-4 w-4" aria-hidden="true" />
-          </button>
-        </div>
-
-        <div className="screentone-fine min-h-0 flex-1 overflow-y-auto bg-[var(--paper)] p-3 sm:p-5">
-          {/* eslint-disable-next-line @next/next/no-img-element -- SVG illustration, opened on demand */}
-          <img
-            src={current.previewImage}
-            alt={current.previewAlt}
-            width={1280}
-            height={744}
-            className="mx-auto h-auto max-h-[calc(92dvh_-_13rem)] w-full border-2 border-[var(--ink)] object-contain shadow-xl"
-          />
-        </div>
-
-        <div className="flex flex-wrap items-center justify-between gap-3 border-t-4 border-[var(--ink)] bg-[var(--paper)] px-5 py-3.5">
-          <p className="min-w-0 flex-1 font-mono text-xs text-[hsl(var(--muted-foreground))]">
-            {current.tagline}
-          </p>
-          <div className="flex items-center gap-2">
-            <button
-              type="button"
-              onClick={prev}
-              aria-label="Previous project preview"
-              className="flex h-9 w-9 items-center justify-center border-2 border-[var(--ink)] bg-white text-[var(--ink)] transition-colors hover:bg-[var(--ink)] hover:text-white focus-visible:outline-4 focus-visible:outline-[var(--seido)]"
-            >
-              <ChevronLeft className="h-4 w-4" aria-hidden="true" />
-            </button>
-            <span className="font-manga px-1 text-[10px] tracking-widest text-[var(--ink)]">
-              {String(activeIndex + 1).padStart(2, "0")} /{" "}
-              {String(catalog.length).padStart(2, "0")}
-            </span>
-            <button
-              type="button"
-              onClick={next}
-              aria-label="Next project preview"
-              className="flex h-9 w-9 items-center justify-center border-2 border-[var(--ink)] bg-white text-[var(--ink)] transition-colors hover:bg-[var(--ink)] hover:text-white focus-visible:outline-4 focus-visible:outline-[var(--seido)]"
-            >
-              <ChevronRight className="h-4 w-4" aria-hidden="true" />
-            </button>
-          </div>
-          <div className="flex items-center gap-2.5">
-            {repo && (
-              <a
-                href={repo}
-                target="_blank"
-                rel="noopener noreferrer"
-                className="font-manga inline-flex items-center gap-1.5 border-2 border-[var(--ink)] bg-[var(--ink)] px-4 py-2 text-xs tracking-widest text-white"
+        {active && (
+          <>
+            <div className="flex shrink-0 items-center justify-between gap-3 border-b-[3px] border-[var(--ink)] bg-[var(--ink)] px-4 py-3 text-white sm:px-5">
+              <div className="flex min-w-0 flex-wrap items-center gap-2">
+                <span
+                  className="font-manga shrink-0 px-2 py-0.5 text-[10px] tracking-[0.35em] text-white"
+                  style={{ background: "var(--seido)" }}
+                >
+                  {String((openIndex ?? 0) + 1).padStart(2, "0")} /{" "}
+                  {String(catalog.length).padStart(2, "0")}
+                </span>
+                <span className="font-manga truncate text-sm tracking-wider sm:text-lg">
+                  {active.name}
+                </span>
+              </div>
+              <button
+                type="button"
+                onClick={() => setOpenIndex(null)}
+                aria-label="Close preview"
+                className="shrink-0 border-2 border-white/40 p-1.5 text-white transition-colors hover:bg-white hover:text-[var(--ink)] focus-visible:outline-4 focus-visible:outline-white/60"
               >
-                <GithubIcon className="h-3.5 w-3.5" aria-hidden="true" /> GITHUB REPO
-              </a>
-            )}
-            <Link
-              href={`/projects/${current.slug}`}
-              className="font-manga inline-flex items-center gap-1.5 px-4 py-2 text-xs tracking-widest text-white"
-              style={{ background: "var(--seido)" }}
-            >
-              CASE FILE <ExternalLink className="h-3.5 w-3.5" aria-hidden="true" />
-            </Link>
-          </div>
-        </div>
+                <X className="h-4 w-4" aria-hidden="true" />
+              </button>
+            </div>
+
+            <div className="min-h-0 flex-1 overflow-y-auto bg-[var(--paper)] p-3 sm:p-5">
+              {active.screenshot ? (
+                /* eslint-disable-next-line @next/next/no-img-element -- user-supplied capture, opened on demand */
+                <img
+                  src={active.screenshot}
+                  alt={active.screenshotAlt ?? `${active.name} screenshot`}
+                  width={1600}
+                  height={1000}
+                  className="mx-auto block h-auto max-h-[calc(92dvh_-_12rem)] w-full border-2 border-[var(--ink)] object-contain"
+                />
+              ) : (
+                <div
+                  className="mx-auto w-full max-w-3xl border-2 border-[var(--ink)]"
+                  style={{ aspectRatio: "16 / 10" }}
+                >
+                  <ScreenshotFrame project={active} />
+                </div>
+              )}
+            </div>
+
+            <div className="flex shrink-0 flex-wrap items-center justify-between gap-3 border-t-[3px] border-[var(--ink)] bg-[var(--paper)] px-4 py-3 sm:px-5">
+              <p className="min-w-0 flex-1 basis-[12rem] font-mono text-[11px] text-[hsl(var(--muted-foreground))]">
+                {active.tagline}
+              </p>
+
+              <div className="flex items-center gap-1.5">
+                <button
+                  type="button"
+                  onClick={prev}
+                  aria-label="Previous project preview"
+                  className="flex h-9 w-9 items-center justify-center border-2 border-[var(--ink)] bg-white text-[var(--ink)] transition-colors hover:bg-[var(--ink)] hover:text-white focus-visible:outline-4 focus-visible:outline-[var(--seido)]"
+                >
+                  <ChevronLeft className="h-4 w-4" aria-hidden="true" />
+                </button>
+                <button
+                  type="button"
+                  onClick={next}
+                  aria-label="Next project preview"
+                  className="flex h-9 w-9 items-center justify-center border-2 border-[var(--ink)] bg-white text-[var(--ink)] transition-colors hover:bg-[var(--ink)] hover:text-white focus-visible:outline-4 focus-visible:outline-[var(--seido)]"
+                >
+                  <ChevronRight className="h-4 w-4" aria-hidden="true" />
+                </button>
+              </div>
+
+              <div className="flex flex-wrap items-center gap-2">
+                {repoHref(active) && (
+                  <a
+                    href={repoHref(active)}
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    className="font-manga inline-flex items-center gap-1.5 border-2 border-[var(--ink)] bg-[var(--ink)] px-3 py-2 text-[10px] tracking-[0.22em] text-white"
+                  >
+                    <GithubIcon className="h-3.5 w-3.5" aria-hidden="true" /> REPO
+                  </a>
+                )}
+                <Link
+                  href={`/projects/${active.slug}`}
+                  className="font-manga inline-flex items-center gap-1.5 px-3 py-2 text-[10px] tracking-[0.22em] text-white"
+                  style={{ background: "var(--seido)" }}
+                >
+                  CASE FILE <ArrowRight className="h-3 w-3" aria-hidden="true" />
+                </Link>
+              </div>
+            </div>
+          </>
+        )}
       </MangaDialog>
     </>
   );
