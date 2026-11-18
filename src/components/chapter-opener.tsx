@@ -58,8 +58,10 @@ export function ChapterOpener({
             </h2>
             {subtitle ? (
               <p
-                className="font-manga mt-1 max-w-2xl text-balance tracking-[0.28em] text-white/60"
-                style={{ fontSize: "clamp(0.75rem, 1.4vw, 1rem)" }}
+                className="font-manga mt-1.5 max-w-2xl text-balance tracking-[0.28em] text-white/60"
+                /* Floors at 13.6px: at 12px it matched body copy, which left the
+                   opener with only two visible type steps on phones. */
+                style={{ fontSize: "clamp(0.85rem, 1.4vw, 1rem)" }}
               >
                 {subtitle}
               </p>

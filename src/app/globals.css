@@ -164,9 +164,17 @@ h6,
   font-family: var(--font-league-spartan), system-ui, sans-serif;
 }
 
-.font-manga {
-  font-family: var(--font-bebas-neue), "Impact", "Arial Black", system-ui, sans-serif;
-  letter-spacing: 0.04em;
+/*
+ * Component layer for the same reason as .panel: left unlayered, the
+ * `letter-spacing` here outranked every `tracking-*` utility, so all the
+ * display labels (kickers, act breaks, tags) rendered at 0.04em instead of
+ * the tracking they ask for while the mono labels beside them kept theirs.
+ */
+@layer components {
+  .font-manga {
+    font-family: var(--font-bebas-neue), "Impact", "Arial Black", system-ui, sans-serif;
+    letter-spacing: 0.04em;
+  }
 }
 
 .animate-marquee {

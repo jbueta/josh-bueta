@@ -183,7 +183,7 @@ export function Hero() {
             <div className="relative z-10">
               <div className="mb-5 inline-flex items-center gap-1.5 border-2 border-[var(--ink)] bg-white px-3 py-1 shadow-[3px_3px_0_var(--ink)]">
                 <Sparkles className="h-3 w-3" style={{ color: "var(--seido)" }} aria-hidden="true" />
-                <span className="font-manga text-[10px] uppercase tracking-[0.35em] text-[var(--ink)]">
+                <span className="font-manga text-[10px] uppercase tracking-[0.2em] text-[var(--ink)] sm:tracking-[0.35em]">
                   {SITE.role.toUpperCase()}
                 </span>
               </div>

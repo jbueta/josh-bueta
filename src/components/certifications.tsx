@@ -69,8 +69,13 @@ export function Certifications() {
               <span className="block font-mono text-[10px] tracking-[0.25em] text-white/70">
                 TOTAL VERIFIED
               </span>
-              <span className="font-manga text-lg tracking-[0.2em] text-white tabular-nums">
-                {CERTIFICATION_COUNT} CERTIFICATIONS · TAP TO INSPECT
+              {/* The count and the hint were one string, so on phones it broke
+                  mid-phrase as “...· TAP TO / INSPECT”. */}
+              <span className="block font-manga text-lg tracking-[0.2em] text-white tabular-nums">
+                {CERTIFICATION_COUNT} CERTIFICATIONS
+              </span>
+              <span className="block font-mono text-[9px] tracking-[0.25em] text-white/55">
+                TAP TO INSPECT
               </span>
             </div>
           }

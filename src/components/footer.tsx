@@ -57,7 +57,7 @@ export function Footer({ telemetry }: FooterProps) {
                   AVAILABLE FOR SOFTWARE ENGINEERING &amp; FRONTEND ROLES
                 </div>
                 <h2
-                  className="font-manga mb-3 leading-[0.94] tracking-wide text-[var(--ink)]"
+                  className="font-manga mb-3 text-balance leading-[0.94] tracking-wide text-[var(--ink)]"
                   style={{ fontSize: "clamp(2rem, 4.8vw, 3.6rem)" }}
                 >
                   READY TO CONTRIBUTE TO YOUR ENGINEERING TEAM?

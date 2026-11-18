@@ -294,7 +294,7 @@ export function Projects({ data }: ProjectsProps) {
                   <Clock className="h-3.5 w-3.5 text-white/60" aria-hidden="true" />
                   <p
                     className="font-manga tracking-[0.28em] text-white/60"
-                    style={{ fontSize: "clamp(0.72rem, 1.3vw, 0.95rem)" }}
+                    style={{ fontSize: "clamp(0.85rem, 1.4vw, 1rem)" }}
                   >
                     {String(catalog.length).padStart(2, "0")} SYSTEMS ON FILE
                   </p>
@@ -315,7 +315,7 @@ export function Projects({ data }: ProjectsProps) {
               className="font-manga pointer-events-none absolute bottom-0 right-2 select-none leading-none"
               style={{
                 fontSize: "clamp(3.75rem, 11vw, 8.5rem)",
-                color: "rgba(255,255,255,0.038)",
+                color: "rgba(255,255,255,0.042)",
               }}
               aria-hidden="true"
             >
