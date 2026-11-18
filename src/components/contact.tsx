@@ -76,7 +76,7 @@ export function Contact() {
         }
       />
 
-      <div className="w-full" style={{ background: "var(--ink)", padding: "var(--gutter)" }}>
+      <div className="w-full" style={{ background: "var(--tone)", padding: "var(--gutter)" }}>
         <div className="canvas grid grid-cols-1 lg:grid-cols-12" style={{ gap: "var(--gutter)" }}>
           {/* Direct channels */}
           <div className="lg:col-span-4">

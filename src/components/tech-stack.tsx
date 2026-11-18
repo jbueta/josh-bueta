@@ -45,7 +45,7 @@ export function TechStack() {
         ghost="TECH"
       />
 
-      <div className="w-full" style={{ background: "var(--ink)", padding: "var(--gutter)" }}>
+      <div className="w-full" style={{ background: "var(--tone)", padding: "var(--gutter)" }}>
         <div className="canvas grid grid-cols-1 lg:grid-cols-12" style={{ gap: "var(--gutter)" }}>
           <MangaPanelReveal direction="left" index={0} className="lg:col-span-3">
             <div className="panel panel-cut-corner relative flex h-full flex-col justify-between overflow-hidden bg-[var(--ink)] p-6 text-white">

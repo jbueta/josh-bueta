@@ -264,22 +264,25 @@ h6,
   }
 
   /*
-   * Act breaks. Every section butts against the 6px ink gutter, which made the
-   * whole page read as one continuous block; this strip gives each chapter an
-   * ending and the next one a label.
+   * Act breaks. Every section butts against the gutter, which made the whole
+   * page read as one continuous block; this strip gives each chapter an ending
+   * and the next one a label. It sits on paper between two ink rules so it
+   * divides the chapters without adding another slab of black to the page.
    */
   .act-break {
     display: flex;
     align-items: center;
     gap: clamp(0.75rem, 2vw, 1.5rem);
-    padding: clamp(1.25rem, 3.5vw, 2.25rem) clamp(1rem, 4vw, 2rem);
-    background: var(--ink);
+    padding: clamp(1rem, 2.8vw, 1.75rem) clamp(1rem, 4vw, 2rem);
+    background: var(--paper);
+    border-block: 2px solid var(--ink);
   }
 
   .act-break-rule {
     height: 2px;
     flex: 1 1 0%;
-    background: rgba(255, 255, 255, 0.18);
+    background: var(--ink);
+    opacity: 0.16;
   }
 }
 

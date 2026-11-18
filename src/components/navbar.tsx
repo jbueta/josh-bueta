@@ -114,74 +114,59 @@ export function Navbar() {
     };
   }, [mobileMenuOpen]);
 
-  // Cursor light for the mobile menu. The pointer carries a Seido glow, and
-  // links light from ink toward Seido as it approaches, so the menu responds
-  // to where the cursor is rather than only to the link directly under it.
-  // Driven by events, not :hover, so it also fires in emulated/mobile widths.
+  // Cursor light for the mobile menu: the pointer carries a Seido glow and
+  // lights the links it passes. Event-driven rather than :hover so it also
+  // works when the menu is used at phone width with a mouse.
   useEffect(() => {
     if (!mobileMenuOpen) return;
     const menu = menuRef.current;
     if (!menu) return;
 
+    const links = [...menu.querySelectorAll<HTMLElement>("[data-nav-link]")];
     const RADIUS = 110;
     let frame = 0;
-    let pointer: { x: number; y: number } | null = null;
 
-    const reset = () => {
-      menu.querySelectorAll<HTMLElement>("[data-nav-link]").forEach((link) => {
-        link.style.color = "";
-        link.style.borderBottomColor = "";
-        link.style.textShadow = "";
-      });
-    };
-
-    const paint = () => {
+    const paint = (x: number | null, y: number | null) => {
       frame = 0;
-      if (!pointer) return;
-      const { x, y } = pointer;
       const box = menu.getBoundingClientRect();
-      menu.style.setProperty("--light-x", `${x - box.left}px`);
-      menu.style.setProperty("--light-y", `${y - box.top}px`);
-      menu.style.setProperty("--light-on", "1");
 
-      menu.querySelectorAll<HTMLElement>("[data-nav-link]").forEach((link) => {
+      if (x === null || y === null) {
+        // Parked off-canvas rather than toggled with a second variable.
+        menu.style.setProperty("--light-x", "-300px");
+        menu.style.setProperty("--light-y", "-300px");
+      } else {
+        menu.style.setProperty("--light-x", `${x - box.left}px`);
+        menu.style.setProperty("--light-y", `${y - box.top}px`);
+      }
+
+      links.forEach((link) => {
         const rect = link.getBoundingClientRect();
-        // Distance to the nearest edge, so a wide label lights across its
-        // whole width instead of only near its centre point.
-        const dx = Math.max(rect.left - x, 0, x - rect.right);
-        const dy = Math.max(rect.top - y, 0, y - rect.bottom);
-        // Squared falloff keeps the link under the cursor solid Seido while
-        // the neighbours only warm up, instead of the whole stack going blue.
-        const reach = Math.max(0, 1 - Math.hypot(dx, dy) / RADIUS);
-        const lit = reach * reach;
+        // Nearest edge, so a wide label lights across its whole width.
+        const dx = x === null ? Infinity : Math.max(rect.left - x, 0, x - rect.right);
+        const dy = y === null ? Infinity : Math.max(rect.top - y, 0, y - rect.bottom);
+        // Squared falloff: the link under the cursor is solid Seido and its
+        // neighbours only warm up, instead of the stack going blue at once.
+        const lit = Math.max(0, 1 - Math.hypot(dx, dy) / RADIUS) ** 2;
 
         if (lit < 0.02) {
           link.style.color = "";
           link.style.borderBottomColor = "";
-          link.style.textShadow = "";
           return;
         }
 
-        const ink = ((1 - lit) * 100).toFixed(1);
-        // The rule only appears close in, so the menu never looks like five
-        // links are active at once.
-        const rule = Math.max(0, (reach - 0.45) / 0.55);
-        link.style.color = `color-mix(in srgb, hsl(var(--foreground)) ${ink}%, var(--seido))`;
-        link.style.borderBottomColor = `color-mix(in srgb, transparent ${((1 - rule) * 100).toFixed(1)}%, var(--seido))`;
-        link.style.textShadow = `0 0 24px color-mix(in srgb, var(--seido) ${(lit * 45).toFixed(0)}%, transparent)`;
+        const ink = `${((1 - lit) * 100).toFixed(1)}%`;
+        link.style.color = `color-mix(in srgb, hsl(var(--foreground)) ${ink}, var(--seido))`;
+        link.style.borderBottomColor = `color-mix(in srgb, transparent ${ink}, var(--seido))`;
       });
     };
 
-    const onMove = (event: PointerEvent) => {
-      pointer = { x: event.clientX, y: event.clientY };
-      if (!frame) frame = requestAnimationFrame(paint);
+    const schedule = (x: number | null, y: number | null) => {
+      cancelAnimationFrame(frame);
+      frame = requestAnimationFrame(() => paint(x, y));
     };
 
-    const onLeave = () => {
-      pointer = null;
-      menu.style.setProperty("--light-on", "0");
-      reset();
-    };
+    const onMove = (event: PointerEvent) => schedule(event.clientX, event.clientY);
+    const onLeave = () => schedule(null, null);
 
     menu.addEventListener("pointermove", onMove);
     menu.addEventListener("pointerleave", onLeave);
@@ -328,11 +313,10 @@ export function Navbar() {
             {/* Follows the cursor; the links light up as it passes. */}
             <span
               aria-hidden="true"
-              className="pointer-events-none absolute inset-0 z-[1] transition-opacity duration-200"
+              className="pointer-events-none absolute inset-0 z-[1]"
               style={{
-                opacity: "var(--light-on, 0)",
                 background:
-                  "radial-gradient(circle 170px at var(--light-x, 50%) var(--light-y, 50%), color-mix(in srgb, var(--seido) 18%, transparent), transparent 70%)",
+                  "radial-gradient(circle 170px at var(--light-x, -300px) var(--light-y, -300px), color-mix(in srgb, var(--seido) 18%, transparent), transparent 70%)",
               }}
             />
 

@@ -80,7 +80,7 @@ export function Certifications() {
         <div
           className="w-full"
           style={{
-            background: "var(--ink)",
+            background: "var(--tone)",
             padding: "var(--gutter)",
             display: "flex",
             flexDirection: "column",

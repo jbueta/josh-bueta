@@ -16,10 +16,10 @@ export function ActBreak({ next, label }: ActBreakProps) {
   return (
     <div className="act-break" aria-hidden="true">
       <span className="act-break-rule" />
-      <span className="font-manga shrink-0 text-[10px] tracking-[0.5em] text-white/45">
+      <span className="font-manga shrink-0 text-[10px] tracking-[0.5em] text-[var(--ink)]/45">
         TO BE CONTINUED
       </span>
-      <span className="font-manga shrink-0 border-2 border-white/25 px-2.5 py-1 text-[10px] tracking-[0.35em] text-white/75">
+      <span className="font-manga shrink-0 border-2 border-[var(--ink)]/25 px-2.5 py-1 text-[10px] tracking-[0.35em] text-[var(--ink)]/75">
         NEXT // {next} {label.toUpperCase()}
       </span>
       <span className="act-break-rule" />

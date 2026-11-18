@@ -327,7 +327,7 @@ export function Projects({ data }: ProjectsProps) {
         {/* One board for the whole chapter: telemetry band, then the case files. */}
         <div
           className="w-full"
-          style={{ background: "var(--ink)", padding: "var(--gutter)" }}
+          style={{ background: "var(--tone)", padding: "var(--gutter)" }}
         >
           <MangaPanelReveal direction="up" className="canvas">
             <div className="panel bg-[var(--paper)]">

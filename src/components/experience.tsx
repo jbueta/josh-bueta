@@ -50,7 +50,7 @@ export function Experience() {
       <div
         className="w-full"
         style={{
-          background: "var(--ink)",
+          background: "var(--tone)",
           padding: "var(--gutter)",
         }}
       >
