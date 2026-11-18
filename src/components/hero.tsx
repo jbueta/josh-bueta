@@ -266,17 +266,6 @@ export function Hero() {
             </div>
           </div>
         </div>
-
-        <a
-          href="#background"
-          className="font-manga relative z-10 mx-auto flex w-fit items-center gap-2 pb-[var(--gutter)] text-[10px] tracking-[0.5em] text-white/45 transition-colors hover:text-white"
-        >
-          <span
-            className="h-5 w-[2px] bg-white/20 transition-colors"
-            aria-hidden="true"
-          />
-          SCROLL TO ACT 02
-        </a>
       </section>
 
       <MangaDialog
