@@ -119,17 +119,25 @@ export function ContributionGraph({
    * index, which blew the grid out and pushed the whole calendar sideways.
    */
   const monthLabels = useMemo(() => {
+    // Built with an index loop rather than map(): the spacing rule needs to
+    // remember the last labelled column, and mutating that from inside a
+    // callback trips react-hooks/immutability.
+    const labels: string[] = Array.from(
+      { length: visibleWeeks.length },
+      () => "",
+    );
     let lastShown = -99;
-    return visibleWeeks.map((week, column) => {
-      const first = firstDayOf(week);
-      if (!first) return "";
+    for (let column = 0; column < visibleWeeks.length; column += 1) {
+      const first = firstDayOf(visibleWeeks[column]);
+      if (!first) continue;
       const month = Number(first[0].slice(5, 7)) - 1;
       const previous = firstDayOf(visibleWeeks[column - 1]);
       const previousMonth = previous ? Number(previous[0].slice(5, 7)) - 1 : -1;
-      if (month === previousMonth || column - lastShown < 3) return "";
+      if (month === previousMonth || column - lastShown < 3) continue;
       lastShown = column;
-      return MONTH_ABBR[month];
-    });
+      labels[column] = MONTH_ABBR[month];
+    }
+    return labels;
   }, [visibleWeeks]);
 
   const flat = useMemo(
