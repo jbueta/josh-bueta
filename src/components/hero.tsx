@@ -14,6 +14,100 @@ gsap.registerPlugin(useGSAP);
 
 const ROLES = ["Student Leader", "Frontend Developer", "Software Engineer", "Conscious Builder"];
 
+const NAME = "MARK JOSHUA";
+
+/** Upper-case glyphs only: the scrambled line keeps the width of the real name. */
+const NOISE = "ABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789#%&*<>=/+";
+
+/**
+ * Deterministic glyph for a (letter, churn step) pair, so the server and the
+ * first client paint agree on the scrambled name instead of flashing the real
+ * one. Random churn would hydrate mismatched.
+ */
+function noiseGlyph(index: number, step: number) {
+  let hash = (index + 1) * 374761393 + step * 668265263;
+  hash = (hash ^ (hash >> 13)) * 1274126177;
+  hash ^= hash >> 16;
+  return NOISE[Math.abs(hash) % NOISE.length];
+}
+
+/**
+ * Draws the name out of churning glyphs, the way the old HyperText did before
+ * the redesign dropped it: every letter keeps flickering until its own turn to
+ * lock in, left to right.
+ */
+function ScrambleName({ text }: { text: string }) {
+  const reduced = useReducedMotion();
+  const [chars, setChars] = useState(() =>
+    text.split("").map((char, index) => (char === " " ? " " : noiseGlyph(index, 0))),
+  );
+
+  useEffect(() => {
+    // Reduced motion keeps the plain name.
+    if (reduced) return;
+
+    const target = text.split("");
+    const lockStep = 1000 / target.length;
+    const churnEvery = 55;
+    const end = lockStep * target.length + lockStep * 2;
+
+    let step = 0;
+    let frame = 0;
+    let started = false;
+    let start = 0;
+    let lastChurn = 0;
+    let painted = "";
+
+    const tick = (now: number) => {
+      // The clock starts on the first frame, not at mount: a page that loads in
+      // a background tab never runs rAF, so anchoring at mount would swallow the
+      // whole animation and drop the finished name in on the first frame.
+      if (!started) {
+        started = true;
+        start = now;
+      }
+
+      const elapsed = now - start;
+
+      if (elapsed - lastChurn >= churnEvery) {
+        lastChurn = elapsed;
+        step += 1;
+      }
+
+      const next = target
+        .map((char, index) => {
+          if (char === " ") return " ";
+          // A letter jitters for one extra beat after its slot, so the reveal
+          // reads as settling rather than snapping into place.
+          return elapsed >= lockStep * (index + 1) + lockStep * 0.8
+            ? char
+            : noiseGlyph(index, step);
+        })
+        .join("");
+
+      if (next !== painted) {
+        painted = next;
+        setChars(next.split(""));
+      }
+
+      if (elapsed < end) frame = requestAnimationFrame(tick);
+      else if (painted !== text) setChars(target);
+    };
+
+    frame = requestAnimationFrame(tick);
+    return () => cancelAnimationFrame(frame);
+  }, [text, reduced]);
+
+  return (
+    <>
+      <span className="sr-only">{text}</span>
+      <span aria-hidden="true" className="whitespace-nowrap">
+        {reduced ? text : chars.join("")}
+      </span>
+    </>
+  );
+}
+
 function RoleLine() {
   const [index, setIndex] = useState(0);
   const reduced = useReducedMotion();
@@ -142,7 +236,9 @@ export function Hero() {
                 <span className="mb-1.5 block text-[0.32em] font-medium uppercase leading-normal tracking-[0.3em] text-[hsl(var(--muted-foreground))]">
                   Hi, I&apos;m
                 </span>
-                <span className="block">MARK JOSHUA</span>
+                <span className="block">
+                  <ScrambleName text={NAME} />
+                </span>
               </h1>
 
               <RoleLine />
@@ -153,18 +249,18 @@ export function Hero() {
                 things that real people can actually use.
               </p>
 
-              <div className="mt-6 flex flex-wrap items-center gap-2.5 border-2 border-[var(--ink)] bg-white p-2.5 shadow-[4px_4px_0_var(--ink)] sm:flex-nowrap">
+              <div className="mt-6 flex flex-wrap items-center gap-1.5 border-2 border-[var(--ink)] bg-white p-2 shadow-[4px_4px_0_var(--ink)] sm:flex-nowrap">
                 <a
                   href={SITE.cv}
                   download={SITE.cvFileName}
-                  className="font-manga inline-flex flex-1 items-center justify-center gap-2 border-2 border-[var(--ink)] px-5 py-2.5 text-[11px] tracking-[0.2em] text-white transition-colors duration-150 hover:bg-[var(--ink)] sm:flex-none"
+                  className="font-manga inline-flex flex-1 items-center justify-center gap-2 border-2 border-[var(--ink)] px-4 py-2.5 text-[11px] tracking-[0.18em] text-white transition-colors duration-150 hover:bg-[var(--ink)] sm:flex-none"
                   style={{ background: "var(--seido)" }}
                 >
                   <Download className="h-3.5 w-3.5 shrink-0" aria-hidden="true" />
                   DOWNLOAD CV
                 </a>
 
-                <div className="flex items-center gap-2 sm:ml-auto">
+                <div className="flex items-center gap-1.5">
                   {socials.map(({ href, label, icon }) => (
                     <a
                       key={label}
@@ -184,7 +280,7 @@ export function Hero() {
 
           <div
             ref={portraitRef}
-            className="panel relative h-[260px] bg-white sm:h-[340px] lg:col-span-5 lg:h-auto lg:min-h-[400px]"
+            className="panel relative mx-auto aspect-square w-full max-w-[26rem] bg-white lg:col-span-5 lg:mx-0 lg:max-w-none lg:aspect-auto lg:h-auto lg:min-h-[400px]"
           >
             <CinematicAvatar onClick={() => setIsLightboxOpen(true)} />
           </div>

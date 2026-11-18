@@ -65,7 +65,7 @@ export function Contact() {
   return (
     <section id="contact" className="relative z-10 overflow-x-hidden">
       <ChapterOpener
-        label="Get in touch"
+        label="SAY HELLO"
         title="CONTACT"
         subtitle="INTERNSHIPS, COLLABORATIONS & FRONTEND ROLES"
       />

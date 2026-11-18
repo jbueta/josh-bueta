@@ -61,7 +61,7 @@ export function Certifications() {
       <section id="credentials" className="relative z-10">
         <ChapterOpener
           act="04"
-          label="VERIFIED LICENSES"
+          label="CERTIFICATES"
           title="CREDENTIALS"
           subtitle="TECHNICAL CERTIFICATIONS & SPECIALIZATIONS"
           meta={

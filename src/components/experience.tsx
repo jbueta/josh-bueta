@@ -32,7 +32,7 @@ export function Experience() {
     <section id="background" className="relative z-10">
       <ChapterOpener
         act="02"
-        label="ORIGIN & RANKS"
+        label="ABOUT ME"
         title="BACKGROUND"
         subtitle="EDUCATION, LEADERSHIP & SCHOLARSHIP HONORS"
         meta={

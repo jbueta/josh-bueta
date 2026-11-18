@@ -39,7 +39,7 @@ export function TechStack() {
     <section id="stack" className="relative z-10 overflow-hidden">
       <ChapterOpener
         act="INT"
-        label="TECH STACK"
+        label="TOOLS"
         title="ARSENAL"
         subtitle={`${TECH_COUNT} CORE TECHNOLOGIES ACROSS FULL-STACK, UI/UX AND CLOUD`}
         ghost="TECH"

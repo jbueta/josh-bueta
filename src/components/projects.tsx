@@ -282,7 +282,7 @@ export function Projects({ data }: ProjectsProps) {
                   className="font-manga slash-cut-right mb-3 inline-block px-3 py-1 text-[10px] tracking-[0.5em] text-white"
                   style={{ background: "var(--seido)" }}
                 >
-                  SELECTED WORK
+                  MY WORK
                 </span>
                 <h2
                   className="leading-none tracking-[0.04em] text-white"
