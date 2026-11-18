@@ -26,7 +26,7 @@ export default function NotFound() {
               className="font-manga slash-cut-right mb-4 inline-block px-3 py-1 text-[10px] tracking-[0.5em] text-white"
               style={{ background: "var(--seido)" }}
             >
-              MISSING PANEL
+              PAGE NOT FOUND
             </span>
 
             <div className="flex items-start gap-4">
@@ -39,7 +39,7 @@ export default function NotFound() {
               >
                 404
                 <br />
-                <span style={{ color: "var(--seido)" }}>PANEL NOT FOUND</span>
+                <span style={{ color: "var(--seido)" }}>NOT FOUND</span>
               </h1>
             </div>
 

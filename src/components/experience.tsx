@@ -24,7 +24,7 @@ import {
 } from "@/content/profile";
 
 /**
- * ACT. 02 — BACKGROUND: education, student leadership and scholarships.
+ * Background: education, student leadership and scholarships.
  * Anchored as #background because the section has no employment history.
  */
 export function Experience() {
@@ -67,7 +67,7 @@ export function Experience() {
                     </div>
                     <div>
                       <span className="block font-mono text-[10px] tracking-[0.3em] text-[hsl(var(--muted-foreground))]">
-                        PANEL 02-A // ACADEMICS
+                        ACADEMICS
                       </span>
                       <h3 className="text-lg leading-none tracking-widest sm:text-xl">
                         ACADEMIC FOUNDATION
@@ -205,7 +205,7 @@ export function Experience() {
             <div className="panel h-full bg-[var(--paper)] p-6 sm:p-8">
               <div className="mb-5 flex items-center justify-between border-b-2 border-[var(--ink)]/15 pb-3">
                 <span className="font-manga text-xs tracking-[0.35em] text-[hsl(var(--muted-foreground))]">
-                  PROGRESSION LOG // REVERSE CHRONOLOGICAL
+                  MOST RECENT FIRST
                 </span>
                 <Briefcase className="h-4 w-4 text-[var(--ink)]" aria-hidden="true" />
               </div>

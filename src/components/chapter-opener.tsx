@@ -1,16 +1,15 @@
 import React from "react";
 import { MangaPanelReveal } from "@/components/manga-panel-reveal";
-import { actKicker } from "@/content/site";
 import { cn } from "@/lib/utils";
 
 interface ChapterOpenerProps {
-  /** `01`–`05`, or `INT` for the arsenal interlude. */
-  act: string;
-  /** Short right-hand label, e.g. `ORIGIN & RANKS`. */
+  /** Watermark numeral behind the opener, e.g. `03`. */
+  act?: string;
+  /** Small line above the title, e.g. `ORIGIN & RANKS`. */
   label: string;
   title: string;
   subtitle?: string;
-  /** Ghost numeral; defaults to the act code. `TECH` for the interlude. */
+  /** Overrides the watermark text. */
   ghost?: string;
   /** Right-hand info box or link. */
   meta?: React.ReactNode;
@@ -18,21 +17,19 @@ interface ChapterOpenerProps {
 }
 
 /**
- * One chapter opener for the whole portfolio.
- *
- * Each section used to hand-roll its own: five copies with ghost numerals at
- * 0.038/0.04/0.045, two different clamp ranges, three subtitle sizes and one
- * white variant. They now share padding, type scale and watermark.
+ * Shared section opener: one label, one title, one optional subtitle.
  */
 export function ChapterOpener({
   act,
   label,
   title,
   subtitle,
-  ghost = act,
+  ghost,
   meta,
   className,
 }: ChapterOpenerProps) {
+  const watermark = ghost ?? act;
+
   return (
     <MangaPanelReveal direction="up">
       <div
@@ -48,7 +45,7 @@ export function ChapterOpener({
               className="font-manga slash-cut-right mb-3 inline-block px-3 py-1 text-[10px] tracking-[0.5em] text-white"
               style={{ background: "var(--seido)" }}
             >
-              {actKicker(act)}{" // "}{label}
+              {label}
             </span>
             <h2
               className="leading-none tracking-[0.04em] text-white"
@@ -59,8 +56,6 @@ export function ChapterOpener({
             {subtitle ? (
               <p
                 className="font-manga mt-1.5 max-w-2xl text-balance tracking-[0.28em] text-white/60"
-                /* Floors at 13.6px: at 12px it matched body copy, which left the
-                   opener with only two visible type steps on phones. */
                 style={{ fontSize: "clamp(0.85rem, 1.4vw, 1rem)" }}
               >
                 {subtitle}
@@ -70,16 +65,18 @@ export function ChapterOpener({
           {meta ? <div className="self-start sm:self-end">{meta}</div> : null}
         </div>
 
-        <div
-          className="font-manga pointer-events-none absolute bottom-0 right-2 select-none leading-none tabular-nums"
-          style={{
-            fontSize: "clamp(3.75rem, 11vw, 8.5rem)",
-            color: "rgba(255,255,255,0.042)",
-          }}
-          aria-hidden="true"
-        >
-          {ghost}
-        </div>
+        {watermark ? (
+          <div
+            className="font-manga pointer-events-none absolute bottom-0 right-2 select-none leading-none tabular-nums"
+            style={{
+              fontSize: "clamp(3.75rem, 11vw, 8.5rem)",
+              color: "rgba(255,255,255,0.042)",
+            }}
+            aria-hidden="true"
+          >
+            {watermark}
+          </div>
+        ) : null}
       </div>
     </MangaPanelReveal>
   );

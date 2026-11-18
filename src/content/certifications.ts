@@ -17,7 +17,6 @@ export type Certification = {
 
 export type CertificationCategory = {
   id: string;
-  code: string;
   category: string;
   subtitle: string;
   icon: "ai" | "cloud" | "code";
@@ -33,7 +32,6 @@ const pdf = (slug: string) => `/certifications/${slug}.pdf`;
 export const CERTIFICATION_CATEGORIES: CertificationCategory[] = [
   {
     id: "ai",
-    code: "DOMAIN 01 // AI & LLMs",
     category: "AI, LLMs & Prompt Engineering",
     subtitle: "4 VERIFIED DATACAMP CREDENTIALS",
     icon: "ai",
@@ -89,7 +87,6 @@ export const CERTIFICATION_CATEGORIES: CertificationCategory[] = [
   },
   {
     id: "cloud",
-    code: "DOMAIN 02 // CLOUD INFRASTRUCTURE",
     category: "AWS Cloud & Infrastructure",
     subtitle: "5 VERIFIED CLOUD ARCHITECTURE CREDENTIALS",
     icon: "cloud",
@@ -155,7 +152,6 @@ export const CERTIFICATION_CATEGORIES: CertificationCategory[] = [
   },
   {
     id: "core",
-    code: "DOMAIN 03 // CORE ENGINEERING",
     category: "Software Engineering & Data Fundamentals",
     subtitle: "2 VERIFIED FOUNDATIONAL CREDENTIALS",
     icon: "code",

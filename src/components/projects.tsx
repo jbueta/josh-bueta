@@ -79,7 +79,7 @@ function ScreenshotFrame({ project }: { project: CatalogProject }) {
 
       <ImageIcon className="relative h-6 w-6 text-[var(--ink)]/30" />
       <span className="font-manga relative text-[11px] tracking-[0.36em] text-[var(--ink)]/60">
-        SCREENSHOT // PENDING
+        PREVIEW PENDING
       </span>
       <span className="relative max-w-full truncate font-mono text-[9px] uppercase tracking-[0.16em] text-[var(--ink)]/35">
         16:10 · /projects/{project.slug}.png
@@ -122,7 +122,7 @@ function ProjectFile({ project, index, onOpen }: ProjectFileProps) {
             </span>
             <span className="font-manga absolute right-2 top-2 inline-flex items-center gap-1 border-2 border-[var(--ink)] bg-white px-2 py-0.5 text-[9px] tracking-[0.25em] text-[var(--ink)] shadow-[2px_2px_0_var(--ink)] transition-colors group-hover:bg-[var(--seido)] group-hover:text-white">
               <ExternalLink className="h-2.5 w-2.5" aria-hidden="true" />
-              EXPAND
+              VIEW
             </span>
           </button>
         </div>
@@ -133,7 +133,7 @@ function ProjectFile({ project, index, onOpen }: ProjectFileProps) {
               className="font-manga px-1.5 py-0.5 text-[10px] tracking-[0.25em] text-white"
               style={{ background: "var(--ink)" }}
             >
-              FILE {String(index + 1).padStart(2, "0")}
+              {String(index + 1).padStart(2, "0")}
             </span>
             <span>{project.role}</span>
             <span aria-hidden="true">·</span>
@@ -282,7 +282,7 @@ export function Projects({ data }: ProjectsProps) {
                   className="font-manga slash-cut-right mb-3 inline-block px-3 py-1 text-[10px] tracking-[0.5em] text-white"
                   style={{ background: "var(--seido)" }}
                 >
-                  ACT. 03 // CASE FILES &amp; BUILDS
+                  SELECTED WORK
                 </span>
                 <h2
                   className="leading-none tracking-[0.04em] text-white"
@@ -332,8 +332,8 @@ export function Projects({ data }: ProjectsProps) {
           <MangaPanelReveal direction="up" className="canvas">
             <div className="panel bg-[var(--paper)]">
               <div className="flex flex-wrap items-center justify-between gap-x-4 gap-y-1 border-b-[3px] border-[var(--ink)] bg-[var(--ink)] px-4 py-2.5 font-mono text-[10px] uppercase tracking-[0.24em] text-white/70 sm:px-5">
-                <span>BUILD LOG // SHIPPED WORK &amp; TELEMETRY</span>
-                <span className="text-white/45">HOVER A DAY · ← / → TO PAGE</span>
+                <span>SHIPPED WORK &amp; ACTIVITY</span>
+                <span className="text-white/45">LAST 12 MONTHS · USE ARROW KEYS</span>
               </div>
 
               <div className="border-b-[3px] border-[var(--ink)]">

@@ -50,7 +50,7 @@ export default async function ProjectOpengraphImage({ params }: ImageProps) {
               fontWeight: 700,
             }}
           >
-            CASE FILE // {SITE.shortName}
+            CASE FILE · {SITE.shortName}
           </div>
           <div style={{ display: "flex", fontSize: 20, letterSpacing: 4, color: "#a3a3a3" }}>
             {SITE.name.toUpperCase()}

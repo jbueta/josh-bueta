@@ -31,7 +31,7 @@ export default function Error({
               className="font-manga slash-cut-right mb-4 inline-block px-3 py-1 text-[10px] tracking-[0.5em] text-white"
               style={{ background: "var(--seido)" }}
             >
-              PANEL INTERRUPTED
+              SOMETHING WENT WRONG
             </span>
 
             <div className="flex items-start gap-4">
@@ -67,14 +67,14 @@ export default function Error({
                 style={{ background: "var(--seido)" }}
               >
                 <RotateCcw className="h-4 w-4" aria-hidden="true" />
-                RETRY PANEL
+                TRY AGAIN
               </button>
               <Link
                 href="/"
                 className="font-manga inline-flex items-center gap-2 border-2 border-[var(--ink)] bg-white px-5 py-3 text-xs tracking-[0.22em] text-[var(--ink)] transition-colors hover:bg-[var(--ink)] hover:text-white"
               >
                 <ArrowLeft className="h-4 w-4" aria-hidden="true" />
-                BACK TO CHAPTER 01
+                BACK HOME
               </Link>
             </div>
           </div>

@@ -68,11 +68,6 @@ export const ACTS: Act[] = [
   { code: "05", name: "Contact", href: "/#contact", section: "contact" },
 ];
 
-/** Act label used by openers: `ACT. 04` / `INTERLUDE`. */
-export function actKicker(code: string): string {
-  return code === "INT" ? "INTERLUDE" : `ACT. ${code}`;
-}
-
 /** Chapter numeral for a section id, e.g. `stack` → `INT`. */
 export function actCodeForSection(section: string | null): string {
   if (!section) return ACTS[0].code;

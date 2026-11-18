@@ -39,7 +39,7 @@ export default function OpengraphImage() {
                 fontWeight: 700,
               }}
             >
-              ACT. 01 // OPENING
+              MARK JOSHUA BUETA
             </div>
             <div
               style={{

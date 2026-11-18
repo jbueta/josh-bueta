@@ -184,6 +184,9 @@
     scroll-behavior: smooth;
     /* Anchor targets must clear the fixed navbar. */
     scroll-padding-top: calc(var(--header-h) + 10px);
+    /* Pending panels sit 24px off-axis before they reveal; clip rather than
+       hide so the root does not become a scroll container. */
+    overflow-x: clip;
   }
 
   body {

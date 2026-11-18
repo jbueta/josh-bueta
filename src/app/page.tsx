@@ -36,15 +36,15 @@ export default async function Home() {
 
       <div className="relative z-10 flex-1">
         <Hero />
-        <ActBreak next="02" label="Background" />
+        <ActBreak label="Background" />
         <Experience />
-        <ActBreak next="03" label="Projects" />
+        <ActBreak label="Projects" />
         <Projects data={github} />
-        <ActBreak next="INT" label="Arsenal" />
+        <ActBreak label="Arsenal" />
         <TechStack />
-        <ActBreak next="04" label="Credentials" />
+        <ActBreak label="Credentials" />
         <Certifications />
-        <ActBreak next="05" label="Contact" />
+        <ActBreak label="Contact" />
         <Contact />
       </div>
 

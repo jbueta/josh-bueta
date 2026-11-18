@@ -4,7 +4,7 @@ import React, { useEffect, useRef, useState } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import { usePathname } from "next/navigation";
 import { cn } from "@/lib/utils";
-import { actCodeForSection, NAV_LINKS, SITE } from "@/content/site";
+import { NAV_LINKS, SITE } from "@/content/site";
 
 export function Navbar() {
   const [scrolled, setScrolled] = useState(false);
@@ -19,8 +19,6 @@ export function Navbar() {
   // Case files belong to chapter 03, so the header is not blank on them.
   const activeSection =
     pathname === "/" ? observedSection : onProjectFile ? "projects" : null;
-  const chapterCode = actCodeForSection(activeSection);
-  const showChapter = pathname === "/" || onProjectFile;
 
   useEffect(() => {
     const handleScroll = () => {
@@ -211,14 +209,6 @@ export function Navbar() {
               />
             </a>
 
-            {showChapter && (
-              <span
-                className="font-manga hidden border-2 border-[var(--ink)] bg-[var(--ink)] px-1.5 py-0.5 text-[10px] tracking-[0.2em] text-white tabular-nums sm:inline-block"
-                aria-hidden="true"
-              >
-                CH. {chapterCode}
-              </span>
-            )}
           </div>
 
           <nav

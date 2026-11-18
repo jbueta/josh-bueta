@@ -140,9 +140,6 @@ export function Certifications() {
                       {CATEGORY_ICONS[category.icon]}
                     </span>
                     <div>
-                      <span className="block font-mono text-[10px] tracking-[0.35em] text-white/60">
-                        {category.code}
-                      </span>
                       <h3 className="text-base leading-none tracking-[0.22em] text-white sm:text-lg">
                         {category.category.toUpperCase()}
                       </h3>
