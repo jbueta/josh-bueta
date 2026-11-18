@@ -63,7 +63,9 @@ export async function POST(request: Request) {
 
   // Honeypot filled → treat as spam and report success without forwarding.
   if (typeof company === "string" && company.trim().length > 0) {
-    return NextResponse.json({ ok: true });
+    // Spammer filled the honeypot or timed out; report success without
+    // forwarding so the spammer never learns we rejected it.
+    return NextResponse.json({ ok: true, message: "Message received." });
   }
 
   if (

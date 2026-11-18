@@ -2,6 +2,7 @@
 
 import React from "react";
 import { MangaPanelReveal } from "@/components/manga-panel-reveal";
+import { ChapterOpener } from "@/components/chapter-opener";
 import {
   Timeline,
   TimelineConnector,
@@ -29,53 +30,22 @@ import {
 export function Experience() {
   return (
     <section id="background" className="relative z-10">
-      <MangaPanelReveal direction="up">
-        <div
-          className="speed-lines relative overflow-hidden"
-          style={{ background: "var(--ink)", padding: "3.5rem 2rem 3rem" }}
-        >
-          <div className="relative z-10 mx-auto flex max-w-6xl flex-col justify-between gap-4 sm:flex-row sm:items-end">
-            <div>
-              <span
-                className="font-manga slash-cut-right mb-3 inline-block px-3 py-1 text-[9px] tracking-[0.5em] text-white"
-                style={{ background: "var(--seido)" }}
-              >
-                ACT. 02 // ORIGIN &amp; RANKS
-              </span>
-              <h2
-                className="font-manga leading-none text-white"
-                style={{ fontSize: "clamp(3rem, 9vw, 7.5rem)" }}
-              >
-                BACKGROUND
-              </h2>
-              <p
-                className="font-manga mt-1 tracking-[0.28em] text-white/60"
-                style={{ fontSize: "clamp(0.8rem, 2vw, 1.35rem)" }}
-              >
-                EDUCATION, LEADERSHIP &amp; SCHOLARSHIP HONORS
-              </p>
-            </div>
-            <div className="self-start border-2 border-white/30 bg-white/5 px-4 py-2 sm:self-end">
-              <span className="block font-mono text-[10px] tracking-[0.25em] text-white/75">
-                INSTITUTION
-              </span>
-              <span className="font-manga text-sm tracking-[0.2em] text-white">
-                {EDUCATION.institution.toUpperCase()}
-              </span>
-            </div>
+      <ChapterOpener
+        act="02"
+        label="ORIGIN & RANKS"
+        title="BACKGROUND"
+        subtitle="EDUCATION, LEADERSHIP & SCHOLARSHIP HONORS"
+        meta={
+          <div className="border-2 border-white/30 bg-white/5 px-4 py-2">
+            <span className="block font-mono text-[10px] tracking-[0.25em] text-white/75">
+              INSTITUTION
+            </span>
+            <span className="font-manga text-sm tracking-[0.2em] text-white">
+              {EDUCATION.institution.toUpperCase()}
+            </span>
           </div>
-          <div
-            className="font-manga pointer-events-none absolute bottom-0 right-2 select-none leading-none"
-            style={{
-              fontSize: "clamp(5rem, 16vw, 14rem)",
-              color: "rgba(255,255,255,0.04)",
-            }}
-            aria-hidden="true"
-          >
-            02
-          </div>
-        </div>
-      </MangaPanelReveal>
+        }
+      />
 
       <div
         className="w-full"
@@ -84,9 +54,9 @@ export function Experience() {
           padding: "var(--gutter)",
         }}
       >
-        <div className="mx-auto grid max-w-6xl grid-cols-1 lg:grid-cols-12" style={{ gap: "var(--gutter)" }}>
+        <div className="canvas grid grid-cols-1 lg:grid-cols-12" style={{ gap: "var(--gutter)" }}>
           {/* Academic panel */}
-          <MangaPanelReveal direction="left" className="lg:col-span-8">
+          <MangaPanelReveal direction="left" index={0} className="lg:col-span-8">
             <div className="panel sfx-scholar relative flex h-full flex-col justify-between bg-[var(--paper)] p-6 sm:p-8">
               <div className="screentone-fine pointer-events-none absolute inset-0 opacity-45" aria-hidden="true" />
               <div className="relative z-10">
@@ -96,7 +66,7 @@ export function Experience() {
                       <GraduationCap className="h-4 w-4" aria-hidden="true" />
                     </div>
                     <div>
-                      <span className="block font-mono text-[9px] tracking-[0.3em] text-[hsl(var(--muted-foreground))]">
+                      <span className="block font-mono text-[10px] tracking-[0.3em] text-[hsl(var(--muted-foreground))]">
                         PANEL 02-A // ACADEMICS
                       </span>
                       <h3 className="font-manga text-lg leading-none tracking-widest sm:text-xl">
@@ -140,12 +110,12 @@ export function Experience() {
           </MangaPanelReveal>
 
           {/* GWA panel */}
-          <MangaPanelReveal direction="right" className="lg:col-span-4">
+          <MangaPanelReveal direction="right" index={1} className="lg:col-span-4">
             <div className="panel relative flex h-full flex-col justify-between overflow-hidden bg-[var(--ink)] p-6 text-white sm:p-7">
               <div className="speed-lines pointer-events-none absolute inset-0 opacity-35" aria-hidden="true" />
               <div className="relative z-10 flex items-center justify-between">
                 <span
-                  className="font-manga px-2.5 py-0.5 text-[9px] tracking-[0.4em] text-white"
+                  className="font-manga px-2.5 py-0.5 text-[10px] tracking-[0.4em] text-white"
                   style={{ background: "var(--seido)" }}
                 >
                   ACADEMIC STANDING
@@ -176,7 +146,7 @@ export function Experience() {
           </MangaPanelReveal>
 
           {/* Leadership spine */}
-          <MangaPanelReveal direction="left" className="lg:col-span-4">
+          <MangaPanelReveal direction="left" index={0} className="lg:col-span-4">
             <div className="panel relative flex h-full flex-col justify-between overflow-hidden bg-[var(--paper)] p-6 sm:p-7">
               <div className="screentone-coarse pointer-events-none absolute inset-0 opacity-35" aria-hidden="true" />
               <div className="relative z-10">
@@ -203,7 +173,7 @@ export function Experience() {
 
               <div className="relative z-10 mt-8 flex items-center justify-between border-t-2 border-[var(--ink)] pt-4">
                 <div>
-                  <span className="block font-mono text-[9px] text-[hsl(var(--muted-foreground))]">
+                  <span className="block font-mono text-[10px] text-[hsl(var(--muted-foreground))]">
                     TENURE SPAN
                   </span>
                   <span className="font-manga text-lg tracking-widest text-[var(--ink)]">
@@ -221,7 +191,7 @@ export function Experience() {
           </MangaPanelReveal>
 
           {/* Timeline */}
-          <MangaPanelReveal direction="right" className="lg:col-span-8">
+          <MangaPanelReveal direction="right" index={1} className="lg:col-span-8">
             <div className="panel h-full bg-[var(--paper)] p-6 sm:p-8">
               <div className="mb-5 flex items-center justify-between border-b-2 border-[var(--ink)]/15 pb-3">
                 <span className="font-manga text-xs tracking-[0.35em] text-[hsl(var(--muted-foreground))]">
@@ -240,7 +210,7 @@ export function Experience() {
                           <TimelineTitle className="font-manga text-lg tracking-wide text-[var(--ink)] group-hover:text-[var(--seido)]">
                             {position.role}
                           </TimelineTitle>
-                          <span className="border border-[var(--ink)] bg-white px-1.5 py-0.5 font-mono text-[9px] text-[var(--ink)]">
+                          <span className="border border-[var(--ink)] bg-white px-1.5 py-0.5 font-mono text-[10px] text-[var(--ink)]">
                             {position.tag}
                           </span>
                         </div>
@@ -259,7 +229,7 @@ export function Experience() {
           </MangaPanelReveal>
 
           {/* Academic scholarships */}
-          <MangaPanelReveal direction="up" className="lg:col-span-5">
+          <MangaPanelReveal direction="up" index={0} className="lg:col-span-5">
             <div className="panel flex h-full flex-col justify-between bg-[var(--paper)] p-6 sm:p-7">
               <div>
                 <div className="mb-4 flex items-center justify-between border-b-2 border-[var(--ink)] pb-2.5">
@@ -267,7 +237,7 @@ export function Experience() {
                     ACADEMIC SCHOLARSHIPS
                   </span>
                   <span
-                    className="px-2 py-0.5 font-mono text-[9px] text-white"
+                    className="px-2 py-0.5 font-mono text-[10px] text-white"
                     style={{ background: "var(--seido)" }}
                   >
                     MERIT
@@ -297,14 +267,14 @@ export function Experience() {
           </MangaPanelReveal>
 
           {/* Tech grants */}
-          <MangaPanelReveal direction="up" delay={0.06} className="lg:col-span-4">
+          <MangaPanelReveal direction="up" index={1} className="lg:col-span-4">
             <div className="panel flex h-full flex-col justify-between bg-[var(--paper)] p-6 sm:p-7">
               <div>
                 <div className="mb-4 flex items-center justify-between border-b-2 border-[var(--ink)] pb-2.5">
                   <span className="font-manga text-sm tracking-[0.3em] text-[var(--ink)]">
                     TECH GRANTS
                   </span>
-                  <span className="bg-[var(--ink)] px-2 py-0.5 font-mono text-[9px] text-white">
+                  <span className="bg-[var(--ink)] px-2 py-0.5 font-mono text-[10px] text-white">
                     NATIONAL
                   </span>
                 </div>
@@ -332,7 +302,7 @@ export function Experience() {
           </MangaPanelReveal>
 
           {/* Emblem stamp */}
-          <MangaPanelReveal direction="right" delay={0.1} className="lg:col-span-3">
+          <MangaPanelReveal direction="right" index={2} className="lg:col-span-3">
             <div className="panel relative flex h-full min-h-[180px] flex-col justify-between overflow-hidden bg-[var(--ink)] p-6 text-white">
               <div className="speed-lines pointer-events-none absolute inset-0 opacity-30" aria-hidden="true" />
               <div className="relative z-10">

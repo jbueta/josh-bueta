@@ -5,9 +5,15 @@ import Link from "next/link";
 import { GithubIcon, LinkedinIcon } from "@/components/icons";
 import { Mail, ArrowUp, Download, Briefcase, FileText } from "lucide-react";
 import { motion, AnimatePresence } from "framer-motion";
-import { NAV_LINKS, SITE } from "@/content/site";
+import { ACTS, SITE } from "@/content/site";
+import { formatSyncStamp } from "@/lib/format";
 
-export function Footer() {
+interface FooterProps {
+  /** Present on pages that fetched live GitHub data. */
+  telemetry?: { source: "live" | "snapshot"; syncedAt: string };
+}
+
+export function Footer({ telemetry }: FooterProps) {
   const [showScrollTop, setShowScrollTop] = useState(false);
 
   useEffect(() => {
@@ -32,15 +38,12 @@ export function Footer() {
     <>
       <footer
         className="relative z-10 overflow-hidden"
-        style={{
-          background: "var(--ink)",
-          borderTop: "var(--gutter) solid var(--ink)",
-        }}
+        style={{ background: "var(--ink)" }}
       >
         <div className="speed-lines pointer-events-none absolute inset-0 opacity-25" aria-hidden="true" />
         <div className="screentone-fine pointer-events-none absolute inset-0 opacity-15" aria-hidden="true" />
 
-        <div className="relative z-10 mx-auto max-w-6xl px-6 py-16 sm:px-10">
+        <div className="canvas relative z-10 px-6 py-16 sm:px-10">
           {/* Recruitment banner */}
           <div className="relative mb-12 overflow-hidden border-4 border-white bg-[var(--paper)] p-6 text-[var(--ink)] shadow-[6px_6px_0_var(--seido)] sm:p-10">
             <div className="screentone-fine pointer-events-none absolute inset-0 opacity-45" aria-hidden="true" />
@@ -87,8 +90,8 @@ export function Footer() {
             </div>
           </div>
 
-          <div className="grid grid-cols-1 gap-10 border-b border-white/15 pb-10 md:grid-cols-12">
-            <div className="flex flex-col gap-4 md:col-span-6">
+          <div className="grid grid-cols-1 gap-8 border-b border-white/15 pb-10 md:grid-cols-12">
+            <div className="flex flex-col gap-4 md:col-span-5">
               <div
                 className="font-manga select-none leading-none tracking-widest text-white"
                 style={{ fontSize: "clamp(3.5rem, 10vw, 6.5rem)" }}
@@ -105,25 +108,33 @@ export function Footer() {
               </div>
             </div>
 
-            <nav aria-label="Footer navigation" className="flex flex-col gap-3 md:col-span-3">
+            <nav
+              aria-label="Footer navigation"
+              className="flex flex-col gap-2.5 md:col-span-4"
+            >
               <span className="font-manga border-b border-white/15 pb-1 text-[10px] tracking-[0.45em] text-white/60">
-                SECTIONS
+                CHAPTER INDEX
               </span>
-              {NAV_LINKS.map((link) => (
+              {ACTS.map((act) => (
                 <a
-                  key={link.name}
-                  href={link.href}
-                  className="font-manga text-lg leading-tight tracking-widest text-white/80 transition-colors duration-150 hover:text-white"
+                  key={act.code}
+                  href={act.href}
+                  className="font-manga group flex w-fit items-baseline gap-2.5 border-b border-transparent leading-tight text-white/80 transition-colors duration-150 hover:border-white/40 hover:text-white"
                 >
-                  {link.name.toUpperCase()}
+                  <span className="font-mono text-[10px] tabular-nums text-white/45 transition-colors group-hover:text-white/70">
+                    {act.code}
+                  </span>
+                  <span className="text-base tracking-widest">
+                    {act.name.toUpperCase()}
+                  </span>
                 </a>
               ))}
               <Link
                 href="/resume"
-                className="font-manga inline-flex items-center gap-1.5 text-lg leading-tight tracking-widest text-white/80 transition-colors duration-150 hover:text-white"
+                className="font-manga inline-flex w-fit items-baseline gap-2.5 border-b border-transparent leading-tight text-white/80 transition-colors duration-150 hover:border-white/40 hover:text-white"
               >
-                <FileText className="h-4 w-4" aria-hidden="true" />
-                RESUME
+                <FileText className="h-4 w-4 shrink-0 self-center" aria-hidden="true" />
+                <span className="text-base tracking-widest">RÉSUMÉ</span>
               </Link>
             </nav>
 
@@ -139,7 +150,7 @@ export function Footer() {
                     target={href.startsWith("http") ? "_blank" : undefined}
                     rel={href.startsWith("http") ? "noopener noreferrer" : undefined}
                     aria-label={label}
-                    className="flex h-11 w-11 items-center justify-center border-2 border-white/30 text-white/80 transition-all duration-150 hover:border-white hover:bg-white hover:text-[var(--ink)]"
+                    className="flex h-10 w-10 items-center justify-center border-2 border-white/30 text-white/80 transition-all duration-150 hover:border-white hover:bg-white hover:text-[var(--ink)]"
                   >
                     {icon}
                   </a>
@@ -147,15 +158,23 @@ export function Footer() {
               </div>
               <a
                 href={`mailto:${SITE.email}`}
-                className="mt-1 font-mono text-xs text-white/65 transition-colors hover:text-white"
+                className="mt-1 break-all font-mono text-xs text-white/65 transition-colors hover:text-white"
               >
                 {SITE.email}
               </a>
             </div>
           </div>
 
-          <div className="flex flex-col items-center justify-between gap-3 pt-6 font-mono text-[11px] text-white/50 sm:flex-row">
-            <span>© {new Date().getFullYear()} {SITE.name}. All rights reserved.</span>
+          <div className="flex flex-col items-center justify-between gap-3 pt-6 text-center font-mono text-[11px] text-white/50 sm:flex-row sm:text-left">
+            <span>
+              © {new Date().getFullYear()} {SITE.name}. All rights reserved.
+            </span>
+            {telemetry ? (
+              <span className="font-mono text-[10px] uppercase tracking-[0.2em] text-white/40">
+                Telemetry synced {formatSyncStamp(telemetry.syncedAt)} ·{" "}
+                {telemetry.source === "live" ? "GitHub API" : "repo snapshot"}
+              </span>
+            ) : null}
             <span>Engineered with Next.js, TypeScript, Tailwind CSS &amp; GSAP</span>
           </div>
         </div>
@@ -174,7 +193,7 @@ export function Footer() {
             className="fixed bottom-6 right-6 z-40 border-2 border-[var(--ink)] bg-[var(--paper)] p-4 text-[var(--ink)] shadow-[3px_3px_0_var(--ink)] transition-colors duration-150 hover:bg-[var(--ink)] hover:text-[var(--paper)] hover:shadow-none active:translate-x-[2px] active:translate-y-[2px]"
           >
             <ArrowUp className="h-5 w-5" aria-hidden="true" />
-          </motion.button>
+          </button>
         )}
       </AnimatePresence>
     </>

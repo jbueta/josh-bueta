@@ -32,7 +32,7 @@ export default function ResumePage() {
     <main id="main-content" className="relative flex min-h-screen flex-col bg-[var(--ink)]">
       <Navbar />
 
-      <div className="flex-1 px-5 pb-12 pt-[92px] sm:px-8">
+      <div className="flex-1 px-5 pb-12 pt-[calc(var(--header-h)_+_24px)] sm:px-8">
         <div className="mx-auto max-w-4xl">
           <div className="no-print mb-4 flex flex-wrap items-center justify-between gap-3">
             <Link
@@ -152,18 +152,18 @@ export default function ResumePage() {
               <h2 className="font-manga border-b-2 border-[var(--ink)] pb-1 text-sm tracking-[0.35em] text-[var(--ink)]">
                 SCHOLARSHIPS &amp; GRANTS
               </h2>
-              <ul className="mt-2 flex flex-col gap-2">
-                {[...ACADEMIC_SCHOLARSHIPS, ...TECH_SCHOLARSHIPS].map((entry) => (
-                  <li key={entry.code} className="flex flex-wrap items-baseline justify-between gap-2">
-                    <span className="font-sans text-sm text-[var(--ink)]">
-                      {entry.title} — {entry.organization}
-                    </span>
-                    <span className="font-mono text-[11px] text-[hsl(var(--muted-foreground))]">
-                      {entry.period}
-                    </span>
-                  </li>
-                ))}
-              </ul>
+                          <ul className="mt-2 flex flex-col gap-2 print-cols">
+                    {[...ACADEMIC_SCHOLARSHIPS, ...TECH_SCHOLARSHIPS].map((entry) => (
+                      <li key={entry.code} className="font-sans text-sm text-[var(--ink)] break-inside-avoid">
+                        <span className="break-inside-avoid">
+                          {entry.title} — {entry.organization}
+                          <span className="font-mono text-[11px] text-[hsl(var(--muted-foreground))]">
+                            &nbsp;&nbsp;{entry.period}
+                          </span>
+                        </span>
+                      </li>
+                    ))}
+                  </ul>
             </section>
 
             <section className="mt-6">
@@ -175,9 +175,9 @@ export default function ResumePage() {
                   <p className="font-mono text-[10px] uppercase tracking-[0.2em] text-[hsl(var(--muted-foreground))]">
                     {issuer}
                   </p>
-                  <ul className="mt-1 grid grid-cols-1 gap-x-6 gap-y-1 sm:grid-cols-2">
+                  <ul className="mt-1 print-cols">
                     {titles.map((title) => (
-                      <li key={title} className="font-sans text-xs text-[var(--ink)]">
+                      <li key={title} className="font-sans text-xs text-[var(--ink)] break-inside-avoid">
                         · {title}
                       </li>
                     ))}
@@ -190,7 +190,7 @@ export default function ResumePage() {
               <h2 className="font-manga border-b-2 border-[var(--ink)] pb-1 text-sm tracking-[0.35em] text-[var(--ink)]">
                 TECHNICAL SKILLS
               </h2>
-              <p className="mt-2 font-sans text-xs leading-relaxed text-[hsl(var(--muted-foreground))]">
+              <p className="mt-2 font-sans text-xs leading-relaxed text-[hsl(var(--muted-foreground))] print-cols">
                 {TECH_STACK.map((tech) => tech.name).join(" · ")}
               </p>
             </section>
@@ -219,7 +219,7 @@ export default function ResumePage() {
               data={SITE.cv}
               type="application/pdf"
               aria-label={`${SITE.name} resume PDF`}
-              className="h-[70vh] w-full"
+              className="pdf-embed h-[70vh] w-full"
             >
               <p className="p-4 font-mono text-xs text-[var(--ink)]">
                 Your browser cannot display PDFs inline.{" "}
@@ -229,6 +229,23 @@ export default function ResumePage() {
                 .
               </p>
             </object>
+            {/* iOS Safari cannot render PDFs in an <object>; offer the native viewer. */}
+            <div className="pdf-ios-fallback flex-col gap-3 p-6">
+              <p className="font-sans text-sm leading-relaxed text-[hsl(var(--muted-foreground))]">
+                iOS opens PDFs in its own viewer rather than embedding them. Use the button
+                below to read or share the résumé.
+              </p>
+              <a
+                href={SITE.cv}
+                target="_blank"
+                rel="noopener noreferrer"
+                className="font-manga inline-flex w-fit items-center gap-2 border-2 border-[var(--ink)] px-5 py-3 text-xs tracking-[0.22em] text-white shadow-[3px_3px_0_var(--ink)] transition-all hover:translate-x-[2px] hover:translate-y-[2px] hover:shadow-none"
+                style={{ background: "var(--seido)" }}
+              >
+                <FileText className="h-4 w-4" aria-hidden="true" />
+                OPEN THE PDF
+              </a>
+            </div>
           </div>
         </div>
       </div>

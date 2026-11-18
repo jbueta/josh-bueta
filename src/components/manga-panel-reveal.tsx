@@ -10,6 +10,10 @@ interface MangaPanelRevealProps {
   className?: string;
   delay?: number;
   direction?: Direction;
+  /** Position in a grid; multiplied by `stagger` instead of hand-set delays. */
+  index?: number;
+  /** Seconds between siblings. */
+  stagger?: number;
 }
 
 /**
@@ -45,8 +49,11 @@ export function MangaPanelReveal({
   className,
   delay = 0,
   direction = "up",
+  index = 0,
+  stagger = 0.055,
 }: MangaPanelRevealProps) {
   const ref = useRef<HTMLDivElement>(null);
+  const resolvedDelay = delay + Math.max(index, 0) * stagger;
 
   useEffect(() => {
     const element = ref.current;
@@ -65,7 +72,7 @@ export function MangaPanelReveal({
       return;
     }
 
-    element.style.setProperty("--reveal-delay", `${delay}s`);
+    element.style.setProperty("--reveal-delay", `${resolvedDelay}s`);
     element.setAttribute("data-reveal", "pending");
 
     const observer = getObserver();
@@ -76,7 +83,7 @@ export function MangaPanelReveal({
 
     observer.observe(element);
     return () => observer.unobserve(element);
-  }, [delay]);
+  }, [resolvedDelay]);
 
   return (
     <div

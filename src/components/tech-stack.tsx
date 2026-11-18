@@ -3,6 +3,7 @@
 import React from "react";
 import { Marquee } from "@/registry/magicui/marquee";
 import { MangaPanelReveal } from "@/components/manga-panel-reveal";
+import { ChapterOpener } from "@/components/chapter-opener";
 import { Cpu } from "lucide-react";
 import { TECH_COUNT, TECH_STACK, type Tech } from "@/content/stack";
 
@@ -36,41 +37,17 @@ function MangaTechCard({ icon, name, category }: Tech) {
 export function TechStack() {
   return (
     <section id="stack" className="relative z-10 overflow-hidden">
-      <MangaPanelReveal direction="up">
-        <div
-          className="speed-lines relative w-full overflow-hidden"
-          style={{ background: "var(--ink)", padding: "3.5rem 2rem" }}
-        >
-          <div className="relative z-10 mx-auto max-w-6xl">
-            <span
-              className="font-manga slash-cut-right mb-3 inline-block px-3 py-1 text-[9px] tracking-[0.5em] text-white"
-              style={{ background: "var(--seido)" }}
-            >
-              INTERLUDE // TECH STACK
-            </span>
-            <h2
-              className="font-manga leading-none text-white"
-              style={{ fontSize: "clamp(3.2rem, 9vw, 7.5rem)" }}
-            >
-              ARSENAL
-            </h2>
-          </div>
-          <div
-            className="font-manga pointer-events-none absolute bottom-0 right-4 select-none leading-none"
-            style={{
-              fontSize: "clamp(6rem, 18vw, 16rem)",
-              color: "rgba(255,255,255,0.04)",
-            }}
-            aria-hidden="true"
-          >
-            TECH
-          </div>
-        </div>
-      </MangaPanelReveal>
+      <ChapterOpener
+        act="INT"
+        label="TECH STACK"
+        title="ARSENAL"
+        subtitle={`${TECH_COUNT} CORE TECHNOLOGIES ACROSS FULL-STACK, UI/UX AND CLOUD`}
+        ghost="TECH"
+      />
 
       <div className="w-full" style={{ background: "var(--ink)", padding: "var(--gutter)" }}>
-        <div className="mx-auto grid max-w-6xl grid-cols-1 lg:grid-cols-12" style={{ gap: "var(--gutter)" }}>
-          <MangaPanelReveal direction="left" className="lg:col-span-3">
+        <div className="canvas grid grid-cols-1 lg:grid-cols-12" style={{ gap: "var(--gutter)" }}>
+          <MangaPanelReveal direction="left" index={0} className="lg:col-span-3">
             <div className="panel relative flex h-full flex-col justify-between overflow-hidden bg-[var(--ink)] p-6 text-white">
               <div className="speed-lines pointer-events-none absolute inset-0 opacity-30" aria-hidden="true" />
               <div className="relative z-10">
@@ -93,7 +70,7 @@ export function TechStack() {
             </div>
           </MangaPanelReveal>
 
-          <MangaPanelReveal direction="right" className="lg:col-span-9">
+          <MangaPanelReveal direction="right" index={1} className="lg:col-span-9">
             <div className="panel relative flex h-full items-center overflow-hidden bg-[var(--paper)]">
               <div className="screentone-fine pointer-events-none absolute inset-0 opacity-45" aria-hidden="true" />
               <div className="relative flex w-full flex-col items-center gap-3 overflow-hidden py-7">

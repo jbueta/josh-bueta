@@ -1,10 +1,11 @@
 "use client";
 
-import React, { useMemo, useRef, useState } from "react";
+import React, { useCallback, useEffect, useMemo, useRef, useState } from "react";
 import Link from "next/link";
 import { MangaPanelReveal } from "@/components/manga-panel-reveal";
 import { ContributionGraph } from "@/components/contribution-graph";
 import { MangaDialog } from "@/components/ui/manga-dialog";
+import { ChapterOpener } from "@/components/chapter-opener";
 import { GithubIcon } from "@/components/icons";
 import { gsap } from "gsap";
 import { useGSAP } from "@gsap/react";
@@ -84,8 +85,30 @@ export function Projects({ data }: ProjectsProps) {
     { dependencies: [activeIndex] },
   );
 
-  const prev = () => setActiveIndex((index) => (index - 1 + catalog.length) % catalog.length);
-  const next = () => setActiveIndex((index) => (index + 1) % catalog.length);
+  const prev = useCallback(
+    () => setActiveIndex((index) => (index - 1 + catalog.length) % catalog.length),
+    [catalog.length],
+  );
+  const next = useCallback(
+    () => setActiveIndex((index) => (index + 1) % catalog.length),
+    [catalog.length],
+  );
+
+  // ← / → page through previews while the lightbox is open.
+  useEffect(() => {
+    if (!lightboxOpen) return;
+    const onKeyDown = (event: KeyboardEvent) => {
+      if (event.key === "ArrowLeft") {
+        event.preventDefault();
+        prev();
+      } else if (event.key === "ArrowRight") {
+        event.preventDefault();
+        next();
+      }
+    };
+    window.addEventListener("keydown", onKeyDown);
+    return () => window.removeEventListener("keydown", onKeyDown);
+  }, [lightboxOpen, next, prev]);
 
   const repo = repoHref(current);
   const updated = formatUpdated(current.stats?.pushedAt) ?? current.year;
@@ -99,13 +122,13 @@ export function Projects({ data }: ProjectsProps) {
         {/* Chapter opener */}
         <MangaPanelReveal direction="up">
           <div
-            className="speed-lines relative overflow-hidden"
-            style={{ background: "var(--ink)", padding: "3.5rem 2rem 3rem" }}
+            className="chapter-opener speed-lines relative overflow-hidden"
+            style={{ background: "var(--ink)" }}
           >
-            <div className="relative z-10 mx-auto flex max-w-6xl flex-col justify-between gap-4 sm:flex-row sm:items-end">
+            <div className="canvas relative z-10 flex flex-col justify-between gap-4 sm:flex-row sm:items-end">
               <div>
                 <span
-                  className="font-manga slash-cut-right mb-3 inline-block px-3 py-1 text-[9px] tracking-[0.5em] text-white"
+                  className="font-manga slash-cut-right mb-3 inline-block px-3 py-1 text-[10px] tracking-[0.5em] text-white"
                   style={{ background: "var(--seido)" }}
                 >
                   ACT. 03 // CASE FILES &amp; BUILDS
@@ -150,14 +173,14 @@ export function Projects({ data }: ProjectsProps) {
           </div>
         </MangaPanelReveal>
 
-        <div className="w-full" style={{ background: "var(--ink)", padding: "var(--gutter)" }}>
+                    <div className="w-full" style={{ background: "var(--ink)", padding: "var(--gutter)" }}>
           <div
-            className="mx-auto grid max-w-6xl grid-cols-1 lg:grid-cols-12"
+            className="canvas grid grid-cols-1 lg:grid-cols-12"
             style={{ gap: "var(--gutter)" }}
           >
             {/* Row 1 left: contribution matrix */}
             <MangaPanelReveal direction="left" className="lg:col-span-9">
-              <div className="panel h-full bg-[var(--paper)]">
+              <div className="panel h-full bg-[var(--paper)] flex items-start w-full">
                 <ContributionGraph
                   data={data.contributions}
                   meta={data.contributionsMeta}
@@ -171,7 +194,7 @@ export function Projects({ data }: ProjectsProps) {
                 <div className="speed-lines pointer-events-none absolute inset-0 opacity-30" aria-hidden="true" />
                 <div className="relative z-10">
                   <span
-                    className="font-manga mb-3 inline-block px-2.5 py-0.5 text-[9px] tracking-[0.4em] text-white"
+                    className="font-manga mb-3 inline-block px-2.5 py-0.5 text-[10px] tracking-[0.4em] text-white"
                     style={{ background: "var(--seido)" }}
                   >
                     BUILD LOG
@@ -191,7 +214,7 @@ export function Projects({ data }: ProjectsProps) {
 
                 <div className="relative z-10 mt-4 flex items-center justify-between border-t border-white/15 pt-4">
                   <div>
-                    <span className="block font-mono text-[9px] text-white/60">
+                    <span className="block font-mono text-[10px] text-white/60">
                       FEATURED WORKS
                     </span>
                     <span className="font-manga text-2xl tracking-widest text-white">
@@ -224,7 +247,7 @@ export function Projects({ data }: ProjectsProps) {
 
                   <span
                     className={cn(
-                      "font-manga inline-flex shrink-0 items-center gap-1 px-2 py-0.5 text-[9px] tracking-[0.35em]",
+                      "font-manga inline-flex shrink-0 items-center gap-1 px-2 py-0.5 text-[10px] tracking-[0.35em]",
                       current.role === "Owner"
                         ? "bg-white text-[var(--ink)]"
                         : "bg-[var(--seido)] text-white",
@@ -257,14 +280,14 @@ export function Projects({ data }: ProjectsProps) {
                     className="h-full w-full object-cover transition-transform duration-500 group-hover:scale-[1.015]"
                   />
 
-                  <span className="font-manga absolute right-3 top-3 z-10 inline-flex items-center gap-1.5 border-2 border-white bg-[var(--ink)] px-3 py-1 text-[9px] tracking-[0.3em] text-white shadow-[3px_3px_0_rgba(0,0,0,0.5)] transition-colors group-hover:bg-[var(--seido)]">
+                  <span className="font-manga absolute right-3 top-3 z-10 inline-flex items-center gap-1.5 border-2 border-white bg-[var(--ink)] px-3 py-1 text-[10px] tracking-[0.3em] text-white shadow-[3px_3px_0_rgba(0,0,0,0.5)] transition-colors group-hover:bg-[var(--seido)]">
                     <Maximize2 className="h-3 w-3" aria-hidden="true" />
                     INSPECT LANDING PAGE
                   </span>
 
                   <span className="absolute inset-x-0 bottom-0 flex items-end justify-between gap-3 bg-gradient-to-t from-black/90 via-black/60 to-transparent px-4 pb-3 pt-8 sm:px-5">
                     <span className="block text-left">
-                      <span className="block font-mono text-[9px] uppercase tracking-[0.3em] text-white/75">
+                      <span className="block font-mono text-[10px] uppercase tracking-[0.3em] text-white/75">
                         HOMEPAGE / INTERFACE PREVIEW
                       </span>
                       <span className="font-manga block text-base leading-tight tracking-wider text-white sm:text-xl">
@@ -374,7 +397,7 @@ export function Projects({ data }: ProjectsProps) {
                   })}
                 </div>
 
-                <p className="border-t-2 border-[var(--ink)]/15 px-4 py-2.5 font-mono text-[9px] leading-relaxed text-[hsl(var(--muted-foreground))]">
+                <p className="border-t-2 border-[var(--ink)]/15 px-4 py-2.5 font-mono text-[10px] leading-relaxed text-[hsl(var(--muted-foreground))]">
                   PREVIEWS ARE ILLUSTRATED INTERFACE PANELS, NOT SCREENSHOTS.
                 </p>
               </div>
@@ -509,7 +532,7 @@ export function Projects({ data }: ProjectsProps) {
                           className="h-full w-full object-cover"
                         />
                         <span className="absolute inset-x-0 bottom-0 flex items-center justify-between bg-black/85 px-2 py-1">
-                          <span className="font-manga truncate text-[9px] tracking-widest text-white">
+                          <span className="font-manga truncate text-[10px] tracking-widest text-white">
                             {String(index + 1).padStart(2, "0")} ·{" "}
                             {project.name.split("—")[0].trim()}
                           </span>
@@ -543,13 +566,16 @@ export function Projects({ data }: ProjectsProps) {
         <div className="flex items-center justify-between border-b-4 border-[var(--ink)] bg-[var(--ink)] px-5 py-3.5 text-white">
           <div className="flex flex-wrap items-center gap-2">
             <span
-              className="font-manga px-2 py-0.5 text-[9px] tracking-[0.4em] text-white"
+              className="font-manga px-2 py-0.5 text-[10px] tracking-[0.4em] text-white"
               style={{ background: "var(--seido)" }}
             >
               HOMEPAGE PREVIEW
             </span>
             <span className="font-manga text-base tracking-wider sm:text-lg">
               {current.name}
+            </span>
+            <span className="hidden font-mono text-[10px] tracking-[0.2em] text-white/50 sm:inline">
+              ← / → TO PAGE
             </span>
           </div>
           <button
@@ -562,21 +588,43 @@ export function Projects({ data }: ProjectsProps) {
           </button>
         </div>
 
-        <div className="screentone-fine bg-[var(--paper)] p-3 sm:p-5">
+        <div className="screentone-fine min-h-0 flex-1 overflow-y-auto bg-[var(--paper)] p-3 sm:p-5">
           {/* eslint-disable-next-line @next/next/no-img-element -- SVG illustration, opened on demand */}
           <img
             src={current.previewImage}
             alt={current.previewAlt}
             width={1280}
             height={744}
-            className="h-auto w-full border-2 border-[var(--ink)] shadow-xl"
+            className="mx-auto h-auto max-h-[calc(92dvh_-_13rem)] w-full border-2 border-[var(--ink)] object-contain shadow-xl"
           />
         </div>
 
         <div className="flex flex-wrap items-center justify-between gap-3 border-t-4 border-[var(--ink)] bg-[var(--paper)] px-5 py-3.5">
-          <p className="font-mono text-xs text-[hsl(var(--muted-foreground))]">
+          <p className="min-w-0 flex-1 font-mono text-xs text-[hsl(var(--muted-foreground))]">
             {current.tagline}
           </p>
+          <div className="flex items-center gap-2">
+            <button
+              type="button"
+              onClick={prev}
+              aria-label="Previous project preview"
+              className="flex h-9 w-9 items-center justify-center border-2 border-[var(--ink)] bg-white text-[var(--ink)] transition-colors hover:bg-[var(--ink)] hover:text-white focus-visible:outline-4 focus-visible:outline-[var(--seido)]"
+            >
+              <ChevronLeft className="h-4 w-4" aria-hidden="true" />
+            </button>
+            <span className="font-manga px-1 text-[10px] tracking-widest text-[var(--ink)]">
+              {String(activeIndex + 1).padStart(2, "0")} /{" "}
+              {String(catalog.length).padStart(2, "0")}
+            </span>
+            <button
+              type="button"
+              onClick={next}
+              aria-label="Next project preview"
+              className="flex h-9 w-9 items-center justify-center border-2 border-[var(--ink)] bg-white text-[var(--ink)] transition-colors hover:bg-[var(--ink)] hover:text-white focus-visible:outline-4 focus-visible:outline-[var(--seido)]"
+            >
+              <ChevronRight className="h-4 w-4" aria-hidden="true" />
+            </button>
+          </div>
           <div className="flex items-center gap-2.5">
             {repo && (
               <a

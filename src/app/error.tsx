@@ -22,13 +22,13 @@ export default function Error({
     <main id="main-content" className="relative flex min-h-screen flex-col bg-[var(--ink)]">
       <Navbar />
 
-      <div className="flex flex-1 items-center px-5 pb-16 pt-[92px] sm:px-8">
+      <div className="flex flex-1 items-center px-5 pb-16 pt-[calc(var(--header-h)_+_24px)] sm:px-8">
         <div className="panel relative mx-auto w-full max-w-3xl overflow-hidden bg-[var(--paper)] p-8 sm:p-12">
           <div className="speed-lines pointer-events-none absolute inset-0 opacity-20" aria-hidden="true" />
 
           <div className="relative z-10">
             <span
-              className="font-manga slash-cut-right mb-4 inline-block px-3 py-1 text-[9px] tracking-[0.5em] text-white"
+              className="font-manga slash-cut-right mb-4 inline-block px-3 py-1 text-[10px] tracking-[0.5em] text-white"
               style={{ background: "var(--seido)" }}
             >
               PANEL INTERRUPTED

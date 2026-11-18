@@ -37,6 +37,9 @@ export function Marquee({
       {Array.from({ length: repeat }).map((_, i) => (
         <div
           key={i}
+          // Copies 2..n exist only to make the loop seamless; screen readers
+          // used to announce the whole arsenal four times.
+          aria-hidden={i > 0 ? true : undefined}
           className={cn("flex shrink-0 justify-around [gap:var(--gap)]", {
             "animate-marquee flex-row": !vertical,
             "animate-marquee-vertical flex-col": vertical,

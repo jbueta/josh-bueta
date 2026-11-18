@@ -33,11 +33,18 @@ function parseContributions(html) {
       /data-date="(\d{4}-\d{2}-\d{2})"[^>]*data-level="([0-4])"[^>]*>[\s\S]*?<tool-tip[^>]*>([\s\S]*?)<\/tool-tip>/g,
     ),
   ];
-  const days = cells.map(([, date, level, tooltip]) => {
+  const parsed = cells.map(([, date, level, tooltip]) => {
     const count = Number(tooltip.match(/(\d+)\s+contribution/)?.[1] ?? 0);
     return { date, level: Number(level), count };
   });
-  if (!days.length) return null;
+  if (!parsed.length) return null;
+
+  // DOM order from GitHub is not chronological; sort so the graph can slice
+  // real Sunday-to-Saturday weeks.
+  const days = [...new Map(parsed.map((day) => [day.date, day])).values()].sort(
+    (a, b) => a.date.localeCompare(b.date),
+  );
+
   const total = totalMatch
     ? Number(totalMatch[1].replace(/,/g, ""))
     : days.reduce((sum, day) => sum + day.count, 0);

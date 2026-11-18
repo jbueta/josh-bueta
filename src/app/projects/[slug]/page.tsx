@@ -11,6 +11,8 @@ import {
 import { GithubIcon as GithubGlyph } from "@/components/icons";
 import { Navbar } from "@/components/navbar";
 import { Footer } from "@/components/footer";
+import { ChapterOpener } from "@/components/chapter-opener";
+import { ActBreak } from "@/components/act-break";
 import { PROJECTS, getProject } from "@/content/projects";
 
 export const dynamicParams = false;
@@ -123,9 +125,9 @@ export default async function ProjectPage({ params }: PageProps) {
 
   return (
     <main id="main-content" className="relative flex min-h-screen flex-col bg-[var(--ink)]">
-      <Navbar />
+          <Navbar />
 
-      <div className="flex-1 pt-[76px]">
+      <div className="flex-1 pt-[var(--header-h)]" id="projects">
         {/* Case file header */}
         <header className="relative overflow-hidden border-b-4 border-[var(--ink)] bg-[var(--paper)] px-5 pb-10 pt-10 sm:px-8">
           <div className="screentone pointer-events-none absolute inset-0 opacity-30" aria-hidden="true" />
@@ -139,7 +141,7 @@ export default async function ProjectPage({ params }: PageProps) {
             </Link>
 
             <span
-              className="font-manga slash-cut-right mb-3 inline-block px-3 py-1 text-[9px] tracking-[0.5em] text-white"
+              className="font-manga slash-cut-right mb-3 inline-block px-3 py-1 text-[10px] tracking-[0.5em] text-white"
               style={{ background: "var(--seido)" }}
             >
               CASE FILE {String(index + 1).padStart(2, "0")} /{" "}
@@ -173,8 +175,8 @@ export default async function ProjectPage({ params }: PageProps) {
           </div>
         </header>
 
-        <div className="px-5 py-8 sm:px-8" style={{ background: "var(--ink)" }}>
-          <div className="mx-auto flex max-w-4xl flex-col gap-6">
+          <div className="px-5 py-8 sm:px-8" style={{ background: "var(--ink)" }}>
+          <div className="canvas mx-auto flex max-w-4xl flex-col gap-6">
             <div className="panel bg-[var(--paper)] p-3 sm:p-5">
               {/* eslint-disable-next-line @next/next/no-img-element -- SVG interface illustration */}
               <img

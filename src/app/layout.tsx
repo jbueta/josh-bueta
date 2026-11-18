@@ -1,5 +1,5 @@
 import type { Metadata, Viewport } from "next";
-import { League_Spartan, Montserrat, Bebas_Neue } from "next/font/google";
+import { League_Spartan, Montserrat, Bebas_Neue, Space_Mono } from "next/font/google";
 import "./globals.css";
 import { SITE } from "@/content/site";
 
@@ -21,6 +21,14 @@ const bebasNeue = Bebas_Neue({
   variable: "--font-bebas-neue",
   subsets: ["latin"],
   weight: "400",
+  display: "swap",
+});
+
+// Real mono face for telemetry labels; `font-mono` used to fall back to the OS.
+const spaceMono = Space_Mono({
+  variable: "--font-space-mono",
+  subsets: ["latin"],
+  weight: ["400", "700"],
   display: "swap",
 });
 
@@ -58,7 +66,8 @@ export const metadata: Metadata = {
 };
 
 export const viewport: Viewport = {
-  themeColor: "#0a0a0a",
+  // The page is stark white; a black browser chrome sat on top of it.
+  themeColor: "#ffffff",
   colorScheme: "light",
 };
 
@@ -71,7 +80,7 @@ export default function RootLayout({
     <html
       lang="en"
       suppressHydrationWarning
-      className={`${leagueSpartan.variable} ${montserrat.variable} ${bebasNeue.variable} h-full antialiased`}
+      className={`${leagueSpartan.variable} ${montserrat.variable} ${bebasNeue.variable} ${spaceMono.variable} h-full antialiased`}
     >
       <body className="flex min-h-full flex-col overflow-x-hidden bg-[hsl(var(--background))] font-sans text-[hsl(var(--foreground))] antialiased">
         {children}

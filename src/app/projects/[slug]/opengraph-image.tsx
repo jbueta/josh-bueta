@@ -13,9 +13,7 @@ export async function generateImageMetadata({ params }: ImageProps) {
   return [
     {
       id: "case-file",
-      size,
-      contentType,
-      alt: project ? `${project.name} — case file` : "Case file",
+      size, contentType, alt: project ? `${project.name} — case file` : "Case file",
     },
   ];
 }
@@ -26,6 +24,7 @@ export default async function ProjectOpengraphImage({ params }: ImageProps) {
   const title = project?.name ?? "Case file";
   const tagline = project?.tagline ?? SITE.role;
   const tech = project?.techStack.join(" · ") ?? "";
+  const techNode = project ? (project.techStack ? formatTech(project.techStack) : undefined) : undefined;
 
   return new ImageResponse(
     (
@@ -86,17 +85,31 @@ export default async function ProjectOpengraphImage({ params }: ImageProps) {
         </div>
 
         <div style={{ display: "flex", justifyContent: "space-between", alignItems: "flex-end" }}>
-          <div
-            style={{
-              display: "flex",
-              border: "2px solid rgba(255,255,255,0.35)",
-              padding: "10px 16px",
-              fontSize: 20,
-              letterSpacing: 2,
-            }}
-          >
-            {tech}
-          </div>
+                    <div
+              style={{
+                display: "flex",
+                border: "2px solid rgba(255,255,255,0.35)",
+                padding: "10px 16px",
+                fontSize: 20,
+                letterSpacing: 2,
+              }}
+            >
+              {techNode ?? /* Show “NO CASE FILE” for a missing project so the card
+                  never renders blank. */ (
+                <div
+                  style={{
+                    display: "flex",
+                    border: "2px solid rgba(255,255,255,0.35)",
+                    padding: "10px 16px",
+                    fontSize: 20,
+                    letterSpacing: 2,
+                    color: "#a3a3a3",
+                  }}
+                >
+                  NO CASE FILE
+                </div>
+              )}
+            </div>
           <div style={{ display: "flex", fontSize: 96, fontWeight: 900, color: "#003087" }}>
             {SITE.shortName}
           </div>

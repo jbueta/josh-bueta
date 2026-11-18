@@ -26,6 +26,8 @@ export const SITE = {
   /** The one canonical resume. `public/Bueta-Resume_Updated.pdf` was removed. */
   cv: "/Mark_Joshua_Bueta_CV.pdf",
   cvFileName: "Mark_Joshua_Bueta_CV.pdf",
+  /** Bump when page copy changes; keeps `sitemap.xml` deterministic. */
+  updated: "2026-11-18",
   description:
     "Portfolio of Mark Joshua Bueta (MJB) — computer science student, frontend developer and UI/UX designer in Pasig City. Case files on full-stack, AI-assisted and IoT systems, plus verified certifications.",
   keywords: [
@@ -41,10 +43,42 @@ export const SITE = {
   ],
 } as const;
 
-export const NAV_LINKS = [
-  { name: "Background", href: "/#background", section: "background" },
-  { name: "Projects", href: "/#projects", section: "projects" },
-  { name: "Arsenal", href: "/#stack", section: "stack" },
-  { name: "Credentials", href: "/#credentials", section: "credentials" },
-  { name: "Contact", href: "/#contact", section: "contact" },
-] as const;
+export type Act = {
+  /** Chapter numeral. The arsenal is an `INT`erlude, not a numbered act. */
+  code: string;
+  name: string;
+  href: string;
+  section: string;
+  interlude?: boolean;
+};
+
+/**
+ * The chapter order of the whole portfolio, in one place.
+ *
+ * The rail, the navbar, the footer index and every chapter opener read from
+ * this list, so the numerals can no longer drift apart. `01` is the hero and
+ * is deliberately not part of the navbar's section links.
+ */
+export const ACTS: Act[] = [
+  { code: "01", name: "Opening", href: "/#opening", section: "opening" },
+  { code: "02", name: "Background", href: "/#background", section: "background" },
+  { code: "03", name: "Projects", href: "/#projects", section: "projects" },
+  { code: "INT", name: "Arsenal", href: "/#stack", section: "stack", interlude: true },
+  { code: "04", name: "Credentials", href: "/#credentials", section: "credentials" },
+  { code: "05", name: "Contact", href: "/#contact", section: "contact" },
+];
+
+/** Act label used by openers: `ACT. 04` / `INTERLUDE`. */
+export function actKicker(code: string): string {
+  return code === "INT" ? "INTERLUDE" : `ACT. ${code}`;
+}
+
+/** Chapter numeral for a section id, e.g. `stack` → `INT`. */
+export function actCodeForSection(section: string | null): string {
+  if (!section) return ACTS[0].code;
+  return ACTS.find((act) => act.section === section)?.code ?? ACTS[0].code;
+}
+
+export const NAV_LINKS = ACTS.filter((act) => act.code !== "01").map(
+  ({ name, href, section }) => ({ name, href, section }),
+);

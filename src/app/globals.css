@@ -1,5 +1,18 @@
 @import "tailwindcss";
 
+/*
+ * The utilities were pointing at Tailwind's default stacks, so `font-sans`
+ * (33 usages) rendered system-ui instead of Montserrat and `font-mono` (75
+ * usages) rendered the OS mono. `inline` keeps the next/font variables live on
+ * <html> instead of resolving them at :root.
+ */
+@theme inline {
+  --font-sans: var(--font-montserrat), ui-sans-serif, system-ui, sans-serif;
+  --font-mono: var(--font-space-mono), ui-monospace, SFMono-Regular, Menlo, monospace;
+  --font-display: var(--font-bebas-neue), "Impact", "Arial Black", system-ui, sans-serif;
+  --font-heading: var(--font-league-spartan), system-ui, sans-serif;
+}
+
 /* ============================================================
    MANGA DESIGN TOKENS — Stark White Paper & Sumi Ink
    Reference: Ace of Diamond (Yuji Terajima) Manga Panel Style
@@ -36,7 +49,34 @@
     --paper:  #ffffff;
     --tone:   #f4f4f4;   /* Light screentone wash */
     --seido:  #003087;   /* Seido Navy — strictly primary CTAs & status badges */
+    --seido-quiet: rgba(0, 48, 135, 0.45); /* Secondary navy — marks, hairlines, never CTAs */
+
+    /* One coherent five-step ramp for the contribution calendar. */
+    --seido-0: #171717;
+    --seido-1: rgba(0, 48, 135, 0.55);
+    --seido-2: #0b47a8;
+    --seido-3: #2f6fe4;
+    --seido-4: #8fb6ff;
+
     --gutter: 6px;       /* Solid ink gutter between panels */
+    --header-h: 68px;    /* Fixed navbar height — single source of truth */
+    --canvas-max: 72rem; /* Shared page frame; widens on large displays */
+  }
+}
+
+@layer base {
+  /* The logo steps up to text-4xl at `sm`, which grows the navbar by 4px. */
+  @media (min-width: 640px) {
+    :root {
+      --header-h: 72px;
+    }
+  }
+
+  /* One canvas upgrade at the desktop breakpoint keeps every section aligned. */
+  @media (min-width: 1280px) {
+    :root {
+      --canvas-max: 80rem;
+    }
   }
 }
 
@@ -99,6 +139,8 @@
 
 html {
   scroll-behavior: smooth;
+  /* Anchor targets must clear the fixed navbar. */
+  scroll-padding-top: calc(var(--header-h) + 10px);
 }
 
 body {
@@ -137,24 +179,76 @@ h6,
    - Diagonal polygon cuts for Chapter Openers & Project Showcase
    ============================================================ */
 
-.panel {
-  border: 3.5px solid var(--ink);
-  position: relative;
-  overflow: hidden;
-  background-color: var(--paper);
-}
+/*
+ * Component layer on purpose: an unlayered `background-color` here outranks
+ * every Tailwind utility, which silently discarded `bg-[var(--ink)]` on dark
+ * panels (white text on a white card) and killed `hover:bg-[var(--ink)]`.
+ * Living in `components` keeps these defaults overridable by utilities.
+ */
+@layer components {
+  .panel {
+    border: 3px solid var(--ink);
+    position: relative;
+    overflow: hidden;
+    background-color: var(--paper);
+  }
 
-.panel-inset {
-  border: 3.5px solid var(--ink);
-  box-shadow: inset 0 0 0 4px var(--paper), inset 0 0 0 6px var(--ink);
-  position: relative;
-  overflow: hidden;
-}
+  .panel-inset {
+    border: 3px solid var(--ink);
+    box-shadow: inset 0 0 0 4px var(--paper), inset 0 0 0 6px var(--ink);
+    position: relative;
+    overflow: hidden;
+  }
 
-.panel-seido {
-  border: 3.5px solid var(--seido);
-  position: relative;
-  overflow: hidden;
+  .panel-seido {
+    border: 3px solid var(--seido);
+    position: relative;
+    overflow: hidden;
+  }
+
+  /* The single page frame. Every chapter opener and spread shares it. */
+  .canvas {
+    width: 100%;
+    max-width: var(--canvas-max);
+    margin-inline: auto;
+  }
+
+  /* One rhythm for all five chapter openers. */
+  .chapter-opener {
+    padding: clamp(2.5rem, 5vw, 3.5rem) clamp(1.25rem, 4vw, 2rem)
+      clamp(2rem, 4vw, 3rem);
+  }
+
+  /* Sticky chapter index — only on screens wide enough to keep it clear. */
+  .chapter-rail {
+    display: none;
+    flex-direction: column;
+  }
+
+  @media (min-width: 1400px) {
+    .chapter-rail {
+      display: flex;
+    }
+  }
+
+  /*
+   * Act breaks. Every section butts against the 6px ink gutter, which made the
+   * whole page read as one continuous block; this strip gives each chapter an
+   * ending and the next one a label.
+   */
+  .act-break {
+    display: flex;
+    align-items: center;
+    gap: clamp(0.75rem, 2vw, 1.5rem);
+    padding: clamp(1.25rem, 3.5vw, 2.25rem) clamp(1rem, 4vw, 2rem);
+    background: var(--ink);
+  }
+
+  .act-break-rule {
+    height: 2px;
+    flex: 1 1 0%;
+    background: rgba(255, 255, 255, 0.18);
+  }
 }
 
 /* Diagonal Polygon Cuts for Chapter Openers & Project Showcase */
@@ -218,10 +312,8 @@ h6,
    SFX WATERMARK — Subtle ghost typography in panel corners
    ============================================================ */
 
-.sfx-code::after,
 .sfx-deploy::after,
-.sfx-scholar::after,
-.sfx-build::after {
+.sfx-scholar::after {
   position: absolute;
   font-family: var(--font-bebas-neue), "Impact", sans-serif;
   font-size: clamp(5rem, 18vw, 15rem);
@@ -235,10 +327,6 @@ h6,
   z-index: 0;
 }
 
-.sfx-code::after {
-  content: "CODE";
-}
-
 .sfx-deploy::after {
   content: "DEPLOY";
 }
@@ -247,18 +335,11 @@ h6,
   content: "SCHOLAR";
 }
 
-.sfx-build::after {
-  content: "BUILD";
-}
-
 /* ============================================================
    SCROLLBAR & SELECTION
    ============================================================ */
 
 ::-webkit-scrollbar       { width: 6px; }
-::-webkit-scrollbar-track { background: #ffffff; border-left: 1px solid #0a0a0a; }
-::-webkit-scrollbar-thumb { background: #0a0a0a; border-radius: 0; }
-::-webkit-scrollbar-thumb:hover { background: var(--seido); }
 
 ::-webkit-scrollbar-track {
   background: transparent;
@@ -284,25 +365,25 @@ h6,
 
 .panel-reveal {
   transition:
-    opacity 0.65s cubic-bezier(0.22, 1, 0.36, 1),
-    transform 0.65s cubic-bezier(0.22, 1, 0.36, 1),
-    filter 0.65s cubic-bezier(0.22, 1, 0.36, 1);
+    opacity 0.45s cubic-bezier(0.22, 1, 0.36, 1),
+    transform 0.45s cubic-bezier(0.22, 1, 0.36, 1),
+    filter 0.45s cubic-bezier(0.22, 1, 0.36, 1);
   transition-delay: var(--reveal-delay, 0s);
 }
 
 .panel-reveal[data-reveal="pending"] {
   opacity: 0;
-  filter: blur(6px);
-  transform: translate3d(0, 50px, 0);
+  filter: blur(2px);
+  transform: translate3d(0, 18px, 0);
   will-change: opacity, transform;
 }
 
 .panel-reveal[data-direction="left"][data-reveal="pending"] {
-  transform: translate3d(-60px, 0, 0);
+  transform: translate3d(-24px, 0, 0);
 }
 
 .panel-reveal[data-direction="right"][data-reveal="pending"] {
-  transform: translate3d(60px, 0, 0);
+  transform: translate3d(24px, 0, 0);
 }
 
 .panel-reveal[data-direction="none"][data-reveal="pending"] {
@@ -355,6 +436,28 @@ h6,
 }
 
 /* ============================================================
+   PDF EMBED — iOS Safari cannot render <object> PDFs inline
+   ============================================================ */
+
+.pdf-ios-fallback {
+  display: none;
+}
+
+/*
+ * `-webkit-touch-callout` is also supported by desktop Safari, which renders
+ * PDFs perfectly well. `hover: none` keeps the fallback on touch devices only.
+ */
+@supports (-webkit-touch-callout: none) and (hover: none) {
+  .pdf-embed {
+    display: none;
+  }
+
+  .pdf-ios-fallback {
+    display: flex;
+  }
+}
+
+/* ============================================================
    PRINT — /resume
    ============================================================ */
 
@@ -383,4 +486,20 @@ h6,
     content: " (" attr(href) ")";
     font-size: 10px;
   }
+
+  /* Two columns keep the printed résumé to two pages. */
+  .print-cols {
+    display: block !important;
+    columns: 2;
+    column-gap: 1.75rem;
+  }
+
+  .print-page section {
+    break-inside: avoid;
+  }
+}
+
+/* A4-friendly margins for the printed résumé. */
+@page {
+  margin: 14mm;
 }

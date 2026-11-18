@@ -29,11 +29,17 @@ export type RepoStat = {
   topics: string[];
 };
 
-export type ContributionDay = {
-  date: string;
-  count: number;
-  level: 0 | 1 | 2 | 3 | 4;
-};
+export type ContributionLevel = 0 | 1 | 2 | 3 | 4;
+
+/**
+ * Compact tuple: `[date, count, level]`.
+ *
+ * The calendar is 364 entries and ships to the client inside the RSC payload.
+ * Tuples serialise to roughly half the bytes of named objects with no loss of
+ * fidelity, and the committed snapshot (which still stores objects) is
+ * normalised below.
+ */
+export type ContributionDay = [date: string, count: number, level: ContributionLevel];
 
 export type ContributionData = {
   total: number;
@@ -64,11 +70,15 @@ type SnapshotRepo = {
   topics: string[];
 };
 
+type SnapshotContributionDay =
+  | ContributionDay
+  | { date: string; count: number; level: ContributionLevel };
+
 type Snapshot = {
   username: string;
   syncedAt: string;
   repos: SnapshotRepo[];
-  contributions: { total: number; days: ContributionDay[] } | null;
+  contributions: { total: number; days: SnapshotContributionDay[] } | null;
 };
 
 type GithubRepoResponse = {
@@ -132,6 +142,7 @@ async function githubJson<T>(url: string): Promise<T | null> {
         "User-Agent": "bueta-portfolio",
         ...(token ? { Authorization: `Bearer ${token}` } : {}),
       },
+      signal: AbortSignal.timeout(6000),
       next: { revalidate: REVALIDATE_SECONDS, tags: ["github"] },
     });
     if (!response.ok) return null;
@@ -154,16 +165,23 @@ export function parseContributionsHtml(html: string): ContributionData | null {
   for (const match of html.matchAll(cellPattern)) {
     const [, date, level, tooltip] = match;
     const count = Number(tooltip.match(/(\d+)\s+contribution/)?.[1] ?? 0);
-    days.push({ date, level: Number(level) as ContributionDay["level"], count });
+    days.push([date, count, Number(level) as ContributionLevel]);
   }
 
   if (days.length < 30) return null;
 
   const total = totalMatch
     ? Number(totalMatch[1].replace(/,/g, ""))
-    : days.reduce((sum, day) => sum + day.count, 0);
+    : days.reduce((sum, day) => sum + day[1], 0);
 
-  return { total, days: days.slice(-364) };
+  // GitHub emits the calendar in DOM order, which is not chronological and can
+  // repeat a date. Sorting here is what lets the graph slice real Sun–Sat weeks
+  // instead of arbitrary 7-day runs.
+  const ordered = [...new Map(days.map((day) => [day[0], day])).values()].sort(
+    (a, b) => a[0].localeCompare(b[0]),
+  );
+
+  return { total, days: ordered.slice(-364) };
 }
 
 async function fetchContributionsLive(): Promise<ContributionData | null> {
@@ -172,6 +190,7 @@ async function fetchContributionsLive(): Promise<ContributionData | null> {
       `https://github.com/users/${SITE.githubUsername}/contributions`,
       {
         headers: { "User-Agent": "bueta-portfolio" },
+        signal: AbortSignal.timeout(6000),
         next: { revalidate: REVALIDATE_SECONDS, tags: ["github-contributions"] },
       },
     );
@@ -197,10 +216,15 @@ async function fetchReposLive(): Promise<Record<string, RepoStat> | null> {
     .filter((fullName): fullName is string => Boolean(fullName))
     .filter((fullName) => !(fullName.toLowerCase() in repos));
 
-  for (const fullName of external) {
-    const repo = await githubJson<GithubRepoResponse>(
-      `https://api.github.com/repos/${fullName}`,
-    );
+  // Parallel: a cold revalidation used to pay one round trip per collaborator
+  // repository, in sequence, before the page could render.
+  const collaboratorRepos = await Promise.all(
+    external.map((fullName) =>
+      githubJson<GithubRepoResponse>(`https://api.github.com/repos/${fullName}`),
+    ),
+  );
+
+  for (const repo of collaboratorRepos) {
     if (!repo) continue;
     const stat = toRepoStat(repo);
     if (stat.fullName) repos[stat.fullName.toLowerCase()] = stat;
@@ -209,11 +233,24 @@ async function fetchReposLive(): Promise<Record<string, RepoStat> | null> {
   return repos;
 }
 
+/** Accepts either tuple or object days so old snapshots keep working. */
+function normalizeContributions(
+  contributions: { total: number; days: SnapshotContributionDay[] } | null,
+): ContributionData | null {
+  if (!contributions) return null;
+  const days: ContributionDay[] = contributions.days.map((day) =>
+    Array.isArray(day)
+      ? day
+      : ([day.date, day.count, day.level] as ContributionDay),
+  );
+  return { total: contributions.total, days };
+}
+
 export async function getGithubData(): Promise<GithubData> {
   const fallback: GithubData = {
     repos: snapshotRepos(),
     reposMeta: { source: "snapshot", syncedAt: snapshot.syncedAt },
-    contributions: snapshot.contributions,
+    contributions: normalizeContributions(snapshot.contributions),
     contributionsMeta: { source: "snapshot", syncedAt: snapshot.syncedAt },
   };
 
@@ -240,16 +277,3 @@ export async function getGithubData(): Promise<GithubData> {
   }
 }
 
-const STAMP_FORMAT = new Intl.DateTimeFormat("en-GB", {
-  day: "2-digit",
-  month: "short",
-  year: "numeric",
-  timeZone: "UTC",
-});
-
-/** Deterministic across server and client (UTC, fixed locale). */
-export function formatSyncStamp(iso: string): string {
-  const date = new Date(iso);
-  if (Number.isNaN(date.getTime())) return "unknown";
-  return STAMP_FORMAT.format(date).toUpperCase();
-}
