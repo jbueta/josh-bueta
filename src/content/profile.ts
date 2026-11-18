@@ -37,7 +37,7 @@ export const ORG_POSITIONS: OrgPosition[] = [
   },
   {
     id: "evp-external",
-    role: "EVP — External Affairs",
+    role: "Executive Vice President — External Affairs",
     period: "2025 – 2026",
     tag: "EXECUTIVE",
     description:
@@ -45,7 +45,7 @@ export const ORG_POSITIONS: OrgPosition[] = [
   },
   {
     id: "evp-internal",
-    role: "EVP — Internal Affairs",
+    role: "Executive Vice President — Internal Affairs",
     period: "2024 – 2025",
     tag: "EXECUTIVE",
     description:

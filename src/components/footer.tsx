@@ -2,18 +2,14 @@
 
 import React, { useEffect, useState } from "react";
 import Link from "next/link";
+import { useRouter } from "next/navigation";
 import { GithubIcon, LinkedinIcon } from "@/components/icons";
 import { Mail, ArrowUp, Download, Briefcase, FileText } from "lucide-react";
 import { motion, AnimatePresence } from "framer-motion";
 import { ACTS, SITE } from "@/content/site";
-import { formatSyncStamp } from "@/lib/format";
 
-interface FooterProps {
-  /** Present on pages that fetched live GitHub data. */
-  telemetry?: { source: "live" | "snapshot"; syncedAt: string };
-}
-
-export function Footer({ telemetry }: FooterProps) {
+export function Footer() {
+  const router = useRouter();
   const [showScrollTop, setShowScrollTop] = useState(false);
 
   useEffect(() => {
@@ -26,6 +22,23 @@ export function Footer({ telemetry }: FooterProps) {
   const scrollToTop = () => {
     const reduce = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
     window.scrollTo({ top: 0, behavior: reduce ? "auto" : "smooth" });
+  };
+
+  /**
+   * "Schedule a conversation" used to be a `/#contact` link. On the home page
+   * the hash is already `#contact` once someone has been there, so a second
+   * click did nothing. Scroll the section directly, and keep the plain link as
+   * the fallback for pages without the contact form.
+   */
+  const goToContact = () => {
+    const target = document.getElementById("contact");
+    if (!target) {
+      router.push("/#contact");
+      return;
+    }
+    const reduce = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
+    target.scrollIntoView({ behavior: reduce ? "auto" : "smooth", block: "start" });
+    history.replaceState(null, "", "#contact");
   };
 
   const socials = [
@@ -70,14 +83,15 @@ export function Footer({ telemetry }: FooterProps) {
               </div>
 
               <div className="flex shrink-0 flex-wrap items-center gap-3">
-                <Link
-                  href="/#contact"
-                  className="font-manga inline-flex items-center gap-2 border-2 border-[var(--ink)] px-6 py-3.5 text-xs tracking-[0.22em] text-white shadow-[4px_4px_0_var(--ink)] transition-all hover:translate-x-[2px] hover:translate-y-[2px] hover:shadow-none"
+                <button
+                  type="button"
+                  onClick={goToContact}
+                  className="font-manga inline-flex items-center gap-2 border-2 border-[var(--ink)] px-6 py-3.5 text-xs tracking-[0.22em] text-white shadow-[4px_4px_0_var(--ink)] transition-all hover:translate-x-[2px] hover:translate-y-[2px] hover:shadow-none focus-visible:outline-4 focus-visible:outline-offset-2 focus-visible:outline-[var(--ink)]"
                   style={{ background: "var(--seido)" }}
                 >
                   <Mail className="h-4 w-4" aria-hidden="true" />
                   SCHEDULE A CONVERSATION →
-                </Link>
+                </button>
                 <a
                   href={SITE.cv}
                   download={SITE.cvFileName}
@@ -169,12 +183,6 @@ export function Footer({ telemetry }: FooterProps) {
             <span>
               © {new Date().getFullYear()} {SITE.name}. All rights reserved.
             </span>
-            {telemetry ? (
-              <span className="font-mono text-[10px] uppercase tracking-[0.2em] text-white/40">
-                Telemetry synced {formatSyncStamp(telemetry.syncedAt)} ·{" "}
-                {telemetry.source === "live" ? "GitHub API" : "repo snapshot"}
-              </span>
-            ) : null}
             <span>Engineered with Next.js, TypeScript, Tailwind CSS &amp; GSAP</span>
           </div>
         </div>

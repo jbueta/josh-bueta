@@ -164,10 +164,20 @@ export function Experience() {
                   <br />
                   <span style={{ color: "var(--seido)" }}>SOCIETY</span>
                 </h3>
+                {/* The abbreviated "EVP" said nothing to a reader; the post is
+                    spelled out at full weight right under the society name. */}
+                <div className="mb-3 flex flex-wrap items-center gap-x-2 gap-y-1 border-l-4 border-[var(--seido)] bg-[var(--seido)]/[0.06] py-1.5 pl-2.5">
+                  <span className="font-mono text-[10px] font-bold uppercase tracking-[0.14em] text-[var(--ink)]">
+                    Executive Vice President
+                  </span>
+                  <span className="font-mono text-[10px] uppercase tracking-[0.14em] text-[var(--seido)]">
+                    External Affairs · 2025–2026
+                  </span>
+                </div>
                 <p className="font-sans text-xs leading-relaxed text-[hsl(var(--muted-foreground))]">
                   Four consecutive academic years of elected and appointed leadership serving
-                  the College of Computer Studies community and building external industry
-                  linkages.
+                  the College of Computer Studies community — including a term as Executive
+                  Vice President for External Affairs, building industry linkages.
                 </p>
               </div>
 

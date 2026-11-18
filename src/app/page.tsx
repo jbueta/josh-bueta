@@ -48,7 +48,7 @@ export default async function Home() {
         <Contact />
       </div>
 
-      <Footer telemetry={github.contributionsMeta} />
+      <Footer />
       <JsonLd />
     </main>
   );
