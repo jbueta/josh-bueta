@@ -1,253 +1,219 @@
 "use client";
 
-import React, { useEffect, useState } from "react";
+import React, { useMemo, useState } from "react";
 import { cn } from "@/lib/utils";
-
-interface DayContribution {
-  date: string;
-  count: number;
-  level: 0 | 1 | 2 | 3 | 4;
-}
+import { GithubIcon } from "@/components/icons";
+import type { ContributionData, DatasetMeta } from "@/lib/github";
+import { SITE } from "@/content/site";
 
 interface ContributionGraphProps {
-  username?: string;
+  data: ContributionData | null;
+  meta: DatasetMeta;
   className?: string;
-  mangaTheme?: boolean;
 }
 
-const CACHE_KEY = "github_contributions_jbueta_v4";
-const CACHE_TTL = 1 * 60 * 60 * 1000; // 1 hour TTL so fresh commits update quickly while preserving rate-limit safety
+const LEVEL_CLASS: Record<0 | 1 | 2 | 3 | 4, string> = {
+  0: "bg-[#1a1a1a] border border-white/10",
+  1: "bg-[rgba(0,48,135,0.55)] border border-[rgba(0,48,135,0.75)]",
+  2: "bg-[#003087] border border-[#1d4ed8]",
+  3: "bg-[#2563eb] border border-[#60a5fa]",
+  4: "bg-white border border-white shadow-[0_0_6px_rgba(255,255,255,0.65)]",
+};
+
+const DATE_FORMAT = new Intl.DateTimeFormat("en-US", {
+  month: "short",
+  day: "numeric",
+  year: "numeric",
+  timeZone: "UTC",
+});
+
+function formatDay(isoDate: string): string {
+  const [year, month, day] = isoDate.split("-").map(Number);
+  return DATE_FORMAT.format(new Date(Date.UTC(year, month - 1, day)));
+}
+
+function formatStamp(iso: string): string {
+  const date = new Date(iso);
+  if (Number.isNaN(date.getTime())) return "UNKNOWN";
+  return new Intl.DateTimeFormat("en-GB", {
+    day: "2-digit",
+    month: "short",
+    year: "numeric",
+    timeZone: "UTC",
+  })
+    .format(date)
+    .toUpperCase();
+}
+
+/** Groups days into calendar weeks (GitHub's calendar starts on Sunday). */
+function groupWeeks(days: ContributionData["days"]) {
+  const weeks: ContributionData["days"][] = [];
+  for (let index = 0; index < days.length; index += 7) {
+    weeks.push(days.slice(index, index + 7));
+  }
+  return weeks;
+}
+
+const MONTH_ABBR = [
+  "JAN", "FEB", "MAR", "APR", "MAY", "JUN",
+  "JUL", "AUG", "SEP", "OCT", "NOV", "DEC",
+];
 
 export function ContributionGraph({
-  username = "jbueta",
+  data,
+  meta,
   className,
-  mangaTheme = true,
 }: ContributionGraphProps) {
-  const [totalContributions, setTotalContributions] = useState<number>(173);
-  const [days, setDays] = useState<DayContribution[]>([]);
-  const [hoveredDay, setHoveredDay] = useState<{ day: DayContribution; weekIdx: number } | null>(null);
+  const [hovered, setHovered] = useState<{ date: string; count: number } | null>(null);
 
-  useEffect(() => {
-    async function loadContributions() {
-      // 1. Check local storage cache for rate limit prevention
-      try {
-        const cachedRaw = localStorage.getItem(CACHE_KEY);
-        if (cachedRaw) {
-          const cached = JSON.parse(cachedRaw);
-          if (Date.now() - cached.timestamp < CACHE_TTL && cached.days?.length > 0) {
-            setTotalContributions(cached.total);
-            setDays(cached.days);
-            return;
-          }
-        }
-      } catch {
-        // Ignore localStorage error
-      }
+  const weeks = useMemo(() => (data ? groupWeeks(data.days) : []), [data]);
 
-      // 2. Fetch from lightweight GitHub contribution endpoint with fallback
-      try {
-        const res = await fetch(`https://github-contributions-api.johannchopin.fr/v5/${username}`);
-        if (!res.ok) throw new Error(`HTTP ${res.status}`);
-        const data = await res.json();
-        
-        let sum = 0;
-        const mappedDays: DayContribution[] = [];
-        if (data.years && data.years.length > 0) {
-          const currentYearData = data.years[0];
-          sum = currentYearData.total || 173;
-          
-          if (Array.isArray(currentYearData.contributions)) {
-            currentYearData.contributions.forEach((item: { date: string; count: number }) => {
-              const count = item.count || 0;
-              let level: 0 | 1 | 2 | 3 | 4 = 0;
-              if (count >= 7) level = 4;
-              else if (count >= 5) level = 3;
-              else if (count >= 3) level = 2;
-              else if (count >= 1) level = 1;
+  const monthLabels = useMemo(
+    () =>
+      weeks.map((week, index) => {
+        const first = week[0];
+        if (!first) return "";
+        const month = Number(first.date.slice(5, 7)) - 1;
+        const previous = weeks[index - 1]?.[0];
+        const previousMonth = previous ? Number(previous.date.slice(5, 7)) - 1 : -1;
+        return month !== previousMonth ? MONTH_ABBR[month] : "";
+      }),
+    [weeks],
+  );
 
-              mappedDays.push({
-                date: item.date,
-                count,
-                level,
-              });
-            });
-          }
-        }
-
-        if (mappedDays.length > 0) {
-          setTotalContributions(sum);
-          setDays(mappedDays.slice(-364)); // Keep last 52 weeks
-          
-          localStorage.setItem(
-            CACHE_KEY,
-            JSON.stringify({
-              timestamp: Date.now(),
-              total: sum,
-              days: mappedDays.slice(-364),
-            })
-          );
-          return;
-        }
-      } catch (err) {
-        console.warn("GitHub Contribution API fallback active (rate-limit compliance):", err);
-      }
-
-      // 3. Fallback matrix if rate-limited or offline
-      generateFallbackMatrix();
-    }
-
-    function generateFallbackMatrix() {
-      const today = new Date();
-      const generated: DayContribution[] = [];
-
-      for (let i = 363; i >= 0; i--) {
-        const d = new Date(today);
-        d.setDate(d.getDate() - i);
-        const dateStr = d.toLocaleDateString("en-US", {
-          month: "short",
-          day: "numeric",
-          year: "numeric",
-        });
-        
-        const dayOfWeek = d.getDay();
-        const month = d.getMonth();
-        let count = 0;
-        let level: 0 | 1 | 2 | 3 | 4 = 0;
-
-        if ((month === 4 || month === 6 || month === 7 || month === 10 || month === 2) && dayOfWeek !== 0 && dayOfWeek !== 6) {
-          const rand = Math.random();
-          if (rand > 0.62) {
-            count = Math.floor(Math.random() * 8) + 1;
-            if (count >= 7) level = 4;
-            else if (count >= 5) level = 3;
-            else if (count >= 3) level = 2;
-            else level = 1;
-          }
-        }
-
-        generated.push({ date: dateStr, count, level });
-      }
-
-      setTotalContributions(173);
-      setDays(generated);
-    }
-
-    loadContributions();
-  }, [username]);
-
-  // Group days into 52 weeks of 7 days
-  const weeks: DayContribution[][] = React.useMemo(() => {
-    const result: DayContribution[][] = [];
-    for (let i = 0; i < days.length; i += 7) {
-      result.push(days.slice(i, i + 7));
-    }
-    return result;
-  }, [days]);
-
-  const monthLabels = [
-    "Sep", "Oct", "Nov", "Dec", "Jan", "Feb", "Mar", "Apr", "May", "Jun", "Jul", "Aug"
-  ];
+  const sourceBadge =
+    meta.source === "live"
+      ? { label: "LIVE", className: "bg-white text-[var(--ink)]" }
+      : { label: "CACHED", className: "bg-white/20 text-white" };
 
   return (
     <div
       className={cn(
-        "relative w-full p-4 sm:p-6 select-none overflow-hidden",
-        mangaTheme
-          ? "bg-[var(--paper)]"
-          : "border-2 border-[var(--ink)] bg-[var(--paper)]",
-        className
+        "relative w-full select-none overflow-hidden bg-[var(--paper)] p-4 sm:p-6",
+        className,
       )}
     >
-      {/* Header */}
-      <div className="flex items-center justify-between mb-4 flex-wrap gap-2">
-        <h3 className={cn(
-          "text-sm sm:text-base font-bold tracking-tight",
-          mangaTheme ? "font-manga tracking-widest text-[var(--ink)]" : "font-sans text-[var(--ink)]"
-        )}>
-          <span className="text-[var(--seido)]">
-            {totalContributions}
-          </span>{" "}
-          {mangaTheme ? "CONTRIBUTIONS IN THE LAST YEAR" : "contributions in the last year"}
-        </h3>
-        <span className="text-[10px] font-mono text-[hsl(var(--muted-foreground))] sm:hidden">
-          ← Scroll →
+      <div className="mb-4 flex flex-wrap items-start justify-between gap-2">
+        <div>
+          <h3 className="font-manga text-sm tracking-widest text-[var(--ink)] sm:text-base">
+            {data ? (
+              <>
+                <span className="text-[var(--seido)]">{data.total}</span>{" "}
+                CONTRIBUTIONS IN THE LAST YEAR
+              </>
+            ) : (
+              "CONTRIBUTION SYNC UNAVAILABLE"
+            )}
+          </h3>
+          <p className="mt-1 font-mono text-[10px] uppercase tracking-[0.2em] text-[hsl(var(--muted-foreground))]">
+            SYNCED {formatStamp(meta.syncedAt)} · {meta.source === "live" ? "GITHUB API" : "REPO SNAPSHOT"}
+          </p>
+        </div>
+        <span
+          className={cn(
+            "font-manga border-2 border-[var(--ink)] px-2 py-0.5 text-[9px] tracking-[0.3em]",
+            sourceBadge.className,
+          )}
+        >
+          {sourceBadge.label}
         </span>
       </div>
 
-      {/* Graph Box */}
-      <div className={cn(
-        "relative w-full p-3 sm:p-4",
-        mangaTheme
-          ? "border-2 border-[var(--ink)] bg-[#0a0a0a]"
-          : "border border-[var(--ink)]/30 bg-[#0a0a0a]"
-      )}>
-        <div className="w-full overflow-x-auto pb-2">
-          <div className="w-full min-w-[680px] flex flex-col">
-            <div className="flex text-[11px] font-mono text-white/60 pl-8 mb-2 justify-between pr-1">
-              {monthLabels.map((m, idx) => (
-                <span key={idx} className="flex-1 text-left">{m}</span>
-              ))}
-            </div>
-            <div className="flex w-full items-center">
-              <div className="flex flex-col justify-between text-[11px] font-mono text-white/60 pr-3 w-8 shrink-0 h-[104px]">
-                <span>Mon</span>
-                <span>Wed</span>
-                <span>Fri</span>
-              </div>
-              <div className="flex flex-1 justify-between gap-[3px] sm:gap-[4px] items-center w-full">
-                {weeks.map((week, weekIdx) => (
-                  <div key={weekIdx} className="flex flex-col gap-[3px] sm:gap-[4px] flex-1">
-                    {week.map((day, dayIdx) => (
-                      <div
-                        key={dayIdx}
-                        onMouseEnter={() => setHoveredDay({ day, weekIdx })}
-                        onMouseLeave={() => setHoveredDay(null)}
-                        className={cn(
-                          "w-full aspect-square min-w-[10px] min-h-[10px] transition-all duration-200 cursor-pointer relative group rounded-none",
-                          day.level === 0 ? "bg-[#1a1a1a] border border-white/10"
-                            : day.level === 1 ? "bg-[rgba(0,48,135,0.45)] border border-[rgba(0,48,135,0.65)]"
-                            : day.level === 2 ? "bg-[#003087] border border-[#1d4ed8]"
-                            : day.level === 3 ? "bg-[#2563eb] border border-[#60a5fa]"
-                            : "bg-white border border-white shadow-[0_0_6px_rgba(255,255,255,0.75)] hover:scale-125 hover:z-30"
-                        )}
-                      >
-                        {hoveredDay?.day.date === day.date && (
-                          <div
-                            className={cn(
-                              "absolute bottom-full mb-2.5 px-3 py-1.5 text-[11px] font-mono font-medium whitespace-nowrap pointer-events-none z-50 bg-[#0a0a0a] text-white border-2 border-white",
-                              weekIdx > 42 ? "right-0" : weekIdx < 8 ? "left-0" : "left-1/2 -translate-x-1/2"
-                            )}
-                          >
-                            <span className="font-bold text-[#60a5fa]">
-                              {day.count === 0 ? "No" : day.count} contribution{day.count === 1 ? "" : "s"}
-                            </span>{" "}
-                            on {day.date}
-                          </div>
-                        )}
-                      </div>
-                    ))}
-                  </div>
+      {data ? (
+        <div className="relative w-full border-2 border-[var(--ink)] bg-[#0a0a0a] p-3 sm:p-4">
+          <div className="w-full overflow-x-auto pb-2">
+            <div className="flex w-full min-w-[680px] flex-col">
+              <div className="mb-2 flex w-full justify-between pl-8 pr-1 font-mono text-[11px] text-white/65">
+                {monthLabels.map((label, index) => (
+                  <span key={index} className="flex-1 text-left">
+                    {label}
+                  </span>
                 ))}
               </div>
+              <div className="flex w-full items-center">
+                <div className="flex h-[104px] w-8 shrink-0 flex-col justify-between pr-3 font-mono text-[11px] text-white/65">
+                  <span>Mon</span>
+                  <span>Wed</span>
+                  <span>Fri</span>
+                </div>
+                <div className="flex w-full flex-1 items-center justify-between gap-[3px] sm:gap-[4px]">
+                  {weeks.map((week, weekIndex) => (
+                    <div key={weekIndex} className="flex flex-1 flex-col gap-[3px] sm:gap-[4px]">
+                      {week.map((day) => (
+                        <button
+                          key={day.date}
+                          type="button"
+                          tabIndex={-1}
+                          aria-label={`${day.count} contribution${day.count === 1 ? "" : "s"} on ${formatDay(day.date)}`}
+                          onMouseEnter={() => setHovered({ date: day.date, count: day.count })}
+                          onMouseLeave={() => setHovered(null)}
+                          onFocus={() => setHovered({ date: day.date, count: day.count })}
+                          onBlur={() => setHovered(null)}
+                          className={cn(
+                            "relative aspect-square min-h-[10px] min-w-[10px] cursor-pointer rounded-none transition-all duration-200 hover:scale-125 hover:z-30",
+                            LEVEL_CLASS[day.level],
+                          )}
+                        >
+                          {hovered?.date === day.date && (
+                            <span
+                              className={cn(
+                                "pointer-events-none absolute bottom-full z-50 mb-2.5 whitespace-nowrap border-2 border-white bg-[#0a0a0a] px-3 py-1.5 font-mono text-[11px] font-medium text-white",
+                                weekIndex > 42
+                                  ? "right-0"
+                                  : weekIndex < 8
+                                    ? "left-0"
+                                    : "left-1/2 -translate-x-1/2",
+                              )}
+                            >
+                              <span className="font-bold text-[#60a5fa]">
+                                {day.count === 0 ? "No" : day.count} contribution
+                                {day.count === 1 ? "" : "s"}
+                              </span>{" "}
+                              on {formatDay(day.date)}
+                            </span>
+                          )}
+                        </button>
+                      ))}
+                    </div>
+                  ))}
+                </div>
+              </div>
             </div>
           </div>
-        </div>
 
-        {/* Legend */}
-        <div className="flex items-center justify-end pt-3 mt-1 border-t border-white/15 text-[11px] font-mono text-white/60">
-          <div className="flex items-center gap-1.5">
-            <span>Less</span>
-            <div className="flex items-center gap-1">
-              <span className="w-3 h-3 bg-[#1a1a1a] border border-white/10" />
-              <span className="w-3 h-3 bg-[rgba(0,48,135,0.45)] border border-[rgba(0,48,135,0.65)]" />
-              <span className="w-3 h-3 bg-[#003087] border border-[#1d4ed8]" />
-              <span className="w-3 h-3 bg-[#2563eb] border border-[#60a5fa]" />
-              <span className="w-3 h-3 bg-white border border-white" />
+          <div className="mt-1 flex items-center justify-end border-t border-white/15 pt-3 font-mono text-[11px] text-white/65">
+            <div className="flex items-center gap-1.5">
+              <span>Less</span>
+              <div className="flex items-center gap-1">
+                {[0, 1, 2, 3, 4].map((level) => (
+                  <span
+                    key={level}
+                    className={cn("h-3 w-3", LEVEL_CLASS[level as 0 | 1 | 2 | 3 | 4])}
+                  />
+                ))}
+              </div>
+              <span>More</span>
             </div>
-            <span>More</span>
           </div>
         </div>
-      </div>
+      ) : (
+        <div className="flex flex-col items-start gap-3 border-2 border-[var(--ink)] bg-white p-5 shadow-[4px_4px_0_var(--ink)]">
+          <p className="max-w-md font-sans text-xs leading-relaxed text-[hsl(var(--muted-foreground))]">
+            GitHub did not return the contribution calendar for this sync. Rather than
+            drawing an estimated grid, this panel stays empty — the live calendar is one
+            click away.
+          </p>
+          <a
+            href={SITE.github}
+            target="_blank"
+            rel="noopener noreferrer"
+            className="font-manga inline-flex items-center gap-2 border-2 border-[var(--ink)] bg-[var(--ink)] px-3 py-1.5 text-[10px] tracking-[0.3em] text-white transition-colors hover:bg-[var(--seido)]"
+          >
+            <GithubIcon className="h-3.5 w-3.5" aria-hidden="true" />
+            VIEW @{SITE.githubUsername.toUpperCase()}
+          </a>
+        </div>
+      )}
     </div>
   );
 }

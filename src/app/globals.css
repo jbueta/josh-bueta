@@ -1,39 +1,42 @@
 @import "tailwindcss";
 
 /* ============================================================
-   MANGA DESIGN TOKENS — Ace of Diamond
-   Single mode: paper/ink light only.
-   Accent: Seido Navy (#003087) — used sparingly.
+   MANGA DESIGN TOKENS — Stark White Paper & Sumi Ink
+   Reference: Ace of Diamond (Yuji Terajima) Manga Panel Style
+   - Paper: Stark Pure White (#ffffff)
+   - Ink: Deep Sumi Black (#0a0a0a) + Halftone Screentone Greys
+   - Accent: Seido Navy (#003087) — strictly for primary CTAs & status badges
    ============================================================ */
 
 @layer base {
   :root {
-    --background:          40 18% 96%;   /* off-white manga paper */
-    --foreground:          0  0%  5%;    /* near-black ink */
-    --card:                40 10% 98%;
-    --card-foreground:     0  0%  5%;
-    --popover:             40 10% 98%;
-    --popover-foreground:  0  0%  5%;
-    --primary:             220 100% 27%; /* Seido navy */
-    --primary-foreground:  0   0% 98%;
-    --secondary:           0   0% 90%;
-    --secondary-foreground:0   0% 10%;
-    --muted:               0   0% 88%;
-    --muted-foreground:    0   0% 42%;
+    --background:          0   0% 100%;  /* Stark Pure White (#ffffff) */
+    --foreground:          0   0%   4%;  /* Deep Sumi Ink (#0a0a0a) */
+    --card:                0   0% 100%;  /* Pure White panel surface */
+    --card-foreground:     0   0%   4%;
+    --popover:             0   0% 100%;
+    --popover-foreground:  0   0%   4%;
+    --primary:             220 100% 27%; /* Seido Navy (#003087) */
+    --primary-foreground:  0   0% 100%;
+    --secondary:           0   0%  95%;
+    --secondary-foreground:0   0%   8%;
+    --muted:               0   0%  94%;
+    --muted-foreground:    0   0%  36%;
     --accent:              220 100% 27%;
-    --accent-foreground:   0   0% 98%;
-    --destructive:         0  72% 51%;
+    --accent-foreground:   0   0% 100%;
+    --destructive:         0  72%  51%;
     --destructive-foreground: 0 0% 98%;
-    --border:              0   0% 10%;
-    --input:               0   0% 85%;
+    --border:              0   0%   4%;
+    --input:               0   0%  88%;
     --ring:                220 100% 27%;
     --radius:              0rem;
 
     /* Named manga palette */
     --ink:    #0a0a0a;
-    --paper:  #f5f0e8;
-    --seido:  #003087;   /* Seido High navy — the ONE accent colour */
-    --gutter: 6px;       /* ink gutter between panels */
+    --paper:  #ffffff;
+    --tone:   #f4f4f4;   /* Light screentone wash */
+    --seido:  #003087;   /* Seido Navy — strictly primary CTAs & status badges */
+    --gutter: 6px;       /* Solid ink gutter between panels */
   }
 }
 
@@ -42,40 +45,76 @@
    ============================================================ */
 
 @keyframes marquee {
-  from { transform: translateX(0); }
-  to   { transform: translateX(calc(-100% - var(--gap))); }
+  from {
+    transform: translateX(0);
+  }
+
+  to {
+    transform: translateX(calc(-100% - var(--gap)));
+  }
 }
+
 @keyframes marquee-vertical {
-  from { transform: translateY(0); }
-  to   { transform: translateY(calc(-100% - var(--gap))); }
+  from {
+    transform: translateY(0);
+  }
+
+  to {
+    transform: translateY(calc(-100% - var(--gap)));
+  }
 }
+
 @keyframes speed-breathe {
-  0%,100% { opacity: 0.55; }
-  50%      { opacity: 0.80; }
+
+  0%,
+  100% {
+    opacity: 0.55;
+  }
+
+  50% {
+    opacity: 0.80;
+  }
 }
+
 @keyframes halftone-breathe {
-  0%,100% { opacity: 0.022; }
-  50%      { opacity: 0.044; }
+  0%,100% { opacity: 0.018; }
+  50%      { opacity: 0.036; }
 }
+
 @keyframes panel-entry {
-  from { opacity: 0; filter: blur(6px); }
-  to   { opacity: 1; filter: blur(0px); }
+  from {
+    opacity: 0;
+    filter: blur(6px);
+  }
+
+  to {
+    opacity: 1;
+    filter: blur(0px);
+  }
 }
 
 /* ============================================================
    GLOBAL BASE
    ============================================================ */
 
-html { scroll-behavior: smooth; }
+html {
+  scroll-behavior: smooth;
+}
 
 body {
-  background-color: hsl(var(--background));
-  color: hsl(var(--foreground));
+  background-color: var(--paper);
+  color: var(--ink);
   font-family: var(--font-montserrat), system-ui, -apple-system, sans-serif;
   overflow-x: hidden;
 }
 
-h1, h2, h3, h4, h5, h6, .font-heading {
+h1,
+h2,
+h3,
+h4,
+h5,
+h6,
+.font-heading {
   font-family: var(--font-league-spartan), system-ui, sans-serif;
 }
 
@@ -84,90 +123,99 @@ h1, h2, h3, h4, h5, h6, .font-heading {
   letter-spacing: 0.04em;
 }
 
-.animate-marquee          { animation: marquee var(--duration, 40s) linear infinite; }
-.animate-marquee-vertical { animation: marquee-vertical var(--duration, 40s) linear infinite; }
+.animate-marquee {
+  animation: marquee var(--duration, 40s) linear infinite;
+}
+
+.animate-marquee-vertical {
+  animation: marquee-vertical var(--duration, 40s) linear infinite;
+}
 
 /* ============================================================
    MANGA PANEL SYSTEM
-   .panel         — 4px solid ink border, no radius
-   .panel-seido   — 4px Seido navy border (use once/twice max)
-   The page background IS the gutter colour (--ink).
-   Panels sit flush against each other, gap = visible ink strip.
+   - Rectangular ink-bordered panels for text-heavy cards
+   - Diagonal polygon cuts for Chapter Openers & Project Showcase
    ============================================================ */
 
 .panel {
-  border: 4px solid var(--ink);
+  border: 3.5px solid var(--ink);
+  position: relative;
+  overflow: hidden;
+  background-color: var(--paper);
+}
+
+.panel-inset {
+  border: 3.5px solid var(--ink);
+  box-shadow: inset 0 0 0 4px var(--paper), inset 0 0 0 6px var(--ink);
   position: relative;
   overflow: hidden;
 }
 
 .panel-seido {
-  border: 4px solid var(--seido);
+  border: 3.5px solid var(--seido);
   position: relative;
   overflow: hidden;
 }
 
-/* ============================================================
-   MANGA PAGE SPREAD GRID — Asymmetric kinetic panel layouts
-   ============================================================ */
-
-.manga-spread {
-  display: grid;
-  gap: var(--gutter);
-  background: var(--ink);
-  padding: var(--gutter) 0;
+/* Diagonal Polygon Cuts for Chapter Openers & Project Showcase */
+.chapter-cut-bottom {
+  clip-path: polygon(0 0, 100% 0, 100% calc(100% - 22px), 0 100%);
 }
 
-/* Diagonal slash badge / header accent */
+.chapter-cut-top {
+  clip-path: polygon(0 22px, 100% 0, 100% 100%, 0 100%);
+}
+.panel-cut-corner {
+  clip-path: polygon(0 0, calc(100% - 24px) 0, 100% 24px, 100% 100%, 24px 100%, 0 calc(100% - 24px));
+}
+
 .slash-cut-right {
-  clip-path: polygon(0 0, 100% 0, calc(100% - 18px) 100%, 0 100%);
-}
-.slash-cut-left {
-  clip-path: polygon(18px 0, 100% 0, 100% 100%, 0 100%);
+  clip-path: polygon(0 0, 100% 0, calc(100% - 14px) 100%, 0 100%);
 }
 
-/* Manga ink print filter for portraits & screenshots */
-.manga-ink-portrait {
-  filter: contrast(1.38) grayscale(0.85) brightness(0.96);
-}
-.manga-ink-screen {
-  filter: contrast(1.22) saturate(0.25) brightness(0.95);
-  transition: filter 0.3s ease, transform 0.4s cubic-bezier(0.22, 1, 0.36, 1);
-}
-.group:hover .manga-ink-screen {
-  filter: contrast(1.08) saturate(0.85) brightness(1);
+.slash-cut-left {
+  clip-path: polygon(14px 0, 100% 0, 100% 100%, 0 100%);
 }
 
 /* ============================================================
-   SCREENTONE — halftone dot grid
+   SCREENTONE — Ben-Day Halftone Dot Grids (Pure Black Ink on White)
    ============================================================ */
 
 .screentone {
-  background-image: radial-gradient(circle, rgba(10,10,10,0.14) 1px, transparent 1px);
-  background-size: 7px 7px;
+  background-image: radial-gradient(circle, rgba(10,10,10,0.16) 1.05px, transparent 1.05px);
+  background-size: 6px 6px;
 }
+
 .screentone-fine {
-  background-image: radial-gradient(circle, rgba(10,10,10,0.09) 0.65px, transparent 0.65px);
+  background-image: radial-gradient(circle, rgba(10,10,10,0.11) 0.75px, transparent 0.75px);
   background-size: 4.5px 4.5px;
 }
+
 .screentone-coarse {
-  background-image: radial-gradient(circle, rgba(10,10,10,0.18) 1.4px, transparent 1.4px);
-  background-size: 11px 11px;
+  background-image: radial-gradient(circle, rgba(10,10,10,0.20) 1.45px, transparent 1.45px);
+  background-size: 9px 9px;
+}
+/* Screentone fade from bottom (like manga sky/suit shading) */
+.screentone-fade-bottom {
+  background-image: radial-gradient(circle, rgba(10,10,10,0.16) 1px, transparent 1px);
+  background-size: 5px 5px;
+  mask-image: linear-gradient(to top, rgba(0,0,0,0.65) 0%, transparent 65%);
+  -webkit-mask-image: linear-gradient(to top, rgba(0,0,0,0.65) 0%, transparent 65%);
 }
 
 /* ============================================================
-   SPEED LINES — radial burst from centre, used as bg on panels
+   SPEED LINES — Radial burst from centre
    ============================================================ */
 
 .speed-lines {
-  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 400 400'%3E%3Cg stroke='%23000' stroke-width='0.7' opacity='0.18'%3E%3Cline x1='200' y1='200' x2='0' y2='0'/%3E%3Cline x1='200' y1='200' x2='50' y2='0'/%3E%3Cline x1='200' y1='200' x2='100' y2='0'/%3E%3Cline x1='200' y1='200' x2='150' y2='0'/%3E%3Cline x1='200' y1='200' x2='200' y2='0'/%3E%3Cline x1='200' y1='200' x2='250' y2='0'/%3E%3Cline x1='200' y1='200' x2='300' y2='0'/%3E%3Cline x1='200' y1='200' x2='350' y2='0'/%3E%3Cline x1='200' y1='200' x2='400' y2='0'/%3E%3Cline x1='200' y1='200' x2='400' y2='50'/%3E%3Cline x1='200' y1='200' x2='400' y2='100'/%3E%3Cline x1='200' y1='200' x2='400' y2='150'/%3E%3Cline x1='200' y1='200' x2='400' y2='200'/%3E%3Cline x1='200' y1='200' x2='400' y2='250'/%3E%3Cline x1='200' y1='200' x2='400' y2='300'/%3E%3Cline x1='200' y1='200' x2='400' y2='350'/%3E%3Cline x1='200' y1='200' x2='400' y2='400'/%3E%3Cline x1='200' y1='200' x2='350' y2='400'/%3E%3Cline x1='200' y1='200' x2='300' y2='400'/%3E%3Cline x1='200' y1='200' x2='250' y2='400'/%3E%3Cline x1='200' y1='200' x2='200' y2='400'/%3E%3Cline x1='200' y1='200' x2='150' y2='400'/%3E%3Cline x1='200' y1='200' x2='100' y2='400'/%3E%3Cline x1='200' y1='200' x2='50' y2='400'/%3E%3Cline x1='200' y1='200' x2='0' y2='400'/%3E%3Cline x1='200' y1='200' x2='0' y2='350'/%3E%3Cline x1='200' y1='200' x2='0' y2='300'/%3E%3Cline x1='200' y1='200' x2='0' y2='250'/%3E%3Cline x1='200' y1='200' x2='0' y2='200'/%3E%3Cline x1='200' y1='200' x2='0' y2='150'/%3E%3Cline x1='200' y1='200' x2='0' y2='100'/%3E%3Cline x1='200' y1='200' x2='0' y2='50'/%3E%3C/g%3E%3C/svg%3E");
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 400 400'%3E%3Cg stroke='%23000' stroke-width='0.75' opacity='0.18'%3E%3Cline x1='200' y1='200' x2='0' y2='0'/%3E%3Cline x1='200' y1='200' x2='50' y2='0'/%3E%3Cline x1='200' y1='200' x2='100' y2='0'/%3E%3Cline x1='200' y1='200' x2='150' y2='0'/%3E%3Cline x1='200' y1='200' x2='200' y2='0'/%3E%3Cline x1='200' y1='200' x2='250' y2='0'/%3E%3Cline x1='200' y1='200' x2='300' y2='0'/%3E%3Cline x1='200' y1='200' x2='350' y2='0'/%3E%3Cline x1='200' y1='200' x2='400' y2='0'/%3E%3Cline x1='200' y1='200' x2='400' y2='50'/%3E%3Cline x1='200' y1='200' x2='400' y2='100'/%3E%3Cline x1='200' y1='200' x2='400' y2='150'/%3E%3Cline x1='200' y1='200' x2='400' y2='200'/%3E%3Cline x1='200' y1='200' x2='400' y2='250'/%3E%3Cline x1='200' y1='200' x2='400' y2='300'/%3E%3Cline x1='200' y1='200' x2='400' y2='350'/%3E%3Cline x1='200' y1='200' x2='400' y2='400'/%3E%3Cline x1='200' y1='200' x2='350' y2='400'/%3E%3Cline x1='200' y1='200' x2='300' y2='400'/%3E%3Cline x1='200' y1='200' x2='250' y2='400'/%3E%3Cline x1='200' y1='200' x2='200' y2='400'/%3E%3Cline x1='200' y1='200' x2='150' y2='400'/%3E%3Cline x1='200' y1='200' x2='100' y2='400'/%3E%3Cline x1='200' y1='200' x2='50' y2='400'/%3E%3Cline x1='200' y1='200' x2='0' y2='400'/%3E%3Cline x1='200' y1='200' x2='0' y2='350'/%3E%3Cline x1='200' y1='200' x2='0' y2='300'/%3E%3Cline x1='200' y1='200' x2='0' y2='250'/%3E%3Cline x1='200' y1='200' x2='0' y2='200'/%3E%3Cline x1='200' y1='200' x2='0' y2='150'/%3E%3Cline x1='200' y1='200' x2='0' y2='100'/%3E%3Cline x1='200' y1='200' x2='0' y2='50'/%3E%3C/g%3E%3C/svg%3E");
   background-size: cover;
   background-position: center;
   background-repeat: no-repeat;
 }
 
 /* ============================================================
-   SFX WATERMARK — barely-visible ghost text in backgrounds
+   SFX WATERMARK — Subtle ghost typography in panel corners
    ============================================================ */
 
 .sfx-code::after,
@@ -176,31 +224,163 @@ h1, h2, h3, h4, h5, h6, .font-heading {
 .sfx-build::after {
   position: absolute;
   font-family: var(--font-bebas-neue), "Impact", sans-serif;
-  font-size: clamp(5rem, 18vw, 16rem);
+  font-size: clamp(5rem, 18vw, 15rem);
   letter-spacing: 0.08em;
-  color: rgba(10, 10, 10, 0.028);
+  color: rgba(10, 10, 10, 0.032);
   pointer-events: none;
   user-select: none;
-  right: -1rem;
+  right: -0.75rem;
   bottom: -0.5rem;
   line-height: 1;
   z-index: 0;
 }
-.sfx-code::after    { content: "CODE"; }
-.sfx-deploy::after  { content: "DEPLOY"; }
-.sfx-scholar::after { content: "SCHOLAR"; }
-.sfx-build::after   { content: "BUILD"; }
+
+.sfx-code::after {
+  content: "CODE";
+}
+
+.sfx-deploy::after {
+  content: "DEPLOY";
+}
+
+.sfx-scholar::after {
+  content: "SCHOLAR";
+}
+
+.sfx-build::after {
+  content: "BUILD";
+}
 
 /* ============================================================
-   SCROLLBAR
+   SCROLLBAR & SELECTION
    ============================================================ */
 
-::-webkit-scrollbar       { width: 5px; }
-::-webkit-scrollbar-track { background: transparent; }
-::-webkit-scrollbar-thumb { background: rgba(10,10,10,0.22); border-radius: 0; }
-::-webkit-scrollbar-thumb:hover { background: rgba(10,10,10,0.5); }
+::-webkit-scrollbar       { width: 6px; }
+::-webkit-scrollbar-track { background: #ffffff; border-left: 1px solid #0a0a0a; }
+::-webkit-scrollbar-thumb { background: #0a0a0a; border-radius: 0; }
+::-webkit-scrollbar-thumb:hover { background: var(--seido); }
+
+::-webkit-scrollbar-track {
+  background: transparent;
+}
+
+::-webkit-scrollbar-thumb {
+  background: rgba(10, 10, 10, 0.22);
+  border-radius: 0;
+}
+
+::-webkit-scrollbar-thumb:hover {
+  background: rgba(10, 10, 10, 0.5);
+}
 
 ::selection {
-  background: rgba(0, 48, 135, 0.18);
+  background: rgba(0, 48, 135, 0.16);
   color: var(--ink);
+}
+
+/* ============================================================
+   PANEL REVEALS — one shared IntersectionObserver, CSS transitions
+   ============================================================ */
+
+.panel-reveal {
+  transition:
+    opacity 0.65s cubic-bezier(0.22, 1, 0.36, 1),
+    transform 0.65s cubic-bezier(0.22, 1, 0.36, 1),
+    filter 0.65s cubic-bezier(0.22, 1, 0.36, 1);
+  transition-delay: var(--reveal-delay, 0s);
+}
+
+.panel-reveal[data-reveal="pending"] {
+  opacity: 0;
+  filter: blur(6px);
+  transform: translate3d(0, 50px, 0);
+  will-change: opacity, transform;
+}
+
+.panel-reveal[data-direction="left"][data-reveal="pending"] {
+  transform: translate3d(-60px, 0, 0);
+}
+
+.panel-reveal[data-direction="right"][data-reveal="pending"] {
+  transform: translate3d(60px, 0, 0);
+}
+
+.panel-reveal[data-direction="none"][data-reveal="pending"] {
+  transform: none;
+}
+
+.panel-reveal[data-revealed="true"] {
+  will-change: auto;
+}
+
+/* ============================================================
+   FOCUS VISIBILITY — visible on paper and on ink panels
+   ============================================================ */
+
+:where(a, button, input, textarea, select, summary, [tabindex]):focus-visible {
+  outline: 3px solid var(--seido);
+  outline-offset: 3px;
+}
+
+/* ============================================================
+   REDUCED MOTION
+   ============================================================ */
+
+@media (prefers-reduced-motion: reduce) {
+  html {
+    scroll-behavior: auto;
+  }
+
+  *,
+  *::before,
+  *::after {
+    animation-duration: 0.001ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.001ms !important;
+    scroll-behavior: auto !important;
+  }
+
+  .animate-marquee,
+  .animate-marquee-vertical,
+  .animate-ping {
+    animation: none !important;
+  }
+
+  .panel-reveal,
+  .panel-reveal[data-reveal="pending"] {
+    opacity: 1;
+    filter: none;
+    transform: none;
+  }
+}
+
+/* ============================================================
+   PRINT — /resume
+   ============================================================ */
+
+@media print {
+  header,
+  footer,
+  .no-print {
+    display: none !important;
+  }
+
+  html,
+  body {
+    background: #ffffff !important;
+    color: #0a0a0a !important;
+  }
+
+  .print-page {
+    border: 0 !important;
+    box-shadow: none !important;
+    padding: 0 !important;
+    margin: 0 !important;
+    max-width: none !important;
+  }
+
+  .print-page a[href^="http"]::after {
+    content: " (" attr(href) ")";
+    font-size: 10px;
+  }
 }

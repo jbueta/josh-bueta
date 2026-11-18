@@ -1,18 +1,43 @@
 "use client";
 
-import React, { useRef } from "react";
-import { gsap } from "gsap";
-import { ScrollTrigger } from "gsap/ScrollTrigger";
-import { useGSAP } from "@gsap/react";
+import React, { useEffect, useRef } from "react";
 import { cn } from "@/lib/utils";
 
-gsap.registerPlugin(ScrollTrigger, useGSAP);
+type Direction = "left" | "right" | "up" | "none";
 
 interface MangaPanelRevealProps {
   children: React.ReactNode;
   className?: string;
   delay?: number;
-  direction?: "left" | "right" | "up" | "none";
+  direction?: Direction;
+}
+
+/**
+ * One shared IntersectionObserver drives every panel reveal.
+ *
+ * The previous implementation created a GSAP ScrollTrigger per panel (~22 on
+ * the home page). This is one observer, honours `prefers-reduced-motion`, and
+ * leaves content visible when JavaScript is unavailable.
+ */
+let sharedObserver: IntersectionObserver | null = null;
+
+function getObserver(): IntersectionObserver | null {
+  if (typeof window === "undefined") return null;
+  if (!sharedObserver) {
+    sharedObserver = new IntersectionObserver(
+      (entries) => {
+        for (const entry of entries) {
+          if (!entry.isIntersecting) continue;
+          const element = entry.target as HTMLElement;
+          element.removeAttribute("data-reveal");
+          element.setAttribute("data-revealed", "true");
+          sharedObserver?.unobserve(element);
+        }
+      },
+      { rootMargin: "0px 0px -10% 0px", threshold: 0.01 },
+    );
+  }
+  return sharedObserver;
 }
 
 export function MangaPanelReveal({
@@ -23,34 +48,42 @@ export function MangaPanelReveal({
 }: MangaPanelRevealProps) {
   const ref = useRef<HTMLDivElement>(null);
 
-  useGSAP(() => {
-    const el = ref.current;
-    if (!el) return;
+  useEffect(() => {
+    const element = ref.current;
+    if (!element) return;
 
-    const from: gsap.TweenVars = { opacity: 0, filter: "blur(6px)" };
-    if (direction === "up")    from.y =  50;
-    if (direction === "left")  from.x = -60;
-    if (direction === "right") from.x =  60;
+    if (window.matchMedia("(prefers-reduced-motion: reduce)").matches) {
+      element.setAttribute("data-revealed", "true");
+      return;
+    }
 
-    gsap.set(el, from);
+    // Only hide panels that start below the fold; above-the-fold content and
+    // no-JS visitors never see a blank page.
+    const { top } = element.getBoundingClientRect();
+    if (top < window.innerHeight * 0.92) {
+      element.setAttribute("data-revealed", "true");
+      return;
+    }
 
-    const st = ScrollTrigger.create({
-      trigger: el,
-      start: "top 90%",
-      once: true,
-      onEnter: () => {
-        gsap.to(el, {
-          opacity: 1, filter: "blur(0px)", y: 0, x: 0,
-          duration: 0.65, ease: "power3.out", delay,
-        });
-      },
-    });
+    element.style.setProperty("--reveal-delay", `${delay}s`);
+    element.setAttribute("data-reveal", "pending");
 
-    return () => st.kill();
-  }, { scope: ref });
+    const observer = getObserver();
+    if (!observer) {
+      element.removeAttribute("data-reveal");
+      return;
+    }
+
+    observer.observe(element);
+    return () => observer.unobserve(element);
+  }, [delay]);
 
   return (
-    <div ref={ref} className={cn(className)}>
+    <div
+      ref={ref}
+      data-direction={direction}
+      className={cn("panel-reveal", className)}
+    >
       {children}
     </div>
   );

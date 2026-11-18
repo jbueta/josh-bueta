@@ -7,31 +7,37 @@ import { Experience } from "@/components/experience";
 import { Projects } from "@/components/projects";
 import { TechStack } from "@/components/tech-stack";
 import { Certifications } from "@/components/certifications";
+import { Contact } from "@/components/contact";
 import { Footer } from "@/components/footer";
+import { JsonLd } from "@/components/json-ld";
+import { getGithubData } from "@/lib/github";
 
-export default function Home() {
+// GitHub telemetry is refreshed hourly; the rest of the page is static content.
+export const revalidate = 3600;
+
+export default async function Home() {
+  const github = await getGithubData();
+
   return (
-    <main className="manga-page relative min-h-screen flex flex-col overflow-x-hidden w-full max-w-full selection:bg-[rgba(0,48,135,0.2)] selection:text-[hsl(var(--foreground))]">
-      {/* z-0: Katakana rain background */}
+    <main
+      id="main-content"
+      className="manga-page relative flex min-h-screen w-full max-w-full flex-col overflow-x-hidden selection:bg-[rgba(0,48,135,0.2)] selection:text-[hsl(var(--foreground))]"
+    >
       <GlyphMatrix />
-
-      {/* z-1: Global halftone screentone paper texture */}
       <HalftoneOverlay />
-
-      {/* z-50: Navigation */}
       <Navbar />
 
-      {/* z-10: Main content — manga chapter layout */}
-      <div className="flex-1 relative z-10">
+      <div className="relative z-10 flex-1">
         <Hero />
         <Experience />
-        <Projects />
+        <Projects data={github} />
         <TechStack />
         <Certifications />
+        <Contact />
       </div>
 
-      {/* Footer */}
       <Footer />
+      <JsonLd />
     </main>
   );
 }

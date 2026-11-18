@@ -7,85 +7,137 @@ interface GlyphMatrixProps {
   className?: string;
 }
 
+const CHARS =
+  "ァアィイゥウェエォオカキクケコサシスセソタチツテトナニヌネノハヒフヘホマミムメモヤユヨラリルレロワヲン01<>/{}#$";
+const FONT_SIZE = 16;
+
+/**
+ * Katakana ink-rain background.
+ *
+ * Old version ran an unbounded 60fps loop forever. Now it:
+ * - renders nothing when the visitor prefers reduced motion,
+ * - pauses on hidden tabs and on coarse pointers (mobile battery),
+ * - caps devicePixelRatio at 2 and rewrites columns on resize,
+ * - stops the loop entirely on unmount.
+ */
 export function GlyphMatrix({ className }: GlyphMatrixProps) {
   const canvasRef = useRef<HTMLCanvasElement | null>(null);
 
   useEffect(() => {
     const canvas = canvasRef.current;
     if (!canvas) return;
+    const context = canvas.getContext("2d", { alpha: false });
+    if (!context) return;
 
-    const ctx = canvas.getContext("2d");
-    if (!ctx) return;
+    const motionQuery = window.matchMedia("(prefers-reduced-motion: reduce)");
+    if (motionQuery.matches) return;
 
-    let animationFrameId: number;
+    const coarsePointer = window.matchMedia("(pointer: coarse)").matches;
+    const dpr = Math.min(window.devicePixelRatio || 1, 2);
 
-    const resizeCanvas = () => {
-      canvas.width = window.innerWidth;
-      canvas.height = window.innerHeight;
+    let columns = 0;
+    let drops: number[] = [];
+    let frame = 0;
+    let running = false;
+    let resizeTimer = 0;
+
+    const setup = () => {
+      const width = window.innerWidth;
+      const height = window.innerHeight;
+      canvas.width = Math.floor(width * dpr);
+      canvas.height = Math.floor(height * dpr);
+      canvas.style.width = `${width}px`;
+      canvas.style.height = `${height}px`;
+      context.setTransform(dpr, 0, 0, dpr, 0, 0);
+      context.fillStyle = "#ffffff";
+      context.fillRect(0, 0, width, height);
+
+      columns = Math.max(1, Math.ceil(width / FONT_SIZE));
+      drops = Array.from({ length: columns }, () =>
+        Math.floor(Math.random() * -50),
+      );
     };
-
-    resizeCanvas();
-    window.addEventListener("resize", resizeCanvas);
-
-    // Full katakana block + manga symbols for Ace of Diamond rain
-    const chars = "ァアィイゥウェエォオカキクケコサシスセソタチツテトナニヌネノハヒフヘホマミムメモヤユヨラリルレロワヲン01<>/{}#$";
-    const fontSize = 16;
-    const columns = Math.floor(canvas.width / fontSize);
-
-    // Track drop Y coordinate per column
-    const drops: number[] = Array.from({ length: columns }, () =>
-      Math.floor(Math.random() * -50)
-    );
 
     const draw = () => {
-      // Ink bleed trail — manga paper/ink feel (single light mode)
-      ctx.fillStyle = "rgba(245, 240, 232, 0.14)";
-      ctx.fillRect(0, 0, canvas.width, canvas.height);
+      if (!running) return;
+      const width = window.innerWidth;
+      const height = window.innerHeight;
 
-      ctx.font = `${fontSize}px monospace`;
+      // Ink bleed trail.
+      context.fillStyle = "rgba(255, 255, 255, 0.16)";
+      context.fillRect(0, 0, width, height);
+      context.font = `${FONT_SIZE}px monospace`;
 
-      for (let i = 0; i < drops.length; i++) {
-        const text = chars.charAt(Math.floor(Math.random() * chars.length));
-        const x = i * fontSize;
-        const y = drops[i] * fontSize;
+      for (let index = 0; index < drops.length; index += 1) {
+        const glyph = CHARS.charAt(Math.floor(Math.random() * CHARS.length));
+        const x = index * FONT_SIZE;
+        const y = drops[index] * FONT_SIZE;
+        const roll = Math.random();
 
-        const rand = Math.random();
-        if (rand > 0.97) {
-          // 3% accent — Seido Navy flash
-          ctx.fillStyle = "#003087";
-        } else if (rand > 0.90) {
-          // 7% bright head glyph
-          ctx.fillStyle = "#0a0a0a";
+        if (roll > 0.97) {
+          context.fillStyle = "#003087";
+        } else if (roll > 0.9) {
+          context.fillStyle = "#0a0a0a";
         } else {
-          // 90% body glyph — faint ink
-          ctx.fillStyle = "rgba(10, 10, 10, 0.14)";
+          context.fillStyle = "rgba(10, 10, 10, 0.14)";
         }
 
-        ctx.fillText(text, x, y);
+        context.fillText(glyph, x, y);
 
-        if (y > canvas.height && Math.random() > 0.975) {
-          drops[i] = 0;
-        }
-        drops[i]++;
+        if (y > height && Math.random() > 0.975) drops[index] = 0;
+        drops[index] += 1;
       }
 
-      animationFrameId = requestAnimationFrame(draw);
+      frame = window.requestAnimationFrame(draw);
     };
 
-    draw();
+    const start = () => {
+      if (running || coarsePointer) return;
+      running = true;
+      frame = window.requestAnimationFrame(draw);
+    };
+
+    const stop = () => {
+      running = false;
+      window.cancelAnimationFrame(frame);
+    };
+
+    const handleVisibility = () => {
+      if (document.hidden) stop();
+      else start();
+    };
+
+    const handleResize = () => {
+      window.clearTimeout(resizeTimer);
+      resizeTimer = window.setTimeout(() => {
+        setup();
+        if (running) {
+          stop();
+          start();
+        }
+      }, 150);
+    };
+
+    setup();
+    start();
+    document.addEventListener("visibilitychange", handleVisibility);
+    window.addEventListener("resize", handleResize);
 
     return () => {
-      window.removeEventListener("resize", resizeCanvas);
-      cancelAnimationFrame(animationFrameId);
+      stop();
+      window.clearTimeout(resizeTimer);
+      document.removeEventListener("visibilitychange", handleVisibility);
+      window.removeEventListener("resize", handleResize);
     };
   }, []);
 
   return (
     <canvas
       ref={canvasRef}
+      aria-hidden="true"
       className={cn(
-        "fixed inset-0 pointer-events-none z-0 opacity-60 transition-opacity duration-500",
-        className
+        "pointer-events-none fixed inset-0 z-0 opacity-60 transition-opacity duration-500",
+        className,
       )}
     />
   );
